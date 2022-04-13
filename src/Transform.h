@@ -23,7 +23,6 @@ public:
 	virtual void Update();
 
 private:
-	// TODO: Change private naming convention to lower with no underscore;
 	vec3 position;
 	quat rotation;
 	vec3 scale;
