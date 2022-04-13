@@ -20,7 +20,7 @@ Texture::~Texture()
 	
 }
 
-void Texture::init()
+void Texture::Init()
 {
 	// Load texture
 	int w, h, ncomps;

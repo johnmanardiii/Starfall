@@ -1,11 +1,18 @@
 #include "Camera.h"
 
-void Camera::update()
+void Camera::Update()
 {
     //TODO update based on input from mouse+keyboard
+    vec3 target = normalize(vec3(
+        cos(xRot) * cos(yRot),
+        sin(yRot),
+        sin(xRot) * cos(yRot)));
+    vec3 up = vec3(0, 1, 0);
+    mat4 lookAt = glm::lookAt(pos, pos + target, up); //first person camera. "looks at" the direction of target from the starting point of pos.
+    view = lookAt; //something can watch view and do something based on that value.
 }
 //not sure how to handle update based on outside parameters yet. Might refactor with event manager.
-void Camera::update(double posX, double posY)
+void Camera::Update(double posX, double posY)
 {
     if (firstMouseMovement) { //avoids first-frame jerky camera movement
         mousePrevX = posX;
@@ -18,7 +25,7 @@ void Camera::update(double posX, double posY)
     xRot += sensitivityX * deltaMouseX;
     yRot += sensitivityY * deltaMouseY;
     //cap yRot to avoid gimbal lock.
-    float cap = glm::radians(80.0f); //in degrees
+    constexpr float cap = glm::radians<float>(80.0f); //in degrees
     if (yRot > cap) yRot = cap;
     if (yRot < -cap) yRot = -cap;
     //set the previous values

@@ -16,7 +16,7 @@ public:
 	Shape();
 	virtual ~Shape();
 	void createShape(tinyobj::shape_t & shape);
-	void init();
+	void Init();
 	void measure();
 	void draw(const std::shared_ptr<Program> prog) const;
 	glm::vec3 min;

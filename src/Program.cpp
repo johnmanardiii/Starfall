@@ -34,7 +34,7 @@ void Program::setShaderNames(const std::string &v, const std::string &f)
 	fShaderName = f;
 }
 
-bool Program::init()
+bool Program::Init()
 {
 	GLint rc;
 

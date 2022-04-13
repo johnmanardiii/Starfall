@@ -90,8 +90,8 @@ public:
 	}
 
 	void mouseMovementCallback(GLFWwindow* window, double posX, double posY) {
-		Camera& cam = componentManager.getCamera();
-		cam.update(posX, posY);
+		Camera& cam = componentManager.GetCamera();
+		cam.Update(posX, posY);
 	}
 
 	void resizeCallback(GLFWwindow *window, int width, int height)
@@ -99,7 +99,7 @@ public:
 		glViewport(0, 0, width, height);
 	}
 
-	void init(const std::string& resourceDirectory)
+	void Init(const std::string& resourceDirectory)
 	{
 		GLSL::checkVersion();
 
@@ -112,7 +112,7 @@ public:
 		prog = make_shared<Program>();
 		prog->setVerbose(true);
 		prog->setShaderNames(resourceDirectory + "/simple_vert.glsl", resourceDirectory + "/simple_frag.glsl");
-		prog->init();
+		prog->Init();
 		prog->addUniform("P");
 		prog->addUniform("V");
 		prog->addUniform("M");
@@ -136,9 +136,10 @@ public:
 	void render()
 	{
 		//local modelview matrix use this for later labs
-		float M[16] = {0};
-		float V[16] = {0};
-		float P[16] = {0};
+		
+		auto M = make_shared<MatrixStack>();
+		auto V = make_shared<MatrixStack>();
+		auto P = make_shared<MatrixStack>();
 
 		// Get current frame buffer size.
 		int width, height;
@@ -151,16 +152,16 @@ public:
 		//Use the local matrices for lab 4
 		float aspect = width/(float)height;
 		//createPerspectiveMat(P, 70.0f, aspect, 0.1, 100.0f);	
-		createIdentityMat(P);
-		createIdentityMat(M);
-		createIdentityMat(V);
-
+		
+		componentManager.UpdateComponents();
+		V->pushMatrix();
+		V->multMatrix(componentManager.GetCamera().GetView());
 		// Draw mesh using GLSL.
 		prog->bind();
-		glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, P);
-		glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, V);
+		glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+		glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
 		//change m
-		glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, M);
+		glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 
 		//we need to set up the vertex array
 		glEnableVertexAttribArray(0);
@@ -193,14 +194,14 @@ int main(int argc, char *argv[])
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
-	windowManager->init(640, 480);
+	windowManager->Init(640, 480);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
 
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
 
-	application->init(resourceDir);
+	application->Init(resourceDir);
 	application->initGeom(resourceDir);
 
 	// Loop until the user closes the window.

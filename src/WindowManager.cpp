@@ -30,7 +30,7 @@ WindowManager::~WindowManager()
 	}
 }
 
-bool WindowManager::init(int const width, int const height)
+bool WindowManager::Init(int const width, int const height)
 {
 	glfwSetErrorCallback(error_callback);
 
@@ -71,6 +71,7 @@ bool WindowManager::init(int const width, int const height)
 
 	glfwSetKeyCallback(windowHandle, key_callback);
 	glfwSetMouseButtonCallback(windowHandle, mouse_callback);
+	glfwSetCursorPosCallback(windowHandle, mouse_movement_callback);
 	glfwSetFramebufferSizeCallback(windowHandle, resize_callback);
 
 	return true;

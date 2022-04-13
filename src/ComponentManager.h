@@ -13,17 +13,17 @@ using std::vector;
 class ComponentManager
 {
 public:
-    void deleteObject(GameObject obj);
-    GameObject getObject(string name);
+    void DeleteObject(GameObject obj);
+    GameObject GetObject(string name);
     //anything the component manager needs to do BEFORE frame-by-frame operations
-    void init();
+    void Init();
     
     //update components
-    void updateComponents();
+    void UpdateComponents();
 
     //anything the component manager needs to do AFTER frame-by-frame operations
-    void cleanup();
-    Camera& getCamera() { return camera; } //direct access, camera isn't componentized yet.
+    void Cleanup();
+    Camera& GetCamera() { return camera; } //direct access, camera isn't componentized yet.
 private:
     //the objects
     map<string, GameObject> objects;
@@ -31,6 +31,6 @@ private:
     //the various components
     
     //one camera for now
-    Camera& camera = Camera::getInstance();
+    Camera& camera = Camera::GetInstance();
 };
 

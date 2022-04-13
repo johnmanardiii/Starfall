@@ -58,7 +58,7 @@ void Shape::measure() {
    max.z = maxZ;
 }
 
-void Shape::init()
+void Shape::Init()
 {
    // Initialize the vertex array object
    glGenVertexArrays(1, &vaoID);

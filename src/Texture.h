@@ -11,7 +11,7 @@ public:
 	Texture();
 	virtual ~Texture();
 	void setFilename(const std::string &f) { filename = f; }
-	void init();
+	void Init();
 	void setUnit(GLint u) { unit = u; }
 	GLint getUnit() const { return unit; }
 	void bind(GLint handle);
