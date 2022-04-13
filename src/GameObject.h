@@ -9,9 +9,13 @@ using std::string;
 class GameObject
 {
 public:
-    bool IsActive;
-    string Name;
+    GameObject(string name, map<string, size_t> comps) : 
+        Name(name),  
+        IsActive(true),
+        components(comps){};
+    bool IsActive; //whether the component is active. might remove.
+    string Name; //the name of the object.
 private:
-    map<string, int> components; //component or int to point to component
+    map<string, size_t> components; //component or int to point to component
 };
 

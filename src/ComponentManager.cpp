@@ -11,7 +11,10 @@ GameObject ComponentManager::GetObject(string name)
 {
     //TODO this should return a reference/copy (discuss) to a game object
     //based on the key in a map.
-    return GameObject();
+    auto it = objects.find(name);
+    if (it != objects.end())
+        return it->second;
+    std::cerr << "GetObject did not"
 }
 
 void ComponentManager::Init()
@@ -28,7 +31,17 @@ void ComponentManager::UpdateComponents()
 
 GameObject ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)
 {
-    return GameObject();
+    map<type_info*, size_t> componentList;
+    //don't care what container is used to pass in components, 
+    //just as long as it is ordered and has same size as max components.
+    //Pad unused components with null.
+    
+    for (const auto& comp : comps) {
+        if (!comp) {
+            typeid(Component);
+        }
+    }
+    
 }
 
 void ComponentManager::RemoveGameObject(string name)

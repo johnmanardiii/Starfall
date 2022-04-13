@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <queue>
+#include <iostream>
 using std::string;
 using std::map;
 using std::vector;
@@ -36,7 +37,11 @@ private:
     map<string, GameObject> objects;
 
     //the various components
-    
+    vector<string> orderedComponentNames = {
+        "renderer",
+        "movement",
+        "transform",
+        "collision" };
     //one camera for now
     Camera& camera = Camera::GetInstance();
 
@@ -47,7 +52,7 @@ private:
     vector<Component> movements; //TODO change type to movement component name
     OpenSlots movementSlots;
     //Transform
-    vector<Component> transforms;
+    vector<Component> transforms; //TODO change type to transforms component name
     OpenSlots transformSlots;
     //Collision
     vector<Component> collisions; //TODO change type to collision, or bounding sphere/box.
