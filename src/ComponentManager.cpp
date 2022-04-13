@@ -22,7 +22,17 @@ void ComponentManager::Init()
 
 void ComponentManager::UpdateComponents()
 {
+
     camera.Update();
+}
+
+GameObject ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)
+{
+    return GameObject();
+}
+
+void ComponentManager::RemoveGameObject(string name)
+{
 }
 
 void ComponentManager::Cleanup()
