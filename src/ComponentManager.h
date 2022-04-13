@@ -32,5 +32,16 @@ private:
     
     //one camera for now
     Camera& camera = Camera::GetInstance();
+
+    map<string, GameObject> objects;
+    //Renderer
+    vector<Component> renderers; //TODO change type to Renderer
+    vector<int> rendererSlots;
+    //Movement
+    vector<Component> movements; //TODO change type to movement component name
+    vector<int> movementSlots;
+    //Transform
+    //Collision
+    //Spawner
 };
 
