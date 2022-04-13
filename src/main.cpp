@@ -108,6 +108,10 @@ public:
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
 
+		//do ComponentManager's init here
+		componentManager.Init();
+
+
 		// Initialize the GLSL program.
 		prog = make_shared<Program>();
 		prog->setVerbose(true);
@@ -209,7 +213,7 @@ int main(int argc, char *argv[])
 	{
 		// Render scene.
 		application->render();
-
+		
 		// Swap front and back buffers.
 		glfwSwapBuffers(windowManager->getHandle());
 		// Poll for and process events.

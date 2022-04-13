@@ -9,6 +9,10 @@ using std::string;
 class GameObject
 {
 public:
+    GameObject() :
+        Name("test"),
+        IsActive(true),
+        components() {};
     GameObject(string name, map<string, size_t> comps) : 
         Name(name),  
         IsActive(true),
