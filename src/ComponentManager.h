@@ -33,7 +33,6 @@ private:
     //one camera for now
     Camera& camera = Camera::GetInstance();
 
-    map<string, GameObject> objects;
     //Renderer
     vector<Component> renderers; //TODO change type to Renderer
     vector<int> rendererSlots;
