@@ -23,16 +23,18 @@ void ComponentManager::Init()
 {
     
     camera = Camera::GetInstance();
-    //TODO change the right-hand pointer to a derived component.
-    shared_ptr<Component> renderer = shared_ptr<Component>();
-    shared_ptr<Component> movement = shared_ptr<Component>();
-    shared_ptr<Component> transform = shared_ptr<Component>();
-    shared_ptr<Component> collision = std::make_shared<>();
-    vector<shared_ptr<Component>> vBunny = { renderer, movement, transform, collision };
-    vector<shared_ptr<Component>> vInvis = { nullptr, movement, transform, collision };
-    AddGameObject("bunny", vBunny);
-    AddGameObject("invisibleBunny", vInvis);
-    AddGameObject("staticBunny", vector<shared_ptr<Component>>{ renderer, nullptr, transform, collision });
+    //TODO get real data in here, about starting information of components.
+    shared_ptr<Component> renderer = nullptr;
+    shared_ptr<Component> movement = make_shared<Movement>();
+    shared_ptr<Component> transform = make_shared<Transform>();
+    shared_ptr<Component> collision = nullptr;
+
+    //declaration style 1
+    vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
+    AddGameObject("bunny", Bunny);
+    //declaration style 2, with no movement component.
+    auto StaticBunny = vector<shared_ptr<Component>>{ renderer, movement, transform, collision };
+    AddGameObject("staticBunny", StaticBunny);
 
 }
 
@@ -45,18 +47,21 @@ void ComponentManager::UpdateComponents()
 GameObject ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)
 {
     map<type_info*, size_t> componentList;
-    //don't care what container is used to pass in components, 
-    //just as long as it is ordered and has same size as max components.
+    //don't care what container is used to pass in components,
     //Pad unused components with null.
     map<string, size_t> objComps;
     for (const auto& comp : comps) {
-        if (comp) {
-            std::cout << typeid(comp).name() << std::endl;
+        if (comp) { //null check
+            addToCollection(comp);
         }
     }
     return GameObject();
 }
-   
+
+void ComponentManager::addToCollection(const shared_ptr<Component>& comp) {
+    auto ptr = dynamic_pointer_cast<Transform>(comp);
+    cout << typeid(ptr).name() << endl;
+}
 
 void ComponentManager::RemoveGameObject(string name)
 {

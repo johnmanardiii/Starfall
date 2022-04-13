@@ -2,17 +2,17 @@
 
 #include "GameObject.h"
 #include "Camera.h"
+#include "Movement.h"
+#include "Transform.h"
+
 #include <string>
 #include <memory>
 #include <map>
 #include <vector>
 #include <queue>
 #include <iostream>
-using std::string;
-using std::map;
-using std::vector;
-using std::shared_ptr;
-using std::priority_queue;
+
+using namespace std;
 
 class ComponentManager
 {
@@ -35,13 +35,9 @@ public:
 private:
     //the objects
     map<string, GameObject> objects;
-
+    
     //the various components
-    vector<string> orderedComponentNames = {
-        "renderer",
-        "movement",
-        "transform",
-        "collision" };
+    void addToCollection(const shared_ptr<Component>& comp);
     //one camera for now
     Camera& camera = Camera::GetInstance();
 
@@ -49,10 +45,10 @@ private:
     vector<Component> renderers; //TODO change type to Renderer
     OpenSlots rendererSlots;
     //Movement
-    vector<Component> movements; //TODO change type to movement component name
+    vector<Movement> movements; //TODO change type to movement component name
     OpenSlots movementSlots;
     //Transform
-    vector<Component> transforms; //TODO change type to transforms component name
+    vector<Transform> transforms; //TODO change type to transforms component name
     OpenSlots transformSlots;
     //Collision
     vector<Component> collisions; //TODO change type to collision, or bounding sphere/box.
