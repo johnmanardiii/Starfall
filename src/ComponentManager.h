@@ -17,8 +17,13 @@ public:
     GameObject getObject(string name);
     //anything the component manager needs to do BEFORE frame-by-frame operations
     void init();
+    
+    //update components
+    void updateComponents();
+
     //anything the component manager needs to do AFTER frame-by-frame operations
     void cleanup();
+    Camera& getCamera() { return camera; } //direct access, camera isn't componentized yet.
 private:
     //the objects
     map<string, GameObject> objects;

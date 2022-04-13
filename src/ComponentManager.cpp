@@ -20,6 +20,11 @@ void ComponentManager::init()
     camera = Camera::getInstance();
 }
 
+void ComponentManager::updateComponents()
+{
+    camera.update();
+}
+
 void ComponentManager::cleanup()
 {
 }

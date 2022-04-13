@@ -108,6 +108,13 @@ void WindowManager::mouse_callback(GLFWwindow * window, int button, int action, 
 	}
 }
 
+void WindowManager::mouse_movement_callback(GLFWwindow* window, double xPos, double yPos) {
+	if (instance && instance->callbacks)
+	{
+		instance->callbacks->mouseMovementCallback(window, xPos, yPos);
+	}
+}
+
 void WindowManager::resize_callback(GLFWwindow * window, int in_width, int in_height)
 {
 	if (instance && instance->callbacks)

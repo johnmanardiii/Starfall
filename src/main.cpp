@@ -89,6 +89,11 @@ public:
 		}
 	}
 
+	void mouseMovementCallback(GLFWwindow* window, double posX, double posY) {
+		Camera& cam = componentManager.getCamera();
+		cam.update(posX, posY);
+	}
+
 	void resizeCallback(GLFWwindow *window, int width, int height)
 	{
 		glViewport(0, 0, width, height);
