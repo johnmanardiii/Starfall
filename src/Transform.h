@@ -20,9 +20,12 @@ public:
 	void ApplyRotation(float, vec3);
 	void ApplyScale(vec3);
 
+	virtual void Update();
+
 private:
-	vec3 _position;
-	quat _rotation;
-	vec3 _scale;
+	// TODO: Change private naming convention to lower with no underscore;
+	vec3 position;
+	quat rotation;
+	vec3 scale;
 };
 
