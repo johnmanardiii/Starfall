@@ -10,6 +10,7 @@ Z. Wood + S. Sueda
 #include "Shape.h"
 #include "MatrixStack.h"
 #include "WindowManager.h"
+#include "ComponentManager.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -34,6 +35,8 @@ static const GLfloat g_vertex_buffer_data[] = {
 class Application : public EventCallbacks {
 
 public:
+	// the component manager.
+	ComponentManager componentManager;
 
 	WindowManager * windowManager = nullptr;
 
