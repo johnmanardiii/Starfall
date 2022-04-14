@@ -29,6 +29,14 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
         shared_ptr<Transform> copyPtr = transforms[index];
         return copyPtr;
     }
+    else if (compName == componentVectorNames[4]) { //collect
+        shared_ptr<Collect> copyPtr = collects[index];
+        return copyPtr;
+    }
+    else if (compName == componentVectorNames[3]) { //collect
+        shared_ptr<Renderer> copyPtr = renderers[index];
+        return copyPtr;
+    }
     else {
         throw "unexpected component name error";
     }
@@ -63,12 +71,13 @@ void ComponentManager::Init(std::string resourceDirectory)
     shared_ptr<Component> movement = nullptr;
     shared_ptr<Component> transform = make_shared<Transform>("Sphere0");
     shared_ptr<Component> collision = nullptr;
-    ((Transform*)transform.get())->ApplyTranslation(vec3(0.0f, 1.0f, 3.0f));
+    shared_ptr<Component> collect = make_shared<Collect>("Sphere0");
+    ((Transform*)transform.get())->ApplyTranslation(vec3(0.0f, 1.0f, -3.0f));
     ((Transform*)transform.get())->ApplyScale(vec3(0.01f, 0.01f, 0.01f));
-    vector<shared_ptr<Component>> Sphere = { renderer, movement, transform, collision };
+    vector<shared_ptr<Component>> Sphere = { renderer, movement, transform, collision, collect};
     AddGameObject("Sphere0", Sphere);
     
-    for (int i = 0; i < 9; i++) {
+    /*for (int i = 0; i < 9; i++) {
         shared_ptr<Component> renderer = nullptr;
         shared_ptr<Component> movement = make_shared<Movement>("bunny" + to_string(i));
         shared_ptr<Component> transform = make_shared<Transform>("bunny" + to_string(i));
@@ -77,7 +86,7 @@ void ComponentManager::Init(std::string resourceDirectory)
         AddGameObject("bunny" + to_string(i), Bunny);
     }
     
-    renderer = make_shared<TextureRenderer>("bunny.obj", "cat.jpg", "bunny");
+    renderer = make_shared<TextureRenderer>("bunny.obj", "cat.jpg", "bunny");*/
     
     //declaration style 2, with no movement component.
     
@@ -112,6 +121,13 @@ void ComponentManager::UpdateComponents(float frameTime)
     {
         if (!trans->IsActive) continue;
         trans->Update(frameTime);
+    }
+
+    // update flashing animation
+    for (auto collect : collects)
+    {
+        if (!collect->IsActive) continue;
+        collect->Update(frameTime);
     }
 
     //update camera position.
@@ -157,6 +173,9 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
         else if (name == componentVectorNames[3]) { //render
             renderers[index]->Init(*this);
         }
+        else if (name == componentVectorNames[4]) { //collect
+            collects[index]->Init(*this);
+        }
         //TODO add additional potential components.
     }//end processing component vector freeing
 }
@@ -181,6 +200,11 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
         index = getNextOpenSlot(rendererSlots);
         compType = componentVectorNames[3];
         addHelper(ptr, renderers, index);
+    }
+    else if (auto ptr = dynamic_pointer_cast<Collect>(comp)) {
+        index = getNextOpenSlot(rendererSlots);
+        compType = componentVectorNames[4];
+        addHelper(ptr, collects, index);
     }
     //TODO the other concrete types. Format should be pretty much identical.
 

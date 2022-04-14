@@ -24,8 +24,10 @@ public:
 	void Init(ComponentManager& compMan);
 
 	void Draw(float frameTime);
+	void SetFlashAmt(float amt) { flashAmt = amt; }
 private:
 	shared_ptr<Shape> model;
 	GLuint texture;
-
+	float flashAmt = 0;
+	vec3 flashColor = vec3(1, 0, 1);
 };

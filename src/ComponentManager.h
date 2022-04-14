@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Component.h"
 #include "Movement.h"
+#include "Collect.h"
 #include "Transform.h"
 #include "Collision.h"
 #include "TextureRenderer.h"
@@ -50,7 +51,7 @@ private:
     //one camera for now
     Camera& camera = Camera::GetInstance(vec3(0,1,0));
 
-    vector<string> componentVectorNames{ "Movement", "Transform", "Collision", "Render" }; //MTRC
+    vector<string> componentVectorNames{ "Movement", "Transform", "Collision", "Renderer", "Collect" }; //MTRC
     //Movement
     vector< shared_ptr<Movement>> movements; //TODO change type to movement component name
     OpenSlots movementSlots;
@@ -63,6 +64,9 @@ private:
     //Collision
     vector<shared_ptr<Collision>> collisions; //TODO change type to collision, or bounding sphere/box.
     OpenSlots collisionSlots;
+    //Collect
+    vector<shared_ptr<Collect>> collects; //TODO change type to collision, or bounding sphere/box.
+    OpenSlots collectSlots;
     
     //Spawner
     //TODO write singleton for spawner.
