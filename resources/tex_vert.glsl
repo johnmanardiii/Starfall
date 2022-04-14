@@ -17,5 +17,4 @@ void main()
 	vertex_pos = tpos.xyz;
 	gl_Position = P * V * tpos;
 	vertex_tex = vertTex * vec2(1, -1);
-	model = M;
 }

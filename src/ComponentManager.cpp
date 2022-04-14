@@ -59,7 +59,14 @@ void ComponentManager::Init(std::string resourceDirectory)
     prog->addUniform("M");
     prog->addAttribute("vertPos");
     
-    
+    shared_ptr<Component> renderer = make_shared<TextureRenderer>("Sphere", "Cat", "Sphere0");
+    shared_ptr<Component> movement = nullptr;
+    shared_ptr<Component> transform = make_shared<Transform>("Sphere0");
+    shared_ptr<Component> collision = nullptr;
+    ((Transform*)transform.get())->ApplyTranslation(vec3(0.0f, 1.0f, 3.0f));
+    ((Transform*)transform.get())->ApplyScale(vec3(0.01f, 0.01f, 0.01f));
+    vector<shared_ptr<Component>> Sphere = { renderer, movement, transform, collision };
+    AddGameObject("Sphere0", Sphere);
     
     for (int i = 0; i < 9; i++) {
         shared_ptr<Component> renderer = nullptr;
@@ -70,7 +77,7 @@ void ComponentManager::Init(std::string resourceDirectory)
         AddGameObject("bunny" + to_string(i), Bunny);
     }
     
-    shared_ptr<Component> renderer = make_shared<TextureRenderer>("bunny.obj", "cat.jpg", "bunny");
+    renderer = make_shared<TextureRenderer>("bunny.obj", "cat.jpg", "bunny");
     
     //declaration style 2, with no movement component.
     
@@ -169,6 +176,11 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
         index = getNextOpenSlot(movementSlots);
         compType = componentVectorNames[0];
         addHelper(ptr, movements, index);
+    }
+    else if (auto ptr = dynamic_pointer_cast<Renderer>(comp)) {
+        index = getNextOpenSlot(rendererSlots);
+        compType = componentVectorNames[3];
+        addHelper(ptr, renderers, index);
     }
     //TODO the other concrete types. Format should be pretty much identical.
 
