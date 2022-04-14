@@ -207,10 +207,10 @@ public:
 
 	void initGeom(const std::string& resourceDirectory)
 	{
-		initGround(0.0);
+		//initGround(0.0);
 		
 		//generate the VAO
-		glGenVertexArrays(1, &VertexArrayID);
+		/*glGenVertexArrays(1, &VertexArrayID);
 		glBindVertexArray(VertexArrayID);
 
 		//generate vertex buffer to hand off to OGL
@@ -219,6 +219,7 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 		//actually memcopy the data - only do this once
 		glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+		*/
 	}
 
 	void render(float frameTime)
@@ -245,16 +246,11 @@ public:
 		V->pushMatrix();
 		V->multMatrix(componentManager.GetCamera().GetView());
 		// Draw mesh using GLSL.
+		initGround(0.0);
 		drawGround(prog);
 
 	}	
 };
-
-void testEvents()
-{
-	EventManager emanager;
-
-}
 
 int main(int argc, char *argv[])
 {
