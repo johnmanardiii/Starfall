@@ -7,7 +7,7 @@
 using namespace std;
 class Event
 {
-	typedef pair<Component, void*> Listener;
+	typedef pair<Component*, void*> Listener;
 
 public:
 	void Subscribe(Listener);
