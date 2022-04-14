@@ -27,7 +27,7 @@ public:
     
     //update components
     void UpdateComponents();
-    GameObject AddGameObject(string name, vector<shared_ptr<Component>> comps);
+    void AddGameObject(string name, vector<shared_ptr<Component>> comps);
     void RemoveGameObject(string name);
     //anything the component manager needs to do AFTER frame-by-frame operations
     void Cleanup();
@@ -37,7 +37,7 @@ private:
     map<string, GameObject> objects;
     
     //helper functions to differentiate parts of AddGameObject.
-    void addToComponentList(const shared_ptr<Component>& comp);
+    pair<string, size_t> addToComponentList(const shared_ptr<Component>& comp);
     int getNextOpenSlot(OpenSlots slots);
     template<typename T>
     void addHelper(T comp, vector<T>& compList, int index);

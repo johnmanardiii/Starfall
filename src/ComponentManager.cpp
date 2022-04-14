@@ -42,38 +42,46 @@ void ComponentManager::UpdateComponents()
     camera.Update();
 }
 
-GameObject ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)
+void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)
 {
     map<type_info*, size_t> componentList;
     //don't care what container is used to pass in components,
     //Pad unused components with null.
     map<string, size_t> objComps;
     for (const auto& comp : comps) {
-        if (comp) { //null check
-            addToComponentList(comp);
-        }
+        if (!comp) continue; //null check
+        //if not null
+        objComps.insert(addToComponentList(comp));
     }
-    return GameObject();
+    objects[name] = GameObject(name, objComps);
 }
 
 //add the component to the first-available position of the corresponding vector of components.
-void ComponentManager::addToComponentList(const shared_ptr<Component>& comp) {
+pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Component>& comp) {
     //these series of checks check whether an attempted cast returns a nullptr, indicating that
     //a cast could/couldn't take place, effectively type-checking the object.
+    int index = -1; //if this remains at -1 there wasn't a successful cast.
+    string compType = "undefinedComponentType"; //make it really obvious if not detected.
     if (auto ptr = dynamic_pointer_cast<Transform>(comp)) {
-        cout << typeid(*comp).name() << endl; //DEBUG can be removed safely
-
-        int index = getNextOpenSlot(transformSlots);
+        index = getNextOpenSlot(transformSlots);
+        compType = "Transform";
         addHelper(*ptr, transforms, index);
+
     }
     else if (auto ptr = dynamic_pointer_cast<Movement>(comp)) {
-        cout << typeid(*comp).name() << endl; //DEBUG can be removed safely
-
-        int index = getNextOpenSlot(transformSlots);
+        index = getNextOpenSlot(transformSlots);
+        compType = "Movement";
         addHelper(*ptr, movements, index);
     }
     //TODO the other concrete types. Format should be pretty much identical.
+
+    // finally(this should happen at the end, unconditionally, for all component types :
+    //return the index where the component resides now.
+    return make_pair(compType, index); //insert this into the GameObject.
     
+ 
+    //finally (this should happen at the end, unconditionally, for all component types:
+    //return the index where the component resides now.
 }
 
 //This modifies compList by inserting comp.
