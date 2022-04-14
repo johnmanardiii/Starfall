@@ -37,3 +37,5 @@ void Transform::ApplyScale(vec3 scalars)
 }
 
 void Transform::Update() {}
+
+void Transform::Init(ComponentManager& compMan) {}

@@ -30,6 +30,7 @@ public:
     //write something to the application's view matrix directly. TODO change this access with an event manager class.
     void Update();
     void Update(double posX, double posY);
+    void Init(ComponentManager&) {} //does nothing, also not required to be called.
     static Camera& GetInstance() {
         static Camera instance;
         return instance;

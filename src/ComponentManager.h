@@ -31,6 +31,7 @@ public:
     void RemoveGameObject(string name);
     //anything the component manager needs to do AFTER frame-by-frame operations
     void Cleanup();
+    shared_ptr<Component> GetComponent(string, int);
     Camera& GetCamera() { return camera; } //direct access, camera isn't componentized yet.
 private:
     //the objects

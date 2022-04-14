@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "ComponentManager.h"
 #include <glm/gtc/type_ptr.hpp>
 
 using namespace glm;
@@ -20,7 +21,8 @@ public:
 	void ApplyRotation(float, vec3);
 	void ApplyScale(vec3);
 
-	virtual void Update();
+	void Update();
+	void Init(ComponentManager& manager);
 
 private:
 	vec3 position;

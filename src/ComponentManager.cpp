@@ -19,32 +19,54 @@ GameObject ComponentManager::GetObject(string name)
     return it->second;
 }
 
+shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
+{
+    if (compName == componentVectorNames[0]) { //movement
+        return make_shared<Component>(&movements[index]);
+    }
+    else if (compName == componentVectorNames[1]) { //transform
+        return make_shared<Component>(&transforms[index]);
+    } 
+    else if (compName == componentVectorNames[2]) { //collision
+        return make_shared<Component>(&collisions[index]);
+    }
+    else if (compName == componentVectorNames[3]) { //render
+        return make_shared<Component>(&renderers[index]);
+    }
+}
+
 void ComponentManager::Init()
 {
     
     camera = Camera::GetInstance();
     //TODO get real data in here, about starting information of components.
-    shared_ptr<Component> renderer = nullptr;
-    shared_ptr<Component> movement = make_shared<Movement>();
-    shared_ptr<Component> transform = make_shared<Transform>();
-    shared_ptr<Component> collision = nullptr;
+    
 
     //declaration style 1
-    vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
+    
     //quick test. Add 9 bunnies, then delete bunny0, bunny4, and bunny8. 
     //all other slots should be active, and there should be 6 remaining.
     
     for (int i = 0; i < 9; i++) {
+        shared_ptr<Component> renderer = nullptr;
+        shared_ptr<Component> movement = make_shared<Movement>("bunny" + to_string(i));
+        shared_ptr<Component> transform = make_shared<Transform>("bunny" + to_string(i));
+        shared_ptr<Component> collision = nullptr;
+        vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
         AddGameObject("bunny" + to_string(i), Bunny);
     }
     //delete 3
     RemoveGameObject("bunny0");
     RemoveGameObject("bunny4");
     RemoveGameObject("bunny8");
-    //add 3 back
+    //add 1 back
+    shared_ptr<Component> renderer = nullptr;
+    shared_ptr<Component> movement = make_shared<Movement>("bunny9");
+    shared_ptr<Component> transform = make_shared<Transform>("bunny");
+    shared_ptr<Component> collision = nullptr;
+    vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
     AddGameObject("bunny9", Bunny);
-    AddGameObject("bunny10", Bunny);
-    AddGameObject("bunny11", Bunny);
+    
     //declaration style 2, with no movement component.
     
 }
@@ -68,6 +90,27 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
         objComps.insert(p);
     }
     objects[name] = GameObject(name, objComps);
+    auto locations = objects[name].GetComponentLocations();
+    for (auto comp : locations) {
+        auto name = comp.first;
+        auto index = comp.second;
+
+        //free up for insertion. Do this by supplying the component's
+        //indices for use by a new component, and marking the component as not in use.
+        if (name == componentVectorNames[0]) { //movement
+            movements[index].Init(*this);
+        }
+        else if (name == componentVectorNames[1]) { //transform
+            transforms[index].Init(*this);
+        } 
+        else if (name == componentVectorNames[2]) { //collision
+            collisions[index].Init(*this);
+        }
+        else if (name == componentVectorNames[3]) { //render
+            renderers[index].Init(*this);
+        }
+        //TODO add additional potential components.
+    }//end processing component vector freeing
 }
 
 //add the component to the first-available position of the corresponding vector of components.

@@ -12,6 +12,8 @@ Z. Wood + S. Sueda
 #include "MatrixStack.h"
 #include "WindowManager.h"
 #include "ComponentManager.h"
+#include "Event.h"
+#include "EventManager.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -41,6 +43,16 @@ public:
 
 	WindowManager * windowManager = nullptr;
 
+	typedef struct Ground{
+        GLuint VertexArrayID;
+        GLuint buffObj;
+        GLuint norBuffObj;
+        GLuint texBuffObj;
+        GLuint indexBuffObj;
+        int giboLen;
+    }Ground;
+    Ground ground;
+
 	// Our shader program
 	std::shared_ptr<Program> prog;
 
@@ -52,18 +64,6 @@ public:
 
 	// Data necessary to give our triangle to OpenGL
 	GLuint vertexBufferID;
-
-	/* we will work with matrices soon - don't worry - place holder for now */
-	void createIdentityMat(float *M) {
-	//set all values to zero
-		for(int i = 0; i < 4; ++i) {
-			for(int j = 0; j < 4; ++j) {
-				M[i*4+j] = 0;
-			}
-		}
-	//overwrite diagonal with 1s
-		M[0] = M[5] = M[10] = M[15] = 1;
-	}
 
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -123,9 +123,92 @@ public:
 		prog->addUniform("M");
 		prog->addAttribute("vertPos");
 	}
+	
+	void drawGround(std::shared_ptr<Program> curS) {
+	    curS->bind();
+	    glBindVertexArray(ground.VertexArrayID);
+	    //draw the ground plane
+	    mat4 ScaleS = glm::scale(glm::mat4(1.0f), vec3(0.15,1,0.6));
+	    mat4 ctm = ScaleS;
+	    glUniformMatrix4fv(curS->getUniform("M"), 1, GL_FALSE, value_ptr(ctm));
+	
+	    glEnableVertexAttribArray(0);
+	    glBindBuffer(GL_ARRAY_BUFFER, ground.buffObj);
+	    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	
+	    glEnableVertexAttribArray(1);
+	    glBindBuffer(GL_ARRAY_BUFFER, ground.norBuffObj);
+	    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	
+	    glEnableVertexAttribArray(2);
+	    glBindBuffer(GL_ARRAY_BUFFER, ground.texBuffObj);
+	    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	
+	    // draw!
+	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ground.indexBuffObj);
+	    glDrawElements(GL_TRIANGLES, ground.giboLen, GL_UNSIGNED_SHORT, 0);
+	
+	    glDisableVertexAttribArray(0);
+	    glDisableVertexAttribArray(1);
+	    glDisableVertexAttribArray(2);
+	    curS->unbind();
+	}
+	
+	void initGround(float g_groundY) {
+	
+	    float g_groundSize = 20;
+	    
+	    // A x-z plane at y = g_groundY of dimension [-g_groundSize, g_groundSize]^2
+	    float GrndPos[] = {
+	        -g_groundSize, g_groundY, -g_groundSize,
+	        -g_groundSize, g_groundY,  g_groundSize,
+	        g_groundSize, g_groundY,  g_groundSize,
+	        g_groundSize, g_groundY, -g_groundSize
+	    };
+	
+	    float GrndNorm[] = {
+	        0, 1, 0,
+	        0, 1, 0,
+	        0, 1, 0,
+	        0, 1, 0,
+	        0, 1, 0,
+	        0, 1, 0
+	    };
+	
+	    static GLfloat GrndTex[] = {
+	        0, 0, // back
+	        0, 1,
+	        1, 1,
+	        1, 0 };
+	 
+	    unsigned short idx[] = {0, 1, 2, 0, 2, 3};
+	
+	    //generate the ground VAO
+	    glGenVertexArrays(1, &ground.VertexArrayID);
+	    glBindVertexArray(ground.VertexArrayID);
+	
+	    ground.giboLen = 6;
+	    glGenBuffers(1, &ground.buffObj);
+	    glBindBuffer(GL_ARRAY_BUFFER, ground.buffObj);
+	    glBufferData(GL_ARRAY_BUFFER, sizeof(GrndPos), GrndPos, GL_STATIC_DRAW);
+	
+	    glGenBuffers(1, &ground.norBuffObj);
+	    glBindBuffer(GL_ARRAY_BUFFER, ground.norBuffObj);
+	    glBufferData(GL_ARRAY_BUFFER, sizeof(GrndNorm), GrndNorm, GL_STATIC_DRAW);
+	
+	    glGenBuffers(1, &ground.texBuffObj);
+	    glBindBuffer(GL_ARRAY_BUFFER, ground.texBuffObj);
+	    glBufferData(GL_ARRAY_BUFFER, sizeof(GrndTex), GrndTex, GL_STATIC_DRAW);
+	
+	    glGenBuffers(1, &ground.indexBuffObj);
+	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ground.indexBuffObj);
+	    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx), idx, GL_STATIC_DRAW);
+	}
 
 	void initGeom(const std::string& resourceDirectory)
 	{
+		initGround(0.0);
+		
 		//generate the VAO
 		glGenVertexArrays(1, &VertexArrayID);
 		glBindVertexArray(VertexArrayID);
@@ -162,26 +245,16 @@ public:
 		V->pushMatrix();
 		V->multMatrix(componentManager.GetCamera().GetView());
 		// Draw mesh using GLSL.
-		prog->bind();
-		glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-		glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
-		//change m
-		glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-
-		//we need to set up the vertex array
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		//key function to get up how many elements to pull out at a time (3)
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*) 0);
-
-		//actually draw from vertex 0, 3 vertices
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDisableVertexAttribArray(0);
-
-		prog->unbind();
+		drawGround(prog);
 
 	}	
 };
+
+void testEvents()
+{
+	EventManager emanager;
+
+}
 
 int main(int argc, char *argv[])
 {
