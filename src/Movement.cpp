@@ -28,7 +28,7 @@ void Movement::Init(ComponentManager& compMan)
 	trans = static_pointer_cast<Transform>(compMan.GetComponent("Transform", index));
 }
 
-void Movement::Update(float frameTime) 
+void Movement::Update(float frameTime, ComponentManager& compMan)
 {
 	Move(frameTime);
 }

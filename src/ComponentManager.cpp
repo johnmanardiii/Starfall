@@ -99,7 +99,7 @@ void ComponentManager::UpdateComponents(float frameTime)
     for (auto move : movements) 
     {
         if (!move->IsActive) continue;
-        move->Update(frameTime);
+        move->Update(frameTime, *this);
     }
      
     //resolve collisions.
@@ -121,24 +121,24 @@ void ComponentManager::UpdateComponents(float frameTime)
     for (auto trans : transforms)
     {
         if (!trans->IsActive) continue;
-        trans->Update(frameTime);
+        trans->Update(frameTime, *this);
     }
 
     // update flashing animation
     for (auto collect : collects)
     {
         if (!collect->IsActive) continue;
-        collect->Update(frameTime);
+        collect->Update(frameTime, *this);
     }
 
     //update camera position.
-    camera.Update(frameTime);
+    camera.Update(frameTime, *this);
     //finally update renderers/draw.
 
     for (auto rend : renderers)
     {
         if (!rend->IsActive) continue;
-        rend->Update(frameTime);
+        rend->Update(frameTime, *this);
     }
 }
 
@@ -256,7 +256,7 @@ void ComponentManager::RemoveGameObject(string name)
             movementSlots.push(index); 
         }
         else if (name == componentVectorNames[1]) { //transform
-            movements[index]->IsActive = false;
+            transforms[index]->IsActive = false;
             transformSlots.push(index);
         } 
         else if (name == componentVectorNames[2]) { //collision
@@ -264,8 +264,12 @@ void ComponentManager::RemoveGameObject(string name)
             collisionSlots.push(index);
         }
         else if (name == componentVectorNames[3]) { //render
-            movements[index]->IsActive = false;
+            renderers[index]->IsActive = false;
             rendererSlots.push(index);
+        }
+        else if (name == componentVectorNames[4]) { //render
+            collects[index]->IsActive = false;
+            collectSlots.push(index);
         }
         //TODO add additional potential components.
     }//end processing component vector freeing

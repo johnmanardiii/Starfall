@@ -16,7 +16,7 @@ public:
     void Init(ComponentManager& manager);
     void Resolve(shared_ptr<Collision> other, float frameTime);
     void updateBasedOnCollision(glm::vec3 collisionDirection, float frameTime);
-    void Update(float frameTime) { throw std::runtime_error("don't use this, use resolve"); }
+    void Update(float frameTime, ComponentManager& compMan) { throw std::runtime_error("don't use this, use resolve"); }
 private:
     glm::vec3 getCenterOfBBox();
     float getRadius();

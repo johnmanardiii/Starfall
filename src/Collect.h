@@ -8,7 +8,7 @@ class Collect : public Component
 {
 public:
 	Collect(string name) : Component(name) {}
-	void Update(float);
+	void Update(float, ComponentManager&);
 	void Init(ComponentManager&);
 
 	void BeginFlash() { flashSpeed = 10; }

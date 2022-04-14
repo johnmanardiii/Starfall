@@ -36,7 +36,7 @@ public:
     //write something to the application's view matrix directly. TODO change this access with an event manager class.
     bool IsWASDPressed[4] = {false, false, false, false};
     
-    void Update(float frameTime);
+    void Update(float frameTime, ComponentManager& compMan);
     void Update(double posX, double posY);
     void Init(ComponentManager&) {} //does nothing, also not required to be called.
     void ProcessWASDInput();

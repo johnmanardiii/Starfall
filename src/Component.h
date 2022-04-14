@@ -18,7 +18,7 @@ public:
 
     Component(std::string gameObjectName) : Name(gameObjectName) {}
     //Components must have an update function, even if it does nothing
-    virtual void Update(float frameTime) = 0;
+    virtual void Update(float frameTime, ComponentManager& compMan) = 0;
     virtual void Init(ComponentManager&) = 0;
     bool IsActive = true;
     std::string Name = "unitialized";

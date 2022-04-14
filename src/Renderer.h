@@ -14,7 +14,7 @@ class Renderer : public Component
 public:
 	virtual void Draw(float frameTime) = 0;
 	virtual void Init(ComponentManager&);
-	virtual void Update(float frameTime) { Draw(frameTime); }
+	virtual void Update(float frameTime, ComponentManager& compMan) { Draw(frameTime); }
 	Renderer(string gameObject) : Component(gameObject) {}
 protected:
 	shared_ptr<Program> prog = NULL;

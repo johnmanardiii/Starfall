@@ -19,7 +19,7 @@ void Camera::ProcessWASDInput() {
     }
 }
 
-void Camera::Update(float frameTime)
+void Camera::Update(float frameTime, ComponentManager& compMan)
 {
     ProcessWASDInput();
     //TODO update based on input from mouse+keyboard
