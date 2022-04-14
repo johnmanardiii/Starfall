@@ -4,6 +4,7 @@ Z. Wood + S. Sueda
 
 #include <iostream>
 #include <glad/glad.h>
+#include <chrono>
 
 #include "GLSL.h"
 #include "Program.h"
@@ -137,7 +138,7 @@ public:
 		glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
 	}
 
-	void render()
+	void render(float frameTime)
 	{
 		//local modelview matrix use this for later labs
 		
@@ -209,11 +210,24 @@ int main(int argc, char *argv[])
 	application->initGeom(resourceDir);
 
 	// Loop until the user closes the window.
+	auto lastTime = chrono::high_resolution_clock::now();
 	while (! glfwWindowShouldClose(windowManager->getHandle()))
 	{
-		// Render scene.
-		application->render();
+
+		auto nextLastTime = chrono::high_resolution_clock::now();
+		float deltaTime = //the time that has elapsed between the start of previous frame and start of this frame
+			chrono::duration_cast<std::chrono::microseconds>(
+				chrono::high_resolution_clock::now() - lastTime)
+				.count();
+		// convert microseconds (weird) to seconds (less weird)
+		deltaTime *= 0.000001;
+
+		// reset lastTime so that we can calculate the deltaTime
+		// on the next frame
+		lastTime = nextLastTime;
 		
+    application->render(deltaTime);
+    
 		// Swap front and back buffers.
 		glfwSwapBuffers(windowManager->getHandle());
 		// Poll for and process events.
