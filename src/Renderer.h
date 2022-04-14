@@ -1,16 +1,20 @@
 #pragma once
+class ComponentManager;
 #include "Program.h"
+
+#include "Transform.h"
+
 #include "Component.h"
-#include "ComponentManager.h"
 #include <memory>
 
 
 using namespace std;
-class Renderer : Component
+class Renderer : public Component
 {
 public:
-	virtual void Draw() = 0;
+	virtual void Draw(float frameTime) = 0;
 	virtual void Init(ComponentManager&);
+	virtual void Update(float frameTime) { Draw(frameTime); }
 	Renderer(string gameObject) : Component(gameObject) {}
 protected:
 	shared_ptr<Program> prog = NULL;

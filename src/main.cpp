@@ -110,28 +110,21 @@ public:
 		glEnable(GL_DEPTH_TEST);
 
 		//do ComponentManager's init here
-		componentManager.Init();
-
-
-		// Initialize the GLSL program.
-		prog = make_shared<Program>();
-		prog->setVerbose(true);
-		prog->setShaderNames(resourceDirectory + "/simple_vert.glsl", resourceDirectory + "/simple_frag.glsl");
-		prog->Init();
-		prog->addUniform("P");
-		prog->addUniform("V");
-		prog->addUniform("M");
-		prog->addAttribute("vertPos");
+		componentManager.Init(resourceDirectory);
 	}
 	
 	void drawGround(std::shared_ptr<Program> curS) {
 	    curS->bind();
 	    glBindVertexArray(ground.VertexArrayID);
 	    //draw the ground plane
-	    mat4 ScaleS = glm::scale(glm::mat4(1.0f), vec3(0.15,1,0.6));
-	    mat4 ctm = ScaleS;
-	    glUniformMatrix4fv(curS->getUniform("M"), 1, GL_FALSE, value_ptr(ctm));
-	
+	    mat4 Model = glm::scale(glm::mat4(1.0f), vec3(0.5,1,0.5));
+		mat4 View = componentManager.GetCamera().GetView();
+		componentManager.GetCamera().CalcPerspective(windowManager);
+		mat4 Perspective = componentManager.GetCamera().GetPerspective();
+	    glUniformMatrix4fv(curS->getUniform("M"), 1, GL_FALSE, value_ptr(Model));
+		glUniformMatrix4fv(curS->getUniform("V"), 1, GL_FALSE, value_ptr(View));
+		glUniformMatrix4fv(curS->getUniform("P"), 1, GL_FALSE, value_ptr(Perspective));
+
 	    glEnableVertexAttribArray(0);
 	    glBindBuffer(GL_ARRAY_BUFFER, ground.buffObj);
 	    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -207,7 +200,16 @@ public:
 
 	void initGeom(const std::string& resourceDirectory)
 	{
-		//initGround(0.0);
+		prog = make_shared<Program>();
+		prog->setShaderNames(resourceDirectory + "/simple_vert.glsl", resourceDirectory + "/simple_frag.glsl");
+		prog->Init();
+		prog->addUniform("P");
+		prog->addUniform("V");
+		prog->addUniform("M");
+
+		prog->addAttribute("vertPos");
+		
+		initGround(0.0);
 		
 		//generate the VAO
 		/*glGenVertexArrays(1, &VertexArrayID);
@@ -246,7 +248,8 @@ public:
 		V->pushMatrix();
 		V->multMatrix(componentManager.GetCamera().GetView());
 		// Draw mesh using GLSL.
-		initGround(0.0);
+		
+		
 		drawGround(prog);
 
 	}	

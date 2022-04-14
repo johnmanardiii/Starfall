@@ -1,5 +1,5 @@
 #include "Collision.h"
-
+#include "ComponentManager.h"
 glm::vec3 Collision::getCenterOfBBox(){
     return glm::vec3(
         (shape.max.x + shape.min.x) / 2,
@@ -16,23 +16,25 @@ float Collision::getRadius(){
     float radY = (center.y - shape.min.y) * scale.y;
     float radZ = (center.z - shape.min.z) * scale.z;
     //returns the largest radius of all bounding box edges.
-    float max1 = max(radX, radY);
-    float max2 = max(max1, radZ);
+    //max macro expansion is dumb and never works. define lambda instead.
+    auto fmax = [](float f1, float f2) {return (f1 > f2) ? f1 : f2; };
+    float max1 = fmax(radX, radY); 
+    float max2 = fmax(max1, radZ);
 
     return max2;
 }
 
-void Collision::Resolve(Collision& other, float frameTime) {
+void Collision::Resolve(shared_ptr<Collision> other, float frameTime) {
     vec3 center = getCenterOfBBox();
-    vec3 otherCenter = other.getCenterOfBBox();
+    vec3 otherCenter = other->getCenterOfBBox();
 
     float radius = getRadius();
-    float otherRadius = other.getRadius();
+    float otherRadius = other->getRadius();
 
     if (glm::distance(center, otherCenter) <= radius + otherRadius) {
         vec3 collisionDirection = center - otherCenter;
         updateBasedOnCollision(collisionDirection, frameTime);
-        other.updateBasedOnCollision(-collisionDirection, frameTime);
+        other->updateBasedOnCollision(-collisionDirection, frameTime);
     }
 }
 

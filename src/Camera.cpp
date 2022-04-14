@@ -43,6 +43,6 @@ void Camera::CalcPerspective(WindowManager* windowMan)
 {
     int width, height;
     glfwGetFramebufferSize(windowMan->getHandle(), &width, &height);
-    perspective = glm::perspective((float)(glm::pi<float>() / 4.), (float)((float)width / (float)height), 0.1f, 1000.0f);
+    perspective = glm::perspective((float)(glm::pi<float>() / 2), (float)((float)width / (float)height), 0.1f, 1000.0f);
 }
 

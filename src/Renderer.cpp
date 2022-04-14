@@ -1,5 +1,5 @@
 #include "Renderer.h"
-
+#include "ComponentManager.h"
 void Renderer::Init(ComponentManager& compMan)
 {
 	GameObject obj = compMan.GetObject(Name);

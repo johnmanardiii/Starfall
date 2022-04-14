@@ -1,7 +1,9 @@
 #pragma once
 #include "Component.h"
+#include "GameObject.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "Transform.h"
+#include "ComponentManager.h"
 
 #include <memory>
 using namespace glm;

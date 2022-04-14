@@ -29,6 +29,9 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
         shared_ptr<Transform> copyPtr = transforms[index];
         return copyPtr;
     }
+    else {
+        throw "unexpected component name error";
+    }
      /*TODO re - add references later
     else if (compName == componentVectorNames[2]) { //collision
         return make_shared<Collision>(&collisions[index]);
@@ -39,17 +42,24 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
     */
 }
 
-void ComponentManager::Init()
+void ComponentManager::Init(std::string resourceDirectory)
 {
     
     camera = Camera::GetInstance(vec3(0,1,0));
     //TODO get real data in here, about starting information of components.
     
 
-    //declaration style 1
+    // Initialize the GLSL program, just for the ground plane.
+    auto prog = make_shared<Program>();
+    prog->setVerbose(true);
+    prog->setShaderNames(resourceDirectory + "/simple_vert.glsl", resourceDirectory + "/simple_frag.glsl");
+    prog->Init();
+    prog->addUniform("P");
+    prog->addUniform("V");
+    prog->addUniform("M");
+    prog->addAttribute("vertPos");
     
-    //quick test. Add 9 bunnies, then delete bunny0, bunny4, and bunny8. 
-    //all other slots should be active, and there should be 6 remaining.
+    
     
     for (int i = 0; i < 9; i++) {
         shared_ptr<Component> renderer = nullptr;
@@ -59,17 +69,8 @@ void ComponentManager::Init()
         vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
         AddGameObject("bunny" + to_string(i), Bunny);
     }
-    //delete 3
-    RemoveGameObject("bunny0");
-    RemoveGameObject("bunny4");
-    RemoveGameObject("bunny8");
-    //add 1 back
-    shared_ptr<Component> renderer = nullptr;
-    shared_ptr<Component> movement = make_shared<Movement>("bunny9");
-    shared_ptr<Component> transform = make_shared<Transform>("bunny");
-    shared_ptr<Component> collision = nullptr;
-    vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
-    AddGameObject("bunny9", Bunny);
+    
+    shared_ptr<Component> renderer = make_shared<TextureRenderer>("bunny.obj", "cat.jpg", "bunny");
     
     //declaration style 2, with no movement component.
     
@@ -77,8 +78,28 @@ void ComponentManager::Init()
 
 void ComponentManager::UpdateComponents(float frameTime)
 {
+    // update movements
+    
+    // update transforms based on movements.
+    
+     
+    //resolve collisions.
+    for (auto giver : collisions) {
+        //TODO do collisions with the player, and then the ground border here.
 
+        if (!giver->IsActive) continue;  //don't collide with destroyed objects.
+        for (auto receiver : collisions) { //the naive n^2 approach.
+            if (!receiver->IsActive) continue; //don't collide with destroyed objects.
+            if (giver.get() == receiver.get()) continue; //don't collide with yourself, that's just ridiculous.
+            //now we know that both objects are active, and could potentially collide.
+            //Resolve updates gameObject information for both giver and receiver if a collision occurred.
+            giver->Resolve(receiver, frameTime);
+        }
+        
+    }
+    //update camera position.
     camera.Update(frameTime);
+    //finally update renderers/draw.
 }
 
 void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)

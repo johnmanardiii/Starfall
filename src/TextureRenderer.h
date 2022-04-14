@@ -1,11 +1,16 @@
 #pragma once
-
+class ComponentManager;
 #include "Renderer.h"
 #include "Shape.h"
 #include "ShaderManager.h"
 #include <memory>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp> //for lookat
+#include <glm/gtc/type_ptr.hpp> //for value_ptr
 
-class TextureRenderer : Renderer
+#include "Camera.h"
+
+class TextureRenderer : public Renderer
 {
 public:
 	TextureRenderer(string mod, string tex, string gameObject) : Renderer(gameObject)
@@ -15,10 +20,10 @@ public:
 		texture = shaderMan.GetTexture(tex);
 		model = shaderMan.GetModel(mod);
 	}
-	void Update() { Draw(); }
-	void Init(ComponentManager&);
+	void Update(float frameTime) { Draw(frameTime); }
+	void Init(ComponentManager& compMan);
 
-	void Draw();
+	void Draw(float frameTime);
 private:
 	shared_ptr<Shape> model;
 	GLuint texture;

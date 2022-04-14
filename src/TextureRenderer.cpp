@@ -1,14 +1,12 @@
 #include "TextureRenderer.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp> //for lookat
-#include <glm/gtc/type_ptr.hpp> //for value_ptr
+
 
 void TextureRenderer::Init(ComponentManager& compMan)
 {
 	Renderer::Init(compMan);
 }
 
-void TextureRenderer::Draw()
+void TextureRenderer::Draw(float frameTime)
 {
 	prog->bind();
 	// send over PVM matrices

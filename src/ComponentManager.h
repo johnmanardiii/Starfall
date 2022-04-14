@@ -5,6 +5,8 @@
 #include "Component.h"
 #include "Movement.h"
 #include "Transform.h"
+#include "Collision.h"
+#include "TextureRenderer.h"
 
 #include <string>
 #include <memory>
@@ -24,7 +26,7 @@ public:
     void DeleteObject(GameObject obj);
     GameObject GetObject(string name);
     //anything the component manager needs to do BEFORE frame-by-frame operations
-    void Init();
+    void Init(std::string resourceDirectory);
     
     //update components
     void UpdateComponents(float frameTime);
@@ -48,18 +50,18 @@ private:
     //one camera for now
     Camera& camera = Camera::GetInstance(vec3(0,1,0));
 
-    vector<string> componentVectorNames{ "Movement", "Transform", "Collision", "Render" };
-    //Renderer
-    vector<shared_ptr<Component>> renderers; //TODO change type to Renderer
-    OpenSlots rendererSlots;
+    vector<string> componentVectorNames{ "Movement", "Transform", "Collision", "Render" }; //MTRC
     //Movement
     vector< shared_ptr<Movement>> movements; //TODO change type to movement component name
     OpenSlots movementSlots;
     //Transform
     vector< shared_ptr<Transform>> transforms; //TODO change type to transforms component name
     OpenSlots transformSlots;
+    //Renderer
+    vector<shared_ptr<Component>> renderers; //TODO change type to Renderer
+    OpenSlots rendererSlots;
     //Collision
-    vector< shared_ptr<Component>> collisions; //TODO change type to collision, or bounding sphere/box.
+    vector<shared_ptr<Collision>> collisions; //TODO change type to collision, or bounding sphere/box.
     OpenSlots collisionSlots;
     
     //Spawner

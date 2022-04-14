@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"
-#include "ComponentManager.h"
+class ComponentManager;
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
