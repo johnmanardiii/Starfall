@@ -39,10 +39,9 @@ class Application : public EventCallbacks
 {
 
 public:
-	Application() {}
 	// the component manager.
 	ComponentManager componentManager;
-	ShaderManager shaderManager = ShaderManager::GetInstance();
+	ShaderManager& shaderManager = ShaderManager::GetInstance();
 	WindowManager *windowManager = nullptr;
 
 	typedef struct Ground
@@ -108,7 +107,7 @@ public:
 
 	void InitShaderManager(const std::string &resourceDirectory)
 	{
-		shaderManager = &(ShaderManager::GetInstance());
+		shaderManager = ShaderManager::GetInstance();
 		GLuint tex;
 		int width, height, channels;
 		char filepath[1000];
@@ -127,7 +126,7 @@ public:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		shaderManager->SetTexture("Cat", tex);
+		shaderManager.SetTexture("Cat", tex);
 
 		auto prog = make_shared<Program>();
 		prog->setVerbose(true);
@@ -144,7 +143,7 @@ public:
 		glUseProgram(prog->pid);
 		glUniform1i(TexLocation, 0);
 
-		shaderManager->SetShader("Texture", prog);
+		shaderManager.SetShader("Texture", prog);
 
 		vector<tinyobj::shape_t> TOshapesSphere;
 		vector<tinyobj::material_t> objMaterials;
@@ -164,7 +163,7 @@ public:
 
 			sphere->measure();
 			sphere->Init();
-			shaderManager->SetModel("Sphere", sphere);
+			shaderManager.SetModel("Sphere", sphere);
 		}
 	}
 
