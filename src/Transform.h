@@ -26,7 +26,7 @@ public:
 	void ApplyRotation(float, vec3);
 	void ApplyScale(vec3);
 
-	void Update();
+	void Update(float frameTime);
 	void Init(ComponentManager& manager);
 
 	void CalcModelMat();

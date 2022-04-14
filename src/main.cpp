@@ -242,7 +242,7 @@ public:
 		float aspect = width/(float)height;
 		//createPerspectiveMat(P, 70.0f, aspect, 0.1, 100.0f);	
 		
-		componentManager.UpdateComponents();
+		componentManager.UpdateComponents(frameTime);
 		V->pushMatrix();
 		V->multMatrix(componentManager.GetCamera().GetView());
 		// Draw mesh using GLSL.

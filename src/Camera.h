@@ -32,7 +32,7 @@ private:
 public:
     //Camera(Camera const&) = delete; //to explicitly delete the copy constructor
     //write something to the application's view matrix directly. TODO change this access with an event manager class.
-    void Update();
+    void Update(float frameTime);
     void Update(double posX, double posY);
     void Init(ComponentManager&) {} //does nothing, also not required to be called.
     static Camera& GetInstance(vec3 pos) {

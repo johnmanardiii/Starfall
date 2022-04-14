@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-void Camera::Update()
+void Camera::Update(float frameTime)
 {
     //TODO update based on input from mouse+keyboard
     vec3 target = normalize(vec3(

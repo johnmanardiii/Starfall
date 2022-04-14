@@ -75,10 +75,10 @@ void ComponentManager::Init()
     
 }
 
-void ComponentManager::UpdateComponents()
+void ComponentManager::UpdateComponents(float frameTime)
 {
 
-    camera.Update();
+    camera.Update(frameTime);
 }
 
 void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)

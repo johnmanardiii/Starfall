@@ -16,10 +16,10 @@ public:
 
 	void ApplyVel(vec3);
 
-	void Update();
+	void Update(float frameTime);
 	void Init(ComponentManager&);
 
-	void Move();
+	void Move(float frameTime);
 
 private:
 	vec3 velocity;

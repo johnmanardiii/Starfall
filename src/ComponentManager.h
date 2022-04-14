@@ -27,7 +27,7 @@ public:
     void Init();
     
     //update components
-    void UpdateComponents();
+    void UpdateComponents(float frameTime);
     void AddGameObject(string name, vector<shared_ptr<Component>> comps);
     void RemoveGameObject(string name);
     //anything the component manager needs to do AFTER frame-by-frame operations

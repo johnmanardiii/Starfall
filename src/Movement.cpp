@@ -16,9 +16,9 @@ void Movement::ApplyVel(vec3 vel)
 }
 
 
-void Movement::Move()
+void Movement::Move(float frameTime)
 {
-	trans->ApplyTranslation(velocity);
+	trans->ApplyTranslation(velocity * frameTime);
 }
 
 void Movement::Init(ComponentManager& compMan)
@@ -28,7 +28,7 @@ void Movement::Init(ComponentManager& compMan)
 	trans = static_pointer_cast<Transform>(compMan.GetComponent("Transform", index));
 }
 
-void Movement::Update() 
+void Movement::Update(float frameTime) 
 {
-	Move();
+	Move(frameTime);
 }
