@@ -31,7 +31,20 @@ void ComponentManager::Init()
 
     //declaration style 1
     vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
-    AddGameObject("bunny", Bunny);
+    //quick test. Add 9 bunnies, then delete bunny0, bunny4, and bunny8. 
+    //all other slots should be active, and there should be 6 remaining.
+    
+    for (int i = 0; i < 9; i++) {
+        AddGameObject("bunny" + to_string(i), Bunny);
+    }
+    //delete 3
+    RemoveGameObject("bunny0");
+    RemoveGameObject("bunny4");
+    RemoveGameObject("bunny8");
+    //add 3 back
+    AddGameObject("bunny9", Bunny);
+    AddGameObject("bunny10", Bunny);
+    AddGameObject("bunny11", Bunny);
     //declaration style 2, with no movement component.
     
 }
@@ -51,7 +64,8 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
     for (const auto& comp : comps) {
         if (!comp) continue; //null check
         //if not null
-        objComps.insert(addToComponentList(comp));
+        auto p = addToComponentList(comp);
+        objComps.insert(p);
     }
     objects[name] = GameObject(name, objComps);
 }
@@ -64,13 +78,13 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
     string compType = "undefinedComponentType"; //make it really obvious if not detected.
     if (auto ptr = dynamic_pointer_cast<Transform>(comp)) {
         index = getNextOpenSlot(transformSlots);
-        compType = "Transform";
+        compType = componentVectorNames[1];
         addHelper(*ptr, transforms, index);
 
     }
     else if (auto ptr = dynamic_pointer_cast<Movement>(comp)) {
-        index = getNextOpenSlot(transformSlots);
-        compType = "Movement";
+        index = getNextOpenSlot(movementSlots);
+        compType = componentVectorNames[0];
         addHelper(*ptr, movements, index);
     }
     //TODO the other concrete types. Format should be pretty much identical.
@@ -86,17 +100,18 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
 
 //This modifies compList by inserting comp.
 template<typename T>
-void ComponentManager::addHelper(T comp, vector<T>& compList, int index) {
+void ComponentManager::addHelper(T comp, vector<T>& compList, int& index) {
     if (index == -1) {
+        index = compList.size();
         compList.push_back(comp);
     }
     else {
-        compList.insert(compList.begin() + index, comp);
+        compList[index] = comp;
     }
 }
 
 //returns the index of the next open slot, or -1 if there are no open slots.
-int ComponentManager::getNextOpenSlot(OpenSlots slots) {
+int ComponentManager::getNextOpenSlot(OpenSlots& slots) {
     //this indicates that there are either no available slots in an empty vector,
     //or there are no empty slots in a vector with things in it.
     //Either way the correct response is push_back.
@@ -110,6 +125,37 @@ int ComponentManager::getNextOpenSlot(OpenSlots slots) {
 
 void ComponentManager::RemoveGameObject(string name)
 {
+    //make a copy, don't actually remove from map until its components are all gone
+    GameObject obj = GetObject(name);
+    assert(name == obj.Name); //DEBUG quick sanity check
+    map<string, size_t> comps = obj.GetComponentLocations();
+    for (auto comp : comps) {
+        auto name = comp.first;
+        auto index = comp.second;
+
+        //free up for insertion. Do this by supplying the component's
+        //indices for use by a new component, and marking the component as not in use.
+        if (name == componentVectorNames[0]) { //movement
+            movements[index].IsActive = false;
+            movementSlots.push(index); 
+        }
+        else if (name == componentVectorNames[1]) { //transform
+            movements[index].IsActive = false;
+            transformSlots.push(index);
+        } 
+        else if (name == componentVectorNames[2]) { //collision
+            movements[index].IsActive = false;
+            collisionSlots.push(index);
+        }
+        else if (name == componentVectorNames[3]) { //render
+            movements[index].IsActive = false;
+            rendererSlots.push(index);
+        }
+        //TODO add additional potential components.
+    }//end processing component vector freeing
+
+    //no longer referenced anywhere, delete from map.
+    objects.erase(name); 
 }
 
 void ComponentManager::Cleanup()

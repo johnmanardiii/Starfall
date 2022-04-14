@@ -5,6 +5,7 @@ class Component
 public:
     //Components must have an update function, even if it does nothing
     virtual void Update() = 0;
+    bool IsActive = true;
 private:
 };
 

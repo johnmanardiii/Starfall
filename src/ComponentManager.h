@@ -38,14 +38,15 @@ private:
     
     //helper functions to differentiate parts of AddGameObject.
     pair<string, size_t> addToComponentList(const shared_ptr<Component>& comp);
-    int getNextOpenSlot(OpenSlots slots);
+    int getNextOpenSlot(OpenSlots& slots);
     template<typename T>
-    void addHelper(T comp, vector<T>& compList, int index);
+    void addHelper(T comp, vector<T>& compList, int& index);
 
     //the various components
     //one camera for now
     Camera& camera = Camera::GetInstance();
 
+    vector<string> componentVectorNames{ "Movement", "Transform", "Collision", "Render" };
     //Renderer
     vector<Component> renderers; //TODO change type to Renderer
     OpenSlots rendererSlots;

@@ -19,6 +19,7 @@ public:
         components(comps){};
     bool IsActive; //whether the component is active. might remove.
     string Name; //the name of the object.
+    const map<string, size_t>& GetComponentLocations() { return components; }
 private:
     map<string, size_t> components; //component or int to point to component
 };
