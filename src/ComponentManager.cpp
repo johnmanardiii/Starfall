@@ -32,8 +32,6 @@ void ComponentManager::Init()
     //declaration style 1
     vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
     AddGameObject("bunny", Bunny);
-    //declaration style 2, with no movement component.
-    
 }
 
 void ComponentManager::UpdateComponents()
