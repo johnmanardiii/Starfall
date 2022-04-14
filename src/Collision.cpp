@@ -16,7 +16,10 @@ float Collision::getRadius(){
     float radY = (center.y - shape.min.y) * scale.y;
     float radZ = (center.z - shape.min.z) * scale.z;
     //returns the largest radius of all bounding box edges.
-    return std::max(radX, std::max(radY, radZ));
+    float max1 = max(radX, radY);
+    float max2 = max(max1, radZ);
+
+    return max2;
 }
 
 void Collision::Resolve(Collision& other, float frameTime) {

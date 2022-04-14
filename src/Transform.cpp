@@ -49,3 +49,4 @@ void Transform::CalcModelMat()
 		S = glm::scale(i, scale);
 	M = T * R * S;
 }
+

@@ -12,7 +12,7 @@ void TextureRenderer::Draw()
 {
 	prog->bind();
 	// send over PVM matrices
-	Camera cam = Camera::GetInstance();
+	Camera cam = Camera::GetInstance(vec3(0,1,0));
 	mat4 P = cam.GetPerspective(),
 		V = cam.GetView(),
 		M = trans->GetModelMat();

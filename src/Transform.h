@@ -16,7 +16,7 @@ public:
 	vec3 GetPos();
 	quat GetRot();
 	vec3 GetScale();
-	mat4 GetModelMat();
+	const mat4 GetModelMat() const { return M; };
 
 	void SetPos(vec3);
 	void SetRot(quat);
