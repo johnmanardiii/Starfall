@@ -41,7 +41,7 @@ private:
     pair<string, size_t> addToComponentList(const shared_ptr<Component>& comp);
     int getNextOpenSlot(OpenSlots& slots);
     template<typename T>
-    void addHelper(T comp, vector<T>& compList, int& index);
+    void addHelper(T comp, vector<shared_ptr<T>>& compList, int& index);
 
     //the various components
     //one camera for now
@@ -49,16 +49,16 @@ private:
 
     vector<string> componentVectorNames{ "Movement", "Transform", "Collision", "Render" };
     //Renderer
-    vector<Component> renderers; //TODO change type to Renderer
+    vector<shared_ptr<Component>> renderers; //TODO change type to Renderer
     OpenSlots rendererSlots;
     //Movement
-    vector<Movement> movements; //TODO change type to movement component name
+    vector< shared_ptr<Movement>> movements; //TODO change type to movement component name
     OpenSlots movementSlots;
     //Transform
-    vector<Transform> transforms; //TODO change type to transforms component name
+    vector< shared_ptr<Transform>> transforms; //TODO change type to transforms component name
     OpenSlots transformSlots;
     //Collision
-    vector<Component> collisions; //TODO change type to collision, or bounding sphere/box.
+    vector< shared_ptr<Component>> collisions; //TODO change type to collision, or bounding sphere/box.
     OpenSlots collisionSlots;
     
     //Spawner
