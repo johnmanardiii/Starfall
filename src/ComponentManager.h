@@ -36,8 +36,13 @@ private:
     //the objects
     map<string, GameObject> objects;
     
+    //helper functions to differentiate parts of AddGameObject.
+    void addToComponentList(const shared_ptr<Component>& comp);
+    int getNextOpenSlot(OpenSlots slots);
+    template<typename T>
+    void addHelper(T comp, vector<T>& compList, int index);
+
     //the various components
-    void addToCollection(const shared_ptr<Component>& comp);
     //one camera for now
     Camera& camera = Camera::GetInstance();
 
@@ -53,6 +58,7 @@ private:
     //Collision
     vector<Component> collisions; //TODO change type to collision, or bounding sphere/box.
     OpenSlots collisionSlots;
+    
     //Spawner
     //TODO write singleton for spawner.
 };

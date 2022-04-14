@@ -33,9 +33,7 @@ void ComponentManager::Init()
     vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
     AddGameObject("bunny", Bunny);
     //declaration style 2, with no movement component.
-    auto StaticBunny = vector<shared_ptr<Component>>{ renderer, movement, transform, collision };
-    AddGameObject("staticBunny", StaticBunny);
-
+    
 }
 
 void ComponentManager::UpdateComponents()
@@ -52,15 +50,54 @@ GameObject ComponentManager::AddGameObject(string name, vector<shared_ptr<Compon
     map<string, size_t> objComps;
     for (const auto& comp : comps) {
         if (comp) { //null check
-            addToCollection(comp);
+            addToComponentList(comp);
         }
     }
     return GameObject();
 }
 
-void ComponentManager::addToCollection(const shared_ptr<Component>& comp) {
-    auto ptr = dynamic_pointer_cast<Transform>(comp);
-    cout << typeid(ptr).name() << endl;
+//add the component to the first-available position of the corresponding vector of components.
+void ComponentManager::addToComponentList(const shared_ptr<Component>& comp) {
+    //these series of checks check whether an attempted cast returns a nullptr, indicating that
+    //a cast could/couldn't take place, effectively type-checking the object.
+    if (auto ptr = dynamic_pointer_cast<Transform>(comp)) {
+        cout << typeid(*comp).name() << endl; //DEBUG can be removed safely
+
+        int index = getNextOpenSlot(transformSlots);
+        addHelper(*ptr, transforms, index);
+    }
+    else if (auto ptr = dynamic_pointer_cast<Movement>(comp)) {
+        cout << typeid(*comp).name() << endl; //DEBUG can be removed safely
+
+        int index = getNextOpenSlot(transformSlots);
+        addHelper(*ptr, movements, index);
+    }
+    //TODO the other concrete types. Format should be pretty much identical.
+    
+}
+
+//This modifies compList by inserting comp.
+template<typename T>
+void ComponentManager::addHelper(T comp, vector<T>& compList, int index) {
+    if (index == -1) {
+        compList.push_back(comp);
+    }
+    else {
+        compList.insert(compList.begin() + index, comp);
+    }
+}
+
+//returns the index of the next open slot, or -1 if there are no open slots.
+int ComponentManager::getNextOpenSlot(OpenSlots slots) {
+    //this indicates that there are either no available slots in an empty vector,
+    //or there are no empty slots in a vector with things in it.
+    //Either way the correct response is push_back.
+    if (slots.empty()) return -1;
+    else {
+        size_t val = slots.top();
+        slots.pop(); //remove the element, as the corresponding position is going to be immediately filled.
+        return val;
+    }
 }
 
 void ComponentManager::RemoveGameObject(string name)
