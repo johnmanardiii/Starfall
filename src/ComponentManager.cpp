@@ -79,9 +79,11 @@ void ComponentManager::Init(std::string resourceDirectory)
 void ComponentManager::UpdateComponents(float frameTime)
 {
     // update movements
-    
-    // update transforms based on movements.
-    
+    for (auto move : movements) 
+    {
+        if (!move->IsActive) continue;
+        move->Update(frameTime);
+    }
      
     //resolve collisions.
     for (auto giver : collisions) {
@@ -97,9 +99,23 @@ void ComponentManager::UpdateComponents(float frameTime)
         }
         
     }
+
+    // update transforms based on movements.
+    for (auto trans : transforms)
+    {
+        if (!trans->IsActive) continue;
+        trans->Update(frameTime);
+    }
+
     //update camera position.
     camera.Update(frameTime);
     //finally update renderers/draw.
+
+    for (auto rend : renderers)
+    {
+        if (!rend->IsActive) continue;
+        rend->Update(frameTime);
+    }
 }
 
 void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)

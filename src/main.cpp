@@ -21,6 +21,7 @@ Z. Wood + S. Sueda
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "stb_image.h"
 
 using namespace std;
 using namespace glm;
@@ -40,7 +41,7 @@ class Application : public EventCallbacks {
 public:
 	// the component manager.
 	ComponentManager componentManager;
-
+	ShaderManager shaderManager;
 	WindowManager * windowManager = nullptr;
 
 	typedef struct Ground{
@@ -98,6 +99,46 @@ public:
 	void resizeCallback(GLFWwindow *window, int width, int height)
 	{
 		glViewport(0, 0, width, height);
+	}
+
+	void InitShaderManager(const std::string& resourceDirectory)
+	{
+		GLuint tex;
+		int width, height, channels;
+		char filepath[1000];
+
+		// load saturn texture
+		string str = resourceDirectory + "/cat.jpg";
+		strcpy(filepath, str.c_str());
+		unsigned char* data = stbi_load(filepath, &width, &height, &channels, 4);
+		glGenTextures(1, &tex);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		shaderManager.SetTexture("Cat", tex);
+
+		auto prog = make_shared<Program>();
+		prog->setVerbose(true);
+		prog->setShaderNames(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag.glsl");
+		prog->Init();
+		prog->addUniform("P");
+		prog->addUniform("V");
+		prog->addUniform("M");
+		prog->addAttribute("vertPos");
+		prog->addAttribute("vertNor");
+		prog->addAttribute("vertTex");
+
+		GLuint TexLocation = glGetUniformLocation(prog->pid, "tex");
+		glUseProgram(prog->pid);
+		glUniform1i(TexLocation, 0);
+
+		shaderManager.SetShader("Texture", prog);
 	}
 
 	void Init(const std::string& resourceDirectory)
