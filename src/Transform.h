@@ -2,6 +2,8 @@
 #include "Component.h"
 #include "ComponentManager.h"
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace glm;
 
@@ -14,6 +16,7 @@ public:
 	vec3 GetPos();
 	quat GetRot();
 	vec3 GetScale();
+	mat4 GetModelMat();
 
 	void SetPos(vec3);
 	void SetRot(quat);
@@ -26,9 +29,11 @@ public:
 	void Update();
 	void Init(ComponentManager& manager);
 
+	void CalcModelMat();
 private:
 	vec3 position;
 	quat rotation;
 	vec3 scale;
+	mat4 M = mat4(1.0f);
 };
 
