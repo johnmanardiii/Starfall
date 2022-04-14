@@ -41,7 +41,7 @@ class Application : public EventCallbacks {
 public:
 	// the component manager.
 	ComponentManager componentManager;
-	ShaderManager shaderManager;
+	ShaderManager shaderManager = ShaderManager::GetInstance();
 	WindowManager * windowManager = nullptr;
 
 	typedef struct Ground{
