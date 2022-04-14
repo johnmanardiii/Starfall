@@ -42,7 +42,7 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 void ComponentManager::Init()
 {
     
-    camera = Camera::GetInstance();
+    camera = Camera::GetInstance(vec3(0,1,0));
     //TODO get real data in here, about starting information of components.
     
 

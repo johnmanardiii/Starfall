@@ -46,7 +46,7 @@ private:
 
     //the various components
     //one camera for now
-    Camera& camera = Camera::GetInstance();
+    Camera& camera = Camera::GetInstance(vec3(0,1,0));
 
     vector<string> componentVectorNames{ "Movement", "Transform", "Collision", "Render" };
     //Renderer

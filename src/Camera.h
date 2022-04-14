@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> //for lookat
 #include <glm/gtc/type_ptr.hpp> //for value_ptr
-#include <glfw/glfw3.h>
+
 #include <cmath>
 
 #include "Component.h"
@@ -17,7 +17,7 @@ using glm::normalize;
 class Camera : public Component
 {
 private:
-    Camera() : Component("Camera") {}
+    Camera(vec3 pos) : Component("Camera"), pos(pos) {}
     vec3 pos = vec3(0); //starts at 0,0,0 for now. TODO move into move component
     double xRot = 0.0, yRot = 0.0; //rotation in radians from start. TODO move into move component, this or the basis vectors, or something else to describe rotate orientation.
     vec3 w = vec3(0), u = vec3(0); //the camera basis vectors TODO move into move component
@@ -35,8 +35,8 @@ public:
     void Update();
     void Update(double posX, double posY);
     void Init(ComponentManager&) {} //does nothing, also not required to be called.
-    static Camera& GetInstance() {
-        static Camera instance;
+    static Camera& GetInstance(vec3 pos) {
+        static Camera instance(pos);
         return instance;
     }
     mat4 GetView() { return view; }
