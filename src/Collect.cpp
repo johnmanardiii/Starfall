@@ -6,7 +6,7 @@ void Collect::Update(float frameTime, ComponentManager& compMan)
 	flashAmount += flashSpeed * frameTime;
 	renderer->SetFlashAmt(sin(flashAmount));
 	// mult by flash speed to be seconds
-	if (flashAmount > 2 * flashSpeed)
+	if (flashAmount > 5 * flashSpeed)
 	{
 		cout << "Deleting self" << endl;
 		compMan.RemoveGameObject(Name);
