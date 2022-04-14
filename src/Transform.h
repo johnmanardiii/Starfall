@@ -31,9 +31,9 @@ public:
 
 	void CalcModelMat();
 private:
-	vec3 position;
-	quat rotation;
-	vec3 scale;
+	vec3 position = vec3(0.0f, 0.0f, 0.0f);
+	quat rotation = vec4(0, 0, 0, 1);
+	vec3 scale = vec3(1.0f, 1.0f, 1.0f);
 	mat4 M = mat4(1.0f);
 };
 

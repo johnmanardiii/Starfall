@@ -39,9 +39,10 @@ static const GLfloat g_vertex_buffer_data[] = {
 class Application : public EventCallbacks {
 
 public:
+	Application() {}
 	// the component manager.
 	ComponentManager componentManager;
-	ShaderManager shaderManager;
+	ShaderManager* shaderManager;
 	WindowManager * windowManager = nullptr;
 
 	typedef struct Ground{
@@ -103,6 +104,7 @@ public:
 
 	void InitShaderManager(const std::string& resourceDirectory)
 	{
+		shaderManager = &(ShaderManager::GetInstance());
 		GLuint tex;
 		int width, height, channels;
 		char filepath[1000];
@@ -121,7 +123,7 @@ public:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		shaderManager.SetTexture("Cat", tex);
+		shaderManager->SetTexture("Cat", tex);
 
 		auto prog = make_shared<Program>();
 		prog->setVerbose(true);
@@ -138,7 +140,27 @@ public:
 		glUseProgram(prog->pid);
 		glUniform1i(TexLocation, 0);
 
-		shaderManager.SetShader("Texture", prog);
+		shaderManager->SetShader("Texture", prog);
+
+		vector<tinyobj::shape_t> TOshapesSphere;
+		vector<tinyobj::material_t> objMaterials;
+		shared_ptr<Shape> sphere;
+		string errStr;
+		//load in the mesh and make the shape(s)
+		bool rc = tinyobj::LoadObj(TOshapesSphere, objMaterials, errStr, (resourceDirectory + "/sphere.obj").c_str());
+		if (!rc) {
+			cerr << errStr << endl;
+		}
+		else {
+
+			sphere = make_shared<Shape>();
+			sphere->createShape(TOshapesSphere[0]);
+
+			sphere->measure();
+			sphere->Init();
+			shaderManager->SetModel("Sphere", sphere);
+		}
+
 	}
 
 	void Init(const std::string& resourceDirectory)
@@ -150,6 +172,7 @@ public:
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
 
+		InitShaderManager(resourceDirectory);
 		//do ComponentManager's init here
 		componentManager.Init(resourceDirectory);
 	}

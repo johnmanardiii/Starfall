@@ -1,5 +1,5 @@
 #include "TextureRenderer.h"
-
+#include <iostream>
 
 void TextureRenderer::Init(ComponentManager& compMan)
 {

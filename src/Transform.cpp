@@ -37,7 +37,7 @@ void Transform::ApplyScale(vec3 scalars)
 	scale = scale * scalars;
 }
 
-void Transform::Update(float frameTime) {}
+void Transform::Update(float frameTime) { CalcModelMat(); }
 
 void Transform::Init(ComponentManager& compMan) {}
 

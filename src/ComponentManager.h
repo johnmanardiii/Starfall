@@ -58,7 +58,7 @@ private:
     vector< shared_ptr<Transform>> transforms; //TODO change type to transforms component name
     OpenSlots transformSlots;
     //Renderer
-    vector<shared_ptr<Component>> renderers; //TODO change type to Renderer
+    vector<shared_ptr<Renderer>> renderers; //TODO change type to Renderer
     OpenSlots rendererSlots;
     //Collision
     vector<shared_ptr<Collision>> collisions; //TODO change type to collision, or bounding sphere/box.
