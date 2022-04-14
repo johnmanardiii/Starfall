@@ -1,10 +1,5 @@
 #include "Movement.h"
 
-void Movement::Update() 
-{
-	Move();
-}
-
 vec3 Movement::GetVel()
 {
 	return velocity;
@@ -23,5 +18,17 @@ void Movement::ApplyVel(vec3 vel)
 
 void Movement::Move()
 {
-	trans.ApplyTranslation(velocity);
+	trans->ApplyTranslation(velocity);
+}
+
+void Movement::Init(ComponentManager& compMan)
+{
+	GameObject obj = compMan.GetObject(Name);
+	int index = obj.GetComponentLocation("Transform");
+	trans = static_pointer_cast<Transform>(compMan.GetComponent("Transform", index));
+}
+
+void Movement::Update() 
+{
+	Move();
 }

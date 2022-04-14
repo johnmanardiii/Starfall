@@ -19,32 +19,58 @@ GameObject ComponentManager::GetObject(string name)
     return it->second;
 }
 
+shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
+{
+    if (compName == componentVectorNames[0]) { //movement
+        shared_ptr<Movement> copyPtr = movements[index];
+        return copyPtr;
+    }
+    else if (compName == componentVectorNames[1]) { //transform
+        shared_ptr<Transform> copyPtr = transforms[index];
+        return copyPtr;
+    }
+     /*TODO re - add references later
+    else if (compName == componentVectorNames[2]) { //collision
+        return make_shared<Collision>(&collisions[index]);
+    }
+    else if (compName == componentVectorNames[3]) { //render
+        return make_shared<Render>(&renderers[index]);
+    }
+    */
+}
+
 void ComponentManager::Init()
 {
     
     camera = Camera::GetInstance();
     //TODO get real data in here, about starting information of components.
-    shared_ptr<Component> renderer = nullptr;
-    shared_ptr<Component> movement = make_shared<Movement>();
-    shared_ptr<Component> transform = make_shared<Transform>();
-    shared_ptr<Component> collision = nullptr;
+    
 
     //declaration style 1
-    vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
+    
     //quick test. Add 9 bunnies, then delete bunny0, bunny4, and bunny8. 
     //all other slots should be active, and there should be 6 remaining.
     
     for (int i = 0; i < 9; i++) {
+        shared_ptr<Component> renderer = nullptr;
+        shared_ptr<Component> movement = make_shared<Movement>("bunny" + to_string(i));
+        shared_ptr<Component> transform = make_shared<Transform>("bunny" + to_string(i));
+        shared_ptr<Component> collision = nullptr;
+        vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
         AddGameObject("bunny" + to_string(i), Bunny);
     }
     //delete 3
     RemoveGameObject("bunny0");
     RemoveGameObject("bunny4");
     RemoveGameObject("bunny8");
-    //add 3 back
+    //add 1 back
+    shared_ptr<Component> renderer = nullptr;
+    shared_ptr<Component> movement = make_shared<Movement>("bunny9");
+    shared_ptr<Component> transform = make_shared<Transform>("bunny");
+    shared_ptr<Component> collision = nullptr;
+    vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
     AddGameObject("bunny9", Bunny);
-    AddGameObject("bunny10", Bunny);
-    AddGameObject("bunny11", Bunny);
+    
     //declaration style 2, with no movement component.
     
 }
@@ -68,6 +94,27 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
         objComps.insert(p);
     }
     objects[name] = GameObject(name, objComps);
+    auto locations = objects[name].GetComponentLocations();
+    for (auto comp : locations) {
+        auto name = comp.first;
+        auto index = comp.second;
+
+        //free up for insertion. Do this by supplying the component's
+        //indices for use by a new component, and marking the component as not in use.
+        if (name == componentVectorNames[0]) { //movement
+            movements[index]->Init(*this);
+        }
+        else if (name == componentVectorNames[1]) { //transform
+            transforms[index]->Init(*this);
+        } 
+        else if (name == componentVectorNames[2]) { //collision
+            collisions[index]->Init(*this);
+        }
+        else if (name == componentVectorNames[3]) { //render
+            renderers[index]->Init(*this);
+        }
+        //TODO add additional potential components.
+    }//end processing component vector freeing
 }
 
 //add the component to the first-available position of the corresponding vector of components.
@@ -79,12 +126,12 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
     if (auto ptr = dynamic_pointer_cast<Transform>(comp)) {
         index = getNextOpenSlot(transformSlots);
         compType = componentVectorNames[1];
-        addHelper(*ptr, transforms, index);
+        addHelper(ptr, transforms, index);
     }
     else if (auto ptr = dynamic_pointer_cast<Movement>(comp)) {
         index = getNextOpenSlot(movementSlots);
         compType = componentVectorNames[0];
-        addHelper(*ptr, movements, index);
+        addHelper(ptr, movements, index);
     }
     //TODO the other concrete types. Format should be pretty much identical.
 
@@ -95,9 +142,9 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
 
 //This modifies compList by inserting comp.
 template<typename T>
-void ComponentManager::addHelper(T comp, vector<T>& compList, int& index) {
+void ComponentManager::addHelper(shared_ptr<T> comp, vector<shared_ptr<T>>& compList, int& index) {
     if (index == -1) {
-        index = compList.size();
+        index = static_cast<int>(compList.size());
         compList.push_back(comp);
     }
     else {
@@ -131,19 +178,19 @@ void ComponentManager::RemoveGameObject(string name)
         //free up for insertion. Do this by supplying the component's
         //indices for use by a new component, and marking the component as not in use.
         if (name == componentVectorNames[0]) { //movement
-            movements[index].IsActive = false;
+            movements[index]->IsActive = false;
             movementSlots.push(index); 
         }
         else if (name == componentVectorNames[1]) { //transform
-            movements[index].IsActive = false;
+            movements[index]->IsActive = false;
             transformSlots.push(index);
         } 
         else if (name == componentVectorNames[2]) { //collision
-            movements[index].IsActive = false;
+            movements[index]->IsActive = false;
             collisionSlots.push(index);
         }
         else if (name == componentVectorNames[3]) { //render
-            movements[index].IsActive = false;
+            movements[index]->IsActive = false;
             rendererSlots.push(index);
         }
         //TODO add additional potential components.

@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include <glm/gtx/quaternion.hpp>
 
 vec3 Transform::GetPos() { return position; }
 quat Transform::GetRot() { return rotation; }
@@ -36,4 +37,15 @@ void Transform::ApplyScale(vec3 scalars)
 	scale = scale * scalars;
 }
 
-void Transform::Update() {}
+void Transform::Update() { CalcModelMat(); }
+
+void Transform::Init(ComponentManager& compMan) {}
+
+void Transform::CalcModelMat()
+{
+	mat4 i = mat4(1.0f);
+	mat4 T = glm::translate(i, position),
+		R = glm::toMat4(rotation),
+		S = glm::scale(i, scale);
+	M = T * R * S;
+}
