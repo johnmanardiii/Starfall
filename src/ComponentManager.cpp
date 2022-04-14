@@ -64,7 +64,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     shared_ptr<Component> transform = make_shared<Transform>("Sphere0");
     shared_ptr<Component> collision = nullptr;
     ((Transform*)transform.get())->ApplyTranslation(vec3(0.0f, 1.0f, 3.0f));
-    ((Transform*)transform.get())->ApplyScale(vec3(0.5f, 0.5f, 0.5f));
+    ((Transform*)transform.get())->ApplyScale(vec3(0.01f, 0.01f, 0.01f));
     vector<shared_ptr<Component>> Sphere = { renderer, movement, transform, collision };
     AddGameObject("Sphere0", Sphere);
     
