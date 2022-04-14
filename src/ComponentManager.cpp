@@ -78,10 +78,6 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
     // finally(this should happen at the end, unconditionally, for all component types :
     //return the index where the component resides now.
     return make_pair(compType, index); //insert this into the GameObject.
-    
- 
-    //finally (this should happen at the end, unconditionally, for all component types:
-    //return the index where the component resides now.
 }
 
 //This modifies compList by inserting comp.
