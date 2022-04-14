@@ -81,6 +81,42 @@ public:
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
+        //camera movement
+        if (key == GLFW_KEY_W && action == GLFW_PRESS) {
+                componentManager.GetCamera().IsWASDPressed[0] = true;
+                //eyePos -= movementSensitivity * w;
+            }
+            
+            if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+                componentManager.GetCamera().IsWASDPressed[1] = true;
+                //eyePos += movementSensitivity * u;
+            }
+            if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+                componentManager.GetCamera().IsWASDPressed[2] = true;
+                //eyePos += movementSensitivity * w;
+            }
+
+            if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+                componentManager.GetCamera().IsWASDPressed[3] = true;
+                //eyePos -= movementSensitivity * u;
+            }
+
+            if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
+                componentManager.GetCamera().IsWASDPressed[0] = false;
+            }
+
+            if (key == GLFW_KEY_A && action == GLFW_RELEASE) {
+                componentManager.GetCamera().IsWASDPressed[1] = false;
+            }
+            if (key == GLFW_KEY_S && action == GLFW_RELEASE) {
+                componentManager.GetCamera().IsWASDPressed[2] = false;
+            }
+
+            if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
+                componentManager.GetCamera().IsWASDPressed[3] = false;
+            }
+
+        
 	}
 
 	void mouseCallback(GLFWwindow *window, int button, int action, int mods)
