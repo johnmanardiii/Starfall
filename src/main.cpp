@@ -250,12 +250,6 @@ public:
 	}	
 };
 
-void testEvents()
-{
-	EventManager emanager;
-
-}
-
 int main(int argc, char *argv[])
 {
 	// Where the resources are loaded from
