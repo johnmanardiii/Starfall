@@ -66,7 +66,6 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
         index = getNextOpenSlot(transformSlots);
         compType = "Transform";
         addHelper(*ptr, transforms, index);
-
     }
     else if (auto ptr = dynamic_pointer_cast<Movement>(comp)) {
         index = getNextOpenSlot(transformSlots);
