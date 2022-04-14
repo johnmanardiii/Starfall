@@ -109,6 +109,10 @@ public:
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
 
+		//do ComponentManager's init here
+		componentManager.Init();
+
+
 		// Initialize the GLSL program.
 		prog = make_shared<Program>();
 		prog->setVerbose(true);
@@ -221,10 +225,9 @@ int main(int argc, char *argv[])
 		// reset lastTime so that we can calculate the deltaTime
 		// on the next frame
 		lastTime = nextLastTime;
-
-		// Render scene.
-		application->render(deltaTime);
-
+		
+    application->render(deltaTime);
+    
 		// Swap front and back buffers.
 		glfwSwapBuffers(windowManager->getHandle());
 		// Poll for and process events.
