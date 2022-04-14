@@ -85,6 +85,7 @@ void ComponentManager::Init(std::string resourceDirectory)
 
 void ComponentManager::UpdateComponents(float frameTime)
 {
+    
     // update movements
     for (auto move : movements) 
     {

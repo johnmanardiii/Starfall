@@ -1,7 +1,27 @@
 #include "Camera.h"
 
+void Camera::ProcessWASDInput() {
+    if (IsWASDPressed[0]) {
+        pos -= movementSensitivity * vec3(w.x, 0.0f, w.z);
+        dPos = pos;
+    }
+    if (IsWASDPressed[1]) {
+        pos += movementSensitivity * vec3(u.x, 0.0f, u.z);
+        dPos = pos;
+    }
+    if (IsWASDPressed[2]) {
+        pos += movementSensitivity * vec3(w.x, 0.0f, w.z);
+        dPos = pos;
+    }
+    if (IsWASDPressed[3]) {
+        pos -= movementSensitivity * vec3(u.x, 0.0f, u.z);
+        dPos = pos;
+    }
+}
+
 void Camera::Update(float frameTime)
 {
+    ProcessWASDInput();
     //TODO update based on input from mouse+keyboard
     vec3 target = normalize(vec3(
         cos(xRot) * cos(yRot),
