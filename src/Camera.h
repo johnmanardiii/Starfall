@@ -14,7 +14,7 @@ using glm::normalize;
 class Camera : public Component
 {
 private:
-    Camera() {}
+    Camera() : Component("Camera") {}
     vec3 pos = vec3(0); //starts at 0,0,0 for now. TODO move into move component
     double xRot = 0.0, yRot = 0.0; //rotation in radians from start. TODO move into move component, this or the basis vectors, or something else to describe rotate orientation.
     vec3 w = vec3(0), u = vec3(0); //the camera basis vectors TODO move into move component

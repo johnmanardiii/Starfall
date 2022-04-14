@@ -9,6 +9,7 @@ using namespace glm;
 class Movement : public Component
 {
 public:
+	Movement(std::string name) : Component(name) {}
 	vec3 GetVel();
 	
 	void SetVel(vec3);

@@ -9,6 +9,8 @@ using namespace glm;
 class Transform : public Component
 {
 public:
+	Transform(std::string name) : Component(name) {}
+
 	vec3 GetPos();
 	quat GetRot();
 	vec3 GetScale();

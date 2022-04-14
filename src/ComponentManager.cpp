@@ -22,12 +22,14 @@ GameObject ComponentManager::GetObject(string name)
 shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 {
     if (compName == componentVectorNames[0]) { //movement
-        return make_shared<Movement>(movements[index]);
+        shared_ptr<Movement> copyPtr = movements[index];
+        return copyPtr;
     }
     else if (compName == componentVectorNames[1]) { //transform
-        return make_shared<Transform>(transforms[index]);
+        shared_ptr<Transform> copyPtr = transforms[index];
+        return copyPtr;
     }
-    /* TODO re-add references later
+     /*TODO re - add references later
     else if (compName == componentVectorNames[2]) { //collision
         return make_shared<Collision>(&collisions[index]);
     }
@@ -124,12 +126,12 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
     if (auto ptr = dynamic_pointer_cast<Transform>(comp)) {
         index = getNextOpenSlot(transformSlots);
         compType = componentVectorNames[1];
-        addHelper(*ptr, transforms, index);
+        addHelper(ptr, transforms, index);
     }
     else if (auto ptr = dynamic_pointer_cast<Movement>(comp)) {
         index = getNextOpenSlot(movementSlots);
         compType = componentVectorNames[0];
-        addHelper(*ptr, movements, index);
+        addHelper(ptr, movements, index);
     }
     //TODO the other concrete types. Format should be pretty much identical.
 
@@ -140,13 +142,13 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
 
 //This modifies compList by inserting comp.
 template<typename T>
-void ComponentManager::addHelper(T comp, vector<shared_ptr<T>>& compList, int& index) {
+void ComponentManager::addHelper(shared_ptr<T> comp, vector<shared_ptr<T>>& compList, int& index) {
     if (index == -1) {
-        index = compList.size();
-        compList.push_back(make_shared<T>(comp));
+        index = static_cast<int>(compList.size());
+        compList.push_back(comp);
     }
     else {
-        compList[index] = make_shared<T>(comp);
+        compList[index] = comp;
     }
 }
 

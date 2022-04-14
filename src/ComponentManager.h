@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 #include "Camera.h"
+#include "Component.h"
 #include "Movement.h"
 #include "Transform.h"
 
@@ -41,7 +42,7 @@ private:
     pair<string, size_t> addToComponentList(const shared_ptr<Component>& comp);
     int getNextOpenSlot(OpenSlots& slots);
     template<typename T>
-    void addHelper(T comp, vector<shared_ptr<T>>& compList, int& index);
+    void addHelper(shared_ptr<T> comp, vector<shared_ptr<T>>& compList, int& index);
 
     //the various components
     //one camera for now

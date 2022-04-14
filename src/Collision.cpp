@@ -10,8 +10,8 @@ glm::vec3 Collision::getCenterOfBBox(Shape s){
 
 void Collision::Init(ComponentManager& manager){
     GameObject obj = manager.GetObject(Name);
-    int transformIndex = obj.GetComponentLocation("Transform");
-    int movementIndex = obj.GetComponentLocation("Movement");
+    size_t transformIndex = obj.GetComponentLocation("Transform");
+    size_t movementIndex = obj.GetComponentLocation("Movement");
 
     movement = static_pointer_cast<Movement>(manager.GetComponent("Movement", movementIndex));
     transform = static_pointer_cast<Transform>(manager.GetComponent("Transform", transformIndex));

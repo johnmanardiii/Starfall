@@ -10,8 +10,11 @@ class Transform;
 class Component
 {
 public:
-    Component() : Name("unitialized") {}
-    Component(std::string gameObjectName) { Name = gameObjectName; }
+    //delete copy constructor
+    //Component(const Component&) = delete;
+    //Component& operator=(const Component&) = delete;
+
+    Component(std::string gameObjectName) : Name(gameObjectName) {}
     //Components must have an update function, even if it does nothing
     virtual void Update() = 0;
     virtual void Init(ComponentManager&) = 0;

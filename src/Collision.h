@@ -4,11 +4,12 @@
 
 #include "Component.h"
 #include "Movement.h"
+#include "Transform.h"
 #include "Shape.h"
 
 class Collision : public Component {
 public:
-    Collision(Shape s) : shape(s) {}
+    Collision(std::string name, Shape s) : Component(name), shape(s) {}
     void Init(ComponentManager& manager);
     Shape shape;
     glm::vec3 getCenterOfBBox(Shape s);

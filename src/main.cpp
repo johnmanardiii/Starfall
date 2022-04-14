@@ -293,7 +293,7 @@ int main(int argc, char *argv[])
 				chrono::high_resolution_clock::now() - lastTime)
 				.count();
 		// convert microseconds (weird) to seconds (less weird)
-		deltaTime *= 0.000001;
+		deltaTime *= 0.000001f;
 
 		// reset lastTime so that we can calculate the deltaTime
 		// on the next frame
