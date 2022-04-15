@@ -8,6 +8,8 @@ glm::vec3 Collision::getCenterOfBBox(){
     );
 }
 
+//this accounts for transform's scale, and returns the largest distance from center
+//of an axis-aligned bounding box.
 float Collision::getRadius(){
     //very conservative estimate based on shape and scale.
     glm::vec3 center = getCenterOfBBox();
@@ -25,8 +27,8 @@ float Collision::getRadius(){
 }
 
 void Collision::Resolve(shared_ptr<Collision> other, float frameTime) {
-    vec3 center = getCenterOfBBox();
-    vec3 otherCenter = other->getCenterOfBBox();
+    vec3 center = transform->GetPos();
+    vec3 otherCenter = other->transform->GetPos();
 
     float radius = getRadius();
     float otherRadius = other->getRadius();
@@ -43,6 +45,22 @@ void Collision::updateBasedOnCollision(vec3 collisionDirection, float frameTime)
     movement->SetVel(glm::reflect(movement->GetVel(), collisionDirection));
     //the position advances one step.
     movement->Move(frameTime);
+}
+
+void Collision::Update(float frameTime, ComponentManager& compMan)
+{
+    vec3 center = transform->GetPos();
+    float radius = getRadius();
+
+    //hard-coded for now, this calculation will drastically change for the project.
+    float g_groundSize = 20; //x-z plane stretches from -20 to +20
+    float g_scale = 0.5; //scaled back, so final is -10 to +10.
+
+    //x, positive and negative
+    //y positive and negative
+    //z positive and negative
+
+
 }
 
 void Collision::Init(ComponentManager& manager){
