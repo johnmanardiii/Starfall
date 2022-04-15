@@ -21,7 +21,7 @@ GameObject ComponentManager::GetObject(string name)
 
 shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 {
-    if (compName == componentVectorNames[0]) { //movement
+    if      (compName == componentVectorNames[0]) { //movement
         shared_ptr<Movement> copyPtr = movements[index];
         return copyPtr;
     }
@@ -29,24 +29,21 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
         shared_ptr<Transform> copyPtr = transforms[index];
         return copyPtr;
     }
-    else if (compName == componentVectorNames[4]) { //collect
-        shared_ptr<Collect> copyPtr = collects[index];
+    else if (compName == componentVectorNames[2]) { //collision
+        shared_ptr<Collision> copyPtr = collisions[index];
         return copyPtr;
     }
-    else if (compName == componentVectorNames[3]) { //collect
+    else if (compName == componentVectorNames[3]) { //render
         shared_ptr<Renderer> copyPtr = renderers[index];
         return copyPtr;
     }
-    else if (compName == componentVectorNames[2]) { //collision
-        shared_ptr<Collision> copyPtr = collisions[index];
+    else if (compName == componentVectorNames[4]) { //collect
+        shared_ptr<Collect> copyPtr = collects[index];
         return copyPtr;
     }
     else {
         throw "unexpected component name error";
     }
-    
-    
-    
 }
 
 void ComponentManager::Init(std::string resourceDirectory)
