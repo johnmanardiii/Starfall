@@ -208,7 +208,8 @@ public:
 	void Init(const std::string &resourceDirectory)
 	{
 		GLSL::checkVersion();
-
+		// lock the mouse cursor
+		glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		// Set background color.
 		glClearColor(.12f, .34f, .56f, 1.0f);
 		// Enable z-buffer test.

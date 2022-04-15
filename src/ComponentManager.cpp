@@ -55,7 +55,6 @@ void ComponentManager::Init(std::string resourceDirectory)
     
     camera = Camera::GetInstance(vec3(0,1,0));
     //TODO get real data in here, about starting information of components.
-    
 
     // Initialize the GLSL program, just for the ground plane.
     auto prog = make_shared<Program>();
@@ -67,29 +66,16 @@ void ComponentManager::Init(std::string resourceDirectory)
     prog->addUniform("M");
     prog->addAttribute("vertPos");
     
-    shared_ptr<Component> renderer = make_shared<TextureRenderer>("Sphere", "Cat", "Sphere0");
-    shared_ptr<Component> movement = nullptr;
-    shared_ptr<Component> transform = make_shared<Transform>("Sphere0");
-    shared_ptr<Component> collision = nullptr;
-    shared_ptr<Component> collect = make_shared<Collect>("Sphere0");
-    ((Transform*)transform.get())->ApplyTranslation(vec3(0.0f, 1.0f, -3.0f));
-    ((Transform*)transform.get())->ApplyScale(vec3(0.01f, 0.01f, 0.01f));
+    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("Sphere", "Cat", "Sphere0");
+    shared_ptr<Movement> movement = nullptr;
+    shared_ptr<Transform> transform = make_shared<Transform>("Sphere0");
+    shared_ptr<Collision> collision = nullptr;
+    shared_ptr<Collect> collect = make_shared<Collect>("Sphere0");
+    transform->ApplyTranslation(vec3(0.0f, 1.0f, -3.0f));
+    transform->ApplyScale(vec3(0.01f, 0.01f, 0.01f));
+
     vector<shared_ptr<Component>> Sphere = { renderer, movement, transform, collision, collect};
     AddGameObject("Sphere0", Sphere);
-    
-    /*for (int i = 0; i < 9; i++) {
-        shared_ptr<Component> renderer = nullptr;
-        shared_ptr<Component> movement = make_shared<Movement>("bunny" + to_string(i));
-        shared_ptr<Component> transform = make_shared<Transform>("bunny" + to_string(i));
-        shared_ptr<Component> collision = nullptr;
-        vector<shared_ptr<Component>> Bunny = { renderer, movement, transform, collision };
-        AddGameObject("bunny" + to_string(i), Bunny);
-    }
-    
-    renderer = make_shared<TextureRenderer>("bunny.obj", "cat.jpg", "bunny");*/
-    
-    //declaration style 2, with no movement component.
-    
 }
 
 void ComponentManager::UpdateComponents(float frameTime)
