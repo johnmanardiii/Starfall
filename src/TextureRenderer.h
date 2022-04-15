@@ -21,7 +21,7 @@ public:
 		model = shaderMan.GetModel(mod);
 	}
 	void Update(float frameTime, ComponentManager& compMan) { Draw(frameTime); }
-	void Init(ComponentManager& compMan);
+	void Init(ComponentManager* compMan);
 
 	void Draw(float frameTime);
 	void SetFlashAmt(float amt) { flashAmt = amt; }

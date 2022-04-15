@@ -1,5 +1,4 @@
 #include "ComponentManager.h"
-
 void ComponentManager::DeleteObject(GameObject obj)
 {
     // TODO removes all components specified in a Game Object's object list. 
@@ -22,24 +21,19 @@ GameObject ComponentManager::GetObject(string name)
 shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 {
     if      (compName == componentVectorNames[0]) { //movement
-        shared_ptr<Movement> copyPtr = movements[index];
-        return copyPtr;
+        return movements[index];
     }
     else if (compName == componentVectorNames[1]) { //transform
-        shared_ptr<Transform> copyPtr = transforms[index];
-        return copyPtr;
+        return transforms[index];;
     }
     else if (compName == componentVectorNames[2]) { //collision
-        shared_ptr<Collision> copyPtr = collisions[index];
-        return copyPtr;
+        return collisions[index];;
     }
     else if (compName == componentVectorNames[3]) { //render
-        shared_ptr<Renderer> copyPtr = renderers[index];
-        return copyPtr;
+        return renderers[index];
     }
     else if (compName == componentVectorNames[4]) { //collect
-        shared_ptr<Collect> copyPtr = collects[index];
-        return copyPtr;
+        return collects[index];
     }
     else {
         throw "unexpected component name error";
@@ -65,7 +59,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     string sphereName = "Sphere0";
     string sphereShapeFileName = "Sphere";
     shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
-    shared_ptr<Movement> movement = make_shared<Movement>(sphereName, vec3(1,0,0));
+    shared_ptr<Movement> movement = make_shared<Movement>(sphereName, vec3(16,0,8));
     shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
     shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
     shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
@@ -82,15 +76,15 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     for (auto move : movements) 
     {
         if (!move->IsActive) continue;
-        move->Update(frameTime, *this);
+        move->Update(frameTime, this);
     }
     //resolve collisions.
     for (auto giver : collisions) {
         //TODO do collisions with the player, and then the ground border here.
         if (!giver->IsActive) continue;  //don't collide with destroyed objects.
-
-        giver->Update(frameTime, *this);
-
+        cout << glm::to_string(movements[0]->GetVel()) << endl;
+        giver->Update(frameTime, this);
+        cout << glm::to_string(movements[0]->GetVel()) << endl;
         for (auto receiver : collisions) { //the naive n^2 approach.
             if (!receiver->IsActive) continue; //don't collide with destroyed objects.
             if (giver.get() == receiver.get()) continue; //don't collide with yourself, that's just ridiculous.
@@ -105,25 +99,25 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     for (auto trans : transforms)
     {
         if (!trans->IsActive) continue;
-        trans->Update(frameTime, *this);
+        trans->Update(frameTime, this);
     }
 
     // update flashing animation
     for (auto collect : collects)
     {
         if (!collect->IsActive) continue;
-        collect->Update(frameTime, *this);
+        collect->Update(frameTime, this);
     }
 
     //update camera position.
     camera.CalcPerspective(width, height);
-    camera.Update(frameTime, *this);
+    camera.Update(frameTime, this);
     //finally update renderers/draw.
 
     for (auto rend : renderers)
     {
         if (!rend->IsActive) continue;
-        rend->Update(frameTime, *this);
+        rend->Update(frameTime, this);
     }
 }
 
@@ -148,19 +142,19 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
         //free up for insertion. Do this by supplying the component's
         //indices for use by a new component, and marking the component as not in use.
         if (name == componentVectorNames[0]) { //movement
-            movements[index]->Init(*this);
+            movements[index]->Init(this);
         }
         else if (name == componentVectorNames[1]) { //transform
-            transforms[index]->Init(*this);
+            transforms[index]->Init(this);
         } 
         else if (name == componentVectorNames[2]) { //collision
-            collisions[index]->Init(*this);
+            collisions[index]->Init(this);
         }
         else if (name == componentVectorNames[3]) { //render
-            renderers[index]->Init(*this);
+            renderers[index]->Init(this);
         }
         else if (name == componentVectorNames[4]) { //collect
-            collects[index]->Init(*this);
+            collects[index]->Init(this);
         }
         //TODO add additional potential components.
     }//end processing component vector freeing

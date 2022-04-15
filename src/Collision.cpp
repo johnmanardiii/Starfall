@@ -47,27 +47,46 @@ void Collision::updateBasedOnCollision(vec3 collisionDirection, float frameTime)
     movement->Move(frameTime);
 }
 
-void Collision::Update(float frameTime, ComponentManager& compMan)
+void Collision::Update(float frameTime, ComponentManager* compMan)
 {
-    vec3 center = transform->GetPos();
-    float radius = getRadius();
-
     //hard-coded for now, this calculation will drastically change for the project.
     float g_groundSize = 20; //x-z plane stretches from -20 to +20
     float g_scale = 0.5; //scaled back, so final is -10 to +10.
+    float g_edge = g_groundSize * g_scale;
+
+
+    vec3 currentCenter = transform->GetPos();
+    vec3 currentVelocity = movement->GetVel();
+    float radius = getRadius();
+
+
+    //define the two common bounds-checking operations for all directions we want to effect.
+    auto lowerBound = [g_edge, radius](float center) {return center - radius < -g_edge; };
+    auto upperBound = [g_edge, radius](float center) {return center + radius > g_edge; };
 
     //x, positive and negative
+    if (lowerBound(currentCenter.x) || upperBound(currentCenter.x)) {
+        movement->SetVel(vec3(-currentVelocity.x, currentVelocity.y, currentVelocity.z));
+        movement->Update(frameTime, compMan); //advance one frame into the future to avoid "sticky" collisions.
+    }
+    currentVelocity = movement->GetVel(); //get our velocity again, as it might have changed.
+    currentCenter = transform->GetPos(); //same for position.
+
     //y positive and negative
+    //currently do nothing, the velocities in y should remain at 0.
+    
     //z positive and negative
-
-
+    if (lowerBound(currentCenter.z) || upperBound(currentCenter.z)) {
+        movement->SetVel(vec3(currentVelocity.x, currentVelocity.y, -currentVelocity.z));
+        movement->Update(frameTime, compMan); //advance one frame into the future to avoid "sticky" collisions.
+    }
 }
 
-void Collision::Init(ComponentManager& manager){
-    GameObject obj = manager.GetObject(Name);
+void Collision::Init(ComponentManager* compMan){
+    GameObject obj = compMan->GetObject(Name);
     size_t transformIndex = obj.GetComponentLocation("Transform");
     size_t movementIndex = obj.GetComponentLocation("Movement");
 
-    movement = static_pointer_cast<Movement>(manager.GetComponent("Movement", movementIndex));
-    transform = static_pointer_cast<Transform>(manager.GetComponent("Transform", transformIndex));
+    movement = static_pointer_cast<Movement>(compMan->GetComponent("Movement", movementIndex));
+    transform = static_pointer_cast<Transform>(compMan->GetComponent("Transform", transformIndex));
 }

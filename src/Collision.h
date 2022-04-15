@@ -18,10 +18,10 @@ public:
         ShaderManager shaderMan = ShaderManager::GetInstance();
         shape = *shaderMan.GetModel(model);
     }
-    void Init(ComponentManager& manager);
+    void Init(ComponentManager* manager);
     void Resolve(shared_ptr<Collision> other, float frameTime);
     void updateBasedOnCollision(glm::vec3 collisionDirection, float frameTime);
-    void Update(float frameTime, ComponentManager& compMan);
+    void Update(float frameTime, ComponentManager* compMan);
 private:
     glm::vec3 getCenterOfBBox();
     float getRadius();

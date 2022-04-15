@@ -205,7 +205,7 @@ public:
 		}
 	}
 
-	void Init(const std::string &resourceDirectory)
+	void Init(std::string resourceDirectory)
 	{
 		GLSL::checkVersion();
 		// lock the mouse cursor

@@ -19,8 +19,8 @@ public:
 
 	void ApplyVel(vec3);
 
-	void Update(float frameTime, ComponentManager& compMan);
-	void Init(ComponentManager&);
+	void Update(float frameTime, ComponentManager* compMan);
+	void Init(ComponentManager*);
 	void Move(float frameTime);
 
 private:

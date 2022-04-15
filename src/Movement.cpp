@@ -21,14 +21,14 @@ void Movement::Move(float frameTime)
 	trans->ApplyTranslation(velocity * frameTime);
 }
 
-void Movement::Init(ComponentManager& compMan)
+void Movement::Init(ComponentManager* compMan)
 {
-	GameObject obj = compMan.GetObject(Name);
+	GameObject obj = compMan->GetObject(Name);
 	int index = obj.GetComponentLocation("Transform");
-	trans = static_pointer_cast<Transform>(compMan.GetComponent("Transform", index));
+	trans = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
 }
 
-void Movement::Update(float frameTime, ComponentManager& compMan)
+void Movement::Update(float frameTime, ComponentManager* compMan)
 {
 	Move(frameTime);
 }
