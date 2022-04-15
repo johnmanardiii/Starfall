@@ -74,7 +74,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     AddGameObject("Sphere0", Sphere);
 }
 
-void ComponentManager::UpdateComponents(float frameTime)
+void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 {
     
     // update movements
@@ -114,6 +114,7 @@ void ComponentManager::UpdateComponents(float frameTime)
     }
 
     //update camera position.
+    camera.CalcPerspective(width, height);
     camera.Update(frameTime, *this);
     //finally update renderers/draw.
 

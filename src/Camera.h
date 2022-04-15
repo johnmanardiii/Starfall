@@ -47,7 +47,7 @@ public:
     mat4 GetView() { return view; }
 
     // must call CalcPerspective before using GetPerspective
-    mat4 GetPerspective() { return perspective; }
-    void CalcPerspective(WindowManager*);
+    const mat4 GetPerspective() const { return perspective; }
+    void CalcPerspective(int width, int height);
 };
 

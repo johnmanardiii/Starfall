@@ -59,10 +59,8 @@ void Camera::Update(double posX, double posY)
     u = cross(w, vec3(0, 1, 0)); //right is forward cross up.
 }
 
-void Camera::CalcPerspective(WindowManager* windowMan)
+void Camera::CalcPerspective(int width, int height)
 {
-    int width, height;
-    glfwGetFramebufferSize(windowMan->getHandle(), &width, &height);
-    perspective = glm::perspective((float)(glm::pi<float>() / 2), (float)((float)width / (float)height), 0.1f, 1000.0f);
+    perspective = glm::perspective((float)(glm::radians(70.0f)), static_cast<float>(width) / height, 0.1f, 1000.0f);
 }
 

@@ -220,14 +220,14 @@ public:
 		componentManager.Init(resourceDirectory);
 	}
 
-	void drawGround(std::shared_ptr<Program> curS)
+	void drawGround(std::shared_ptr<Program> curS, int width, int height)
 	{
 		curS->bind();
 		glBindVertexArray(ground.VertexArrayID);
 		// draw the ground plane
 		mat4 Model = glm::scale(glm::mat4(1.0f), vec3(0.5, 1, 0.5));
 		mat4 View = componentManager.GetCamera().GetView();
-		componentManager.GetCamera().CalcPerspective(windowManager);
+		componentManager.GetCamera().CalcPerspective(width, height);
 		mat4 Perspective = componentManager.GetCamera().GetPerspective();
 		glUniformMatrix4fv(curS->getUniform("M"), 1, GL_FALSE, value_ptr(Model));
 		glUniformMatrix4fv(curS->getUniform("V"), 1, GL_FALSE, value_ptr(View));
@@ -351,12 +351,11 @@ public:
 		float aspect = width / (float)height;
 		// createPerspectiveMat(P, 70.0f, aspect, 0.1, 100.0f);
 
-		componentManager.UpdateComponents(frameTime);
-		V->pushMatrix();
-		V->multMatrix(componentManager.GetCamera().GetView());
+		componentManager.UpdateComponents(frameTime, width, height);
+		
 		// Draw mesh using GLSL.
 
-		drawGround(prog);
+		drawGround(prog, width, height);
 	}
 };
 
