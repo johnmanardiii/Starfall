@@ -73,19 +73,19 @@ void ComponentManager::Init(std::string resourceDirectory)
 void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 {
     // update movements
-    for (auto move : movements) 
+    for (auto& move : movements) 
     {
         if (!move->IsActive) continue;
         move->Update(frameTime, this);
     }
     //resolve collisions.
-    for (auto giver : collisions) {
+    for (auto& giver : collisions) {
         //TODO do collisions with the player, and then the ground border here.
         if (!giver->IsActive) continue;  //don't collide with destroyed objects.
         cout << glm::to_string(movements[0]->GetVel()) << endl;
         giver->Update(frameTime, this);
         cout << glm::to_string(movements[0]->GetVel()) << endl;
-        for (auto receiver : collisions) { //the naive n^2 approach.
+        for (auto& receiver : collisions) { //the naive n^2 approach.
             if (!receiver->IsActive) continue; //don't collide with destroyed objects.
             if (giver.get() == receiver.get()) continue; //don't collide with yourself, that's just ridiculous.
             //now we know that both objects are active, and could potentially collide.
@@ -96,14 +96,14 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     }
 
     // update transforms based on movements.
-    for (auto trans : transforms)
+    for (auto& trans : transforms)
     {
         if (!trans->IsActive) continue;
         trans->Update(frameTime, this);
     }
 
     // update flashing animation
-    for (auto collect : collects)
+    for (auto& collect : collects)
     {
         if (!collect->IsActive) continue;
         collect->Update(frameTime, this);
@@ -114,7 +114,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     camera.Update(frameTime, this);
     //finally update renderers/draw.
 
-    for (auto rend : renderers)
+    for (auto& rend : renderers)
     {
         if (!rend->IsActive) continue;
         rend->Update(frameTime, this);
@@ -134,13 +134,11 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
         objComps.insert(p);
     }
     objects[name] = GameObject(name, objComps);
-    auto locations = objects[name].GetComponentLocations();
-    for (auto comp : locations) {
-        auto name = comp.first;
-        auto index = comp.second;
+    
+    for (auto& comp : objects[name].GetComponentLocations()) {
+        string name = comp.first;
+        size_t index = comp.second;
 
-        //free up for insertion. Do this by supplying the component's
-        //indices for use by a new component, and marking the component as not in use.
         if (name == componentVectorNames[0]) { //movement
             movements[index]->Init(this);
         }
@@ -232,9 +230,9 @@ void ComponentManager::RemoveGameObject(string name)
     GameObject obj = GetObject(name);
     assert(name == obj.Name); //DEBUG quick sanity check
     map<string, size_t> comps = obj.GetComponentLocations();
-    for (auto comp : comps) {
-        auto name = comp.first;
-        auto index = comp.second;
+    for (auto& comp : comps) {
+        string name = comp.first;
+        size_t index = comp.second;
 
         //free up for insertion. Do this by supplying the component's
         //indices for use by a new component, and marking the component as not in use.
