@@ -62,33 +62,35 @@ void ComponentManager::Init(std::string resourceDirectory)
     prog->addUniform("M");
     prog->addAttribute("vertPos");
     
-    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("Sphere", "Cat", "Sphere0");
-    shared_ptr<Movement> movement = nullptr;
-    shared_ptr<Transform> transform = make_shared<Transform>("Sphere0");
-    shared_ptr<Collision> collision = nullptr;
-    shared_ptr<Collect> collect = make_shared<Collect>("Sphere0");
+    string sphereName = "Sphere0";
+    string sphereShapeFileName = "Sphere";
+    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
+    shared_ptr<Movement> movement = make_shared<Movement>(sphereName, vec3(1,0,0));
+    shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
+    shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
+    shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
     transform->ApplyTranslation(vec3(0.0f, 1.0f, -3.0f));
     transform->ApplyScale(vec3(0.01f, 0.01f, 0.01f));
 
-    vector<shared_ptr<Component>> Sphere = { renderer, movement, transform, collision, collect};
-    AddGameObject("Sphere0", Sphere);
+    vector<shared_ptr<Component>> sphereComps = { renderer, movement, transform, collision, collect};
+    AddGameObject(sphereName, sphereComps);
 }
 
 void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 {
-    
     // update movements
     for (auto move : movements) 
     {
         if (!move->IsActive) continue;
         move->Update(frameTime, *this);
     }
-     
     //resolve collisions.
     for (auto giver : collisions) {
         //TODO do collisions with the player, and then the ground border here.
-
         if (!giver->IsActive) continue;  //don't collide with destroyed objects.
+
+        giver->Update(frameTime, *this);
+
         for (auto receiver : collisions) { //the naive n^2 approach.
             if (!receiver->IsActive) continue; //don't collide with destroyed objects.
             if (giver.get() == receiver.get()) continue; //don't collide with yourself, that's just ridiculous.
@@ -170,15 +172,20 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
     //a cast could/couldn't take place, effectively type-checking the object.
     int index = -1; //if this remains at -1 there wasn't a successful cast.
     string compType = "undefinedComponentType"; //make it really obvious if not detected.
-    if (auto ptr = dynamic_pointer_cast<Transform>(comp)) {
+    if (auto ptr = dynamic_pointer_cast<Movement>(comp)) {
+        index = getNextOpenSlot(movementSlots);
+        compType = componentVectorNames[0];
+        addHelper(ptr, movements, index);
+    }
+    else if (auto ptr = dynamic_pointer_cast<Transform>(comp)) {
         index = getNextOpenSlot(transformSlots);
         compType = componentVectorNames[1];
         addHelper(ptr, transforms, index);
     }
-    else if (auto ptr = dynamic_pointer_cast<Movement>(comp)) {
-        index = getNextOpenSlot(movementSlots);
-        compType = componentVectorNames[0];
-        addHelper(ptr, movements, index);
+    else if (auto ptr = dynamic_pointer_cast<Collision>(comp)) {
+        index = getNextOpenSlot(collisionSlots);
+        compType = componentVectorNames[2];
+        addHelper(ptr, collisions, index);
     }
     else if (auto ptr = dynamic_pointer_cast<Renderer>(comp)) {
         index = getNextOpenSlot(rendererSlots);
@@ -191,7 +198,10 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
         addHelper(ptr, collects, index);
     }
     //TODO the other concrete types. Format should be pretty much identical.
-
+    if (index == -1 || compType == "undefinedComponentType") {
+        cerr << "new components should have a similar else-if block, that casts to the "
+             << "concrete type before insertion into the component vector." << endl;
+    }
     // finally(this should happen at the end, unconditionally, for all component types :
     //return the index where the component resides now.
     return make_pair(compType, index); //insert this into the GameObject.
