@@ -37,17 +37,16 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
         shared_ptr<Renderer> copyPtr = renderers[index];
         return copyPtr;
     }
+    else if (compName == componentVectorNames[2]) { //collision
+        shared_ptr<Collision> copyPtr = collisions[index];
+        return copyPtr;
+    }
     else {
         throw "unexpected component name error";
     }
-     /*TODO re - add references later
-    else if (compName == componentVectorNames[2]) { //collision
-        return make_shared<Collision>(&collisions[index]);
-    }
-    else if (compName == componentVectorNames[3]) { //render
-        return make_shared<Render>(&renderers[index]);
-    }
-    */
+    
+    
+    
 }
 
 void ComponentManager::Init(std::string resourceDirectory)
