@@ -14,7 +14,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include <string>
 #include <memory>
-#include <map>
+#include <map> // uses red-black tree, guarantees ordering of keys
+#include <unordered_map> //uses hashtable
 #include <vector>
 #include <queue>
 #include <iostream>
@@ -27,8 +28,9 @@ class ComponentManager
     //a queue that is automatically sorted, with smaller elements at the top.
     //using typedef to localize this long definition.
     typedef priority_queue<size_t, vector<size_t>, std::greater<size_t>> OpenSlots;
-public:
     
+public:
+    ComponentManager();
     //from the name, gets a way to access all the object's data members.
     GameObject GetGameObject(string name);
     //anything the component manager needs to do BEFORE frame-by-frame operations
@@ -51,34 +53,19 @@ private:
     //helper functions to differentiate parts of AddGameObject.
     pair<string, size_t> addToComponentList(const shared_ptr<Component>& comp);
     int getNextOpenSlot(OpenSlots& slots);
-    template<typename T>
-    void addHelper(shared_ptr<T> comp, vector<shared_ptr<T>>& compList, int& index);
+    template<typename CONCRETE, typename ABSTRACT>
+    void addHelper(shared_ptr<CONCRETE> comp, vector<shared_ptr<ABSTRACT>>& compList, int& index);
 
     //the objects
-    map<string, GameObject> objects;
+    unordered_map<string, GameObject> objects;
     
     //something to hold game state information.
     GameState state = GameState(100, this);
 
     //the various components
+    unordered_map <string, vector<shared_ptr<Component>>> components;
+    unordered_map <string, OpenSlots> componentOpenSlots;
     //one camera for now
     Camera& camera = Camera::GetInstance(vec3(0,1,0));
-
-    vector<string> componentVectorNames{ "Movement", "Transform", "Collision", "Renderer", "Collect" }; //MTCRC
-    //Movement
-    vector< shared_ptr<Movement>> movements; //TODO change type to movement component name
-    OpenSlots movementSlots;
-    //Transform
-    vector< shared_ptr<Transform>> transforms; //TODO change type to transforms component name
-    OpenSlots transformSlots;
-    //Renderer
-    vector<shared_ptr<Renderer>> renderers; //TODO change type to Renderer
-    OpenSlots rendererSlots;
-    //Collision
-    vector<shared_ptr<Collision>> collisions; //TODO change type to collision, or bounding sphere/box.
-    OpenSlots collisionSlots;
-    //Collect
-    vector<shared_ptr<Collect>> collects; //TODO change type to collision, or bounding sphere/box.
-    OpenSlots collectSlots;
 };
 
