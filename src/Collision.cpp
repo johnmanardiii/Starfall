@@ -65,7 +65,6 @@ void Collision::collideWithCamera(float frameTime, ComponentManager* compMan) {
     if (glm::distance(center, camCenter) <= radius + camRadius) {
         hasBeenTouchedByCamera = true;
         compMan->GetGameState()->Collect();
-        
     }
 }
 
