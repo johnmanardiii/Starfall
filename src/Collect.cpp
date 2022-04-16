@@ -5,17 +5,28 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 {
 	// mult by flash speed to be seconds
 	if (collision->IsCollected()) {
-		BeginFlash();
 		//start self-destruct.
+		BeginFlash();
 		flashAmount += flashSpeed * frameTime;
 		renderer->SetFlashAmt(sin(flashAmount));
+		//start taking over the other components.
+		movement->IsActive = false; // a really easy way to get something to stop moving. Deletion works as normal.
+		collision->IsActive = false; // now it doesn't collide with anything.
+		transform->ApplyRotation(frameTime * 16, vec3(0, 0, 1));
 	}
 	
-	if (flashAmount > 5 * flashSpeed)
-	{
-		cout << "Deleting self" << endl;
+	//delete after 6s
+	if (flashAmount > 6 * flashSpeed) {
+		cout << "Deleting self" << endl; 
 		compMan->RemoveGameObject(Name);
 	}
+	//shoot off into the sky after 3s
+	else if (flashAmount > 3 * flashSpeed)
+	{   
+		movement->ApplyVel((0.1f * movement->GetVel()) + vec3(0, 1, 0));
+		movement->IsActive = true;
+	} 
+
 }
 
 void Collect::Init(ComponentManager* compMan)
@@ -26,4 +37,10 @@ void Collect::Init(ComponentManager* compMan)
 
 	index = obj.GetComponentLocation("Collision");
 	collision = static_pointer_cast<Collision>(compMan->GetComponent("Collision", index));
+
+	index = obj.GetComponentLocation("Transform");
+	transform = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
+
+	index = obj.GetComponentLocation("Movement");
+	movement = static_pointer_cast<Movement>(compMan->GetComponent("Movement", index));
 }
