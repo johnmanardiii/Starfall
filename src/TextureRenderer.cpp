@@ -1,7 +1,7 @@
 #include "TextureRenderer.h"
 #include <iostream>
 
-void TextureRenderer::Init(ComponentManager& compMan)
+void TextureRenderer::Init(ComponentManager* compMan)
 {
 	Renderer::Init(compMan);
 }

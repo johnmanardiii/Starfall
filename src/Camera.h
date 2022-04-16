@@ -36,9 +36,9 @@ public:
     //write something to the application's view matrix directly. TODO change this access with an event manager class.
     bool IsWASDPressed[4] = {false, false, false, false};
     
-    void Update(float frameTime, ComponentManager& compMan);
+    void Update(float frameTime, ComponentManager* compMan);
     void Update(double posX, double posY);
-    void Init(ComponentManager&) {} //does nothing, also not required to be called.
+    void Init(ComponentManager* compMan) {} //does nothing, also not required to be called.
     void ProcessWASDInput();
     static Camera& GetInstance(vec3 pos) {
         static Camera instance(pos);
@@ -47,7 +47,7 @@ public:
     mat4 GetView() { return view; }
 
     // must call CalcPerspective before using GetPerspective
-    mat4 GetPerspective() { return perspective; }
-    void CalcPerspective(WindowManager*);
+    const mat4 GetPerspective() const { return perspective; }
+    void CalcPerspective(int width, int height);
 };
 

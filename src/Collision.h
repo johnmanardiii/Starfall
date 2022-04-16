@@ -5,6 +5,8 @@
 #include <memory>
 #include <stdexcept>
 
+#include "ShaderManager.h"
+
 #include "Component.h"
 
 #include "Shape.h"
@@ -12,11 +14,14 @@
 using namespace std;
 class Collision : public Component {
 public:
-    Collision(std::string name, Shape s) : Component(name), shape(s) {}
-    void Init(ComponentManager& manager);
+    Collision(std::string name, string model) : Component(name)  {
+        ShaderManager shaderMan = ShaderManager::GetInstance();
+        shape = *shaderMan.GetModel(model);
+    }
+    void Init(ComponentManager* manager);
     void Resolve(shared_ptr<Collision> other, float frameTime);
     void updateBasedOnCollision(glm::vec3 collisionDirection, float frameTime);
-    void Update(float frameTime, ComponentManager& compMan) { throw std::runtime_error("don't use this, use resolve"); }
+    void Update(float frameTime, ComponentManager* compMan);
 private:
     glm::vec3 getCenterOfBBox();
     float getRadius();
