@@ -183,25 +183,32 @@ public:
 
 		shaderManager.SetShader("Texture", prog);
 
-		vector<tinyobj::shape_t> TOshapesSphere;
-		vector<tinyobj::material_t> objMaterials;
-		shared_ptr<Shape> sphere;
+		
+		
+		
+		
+		//the obj files you want to load. Add more to read them all.
+		vector<string> filenames = { "sphere", "suzanne" };
+		//where the data is held
+		vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
+		vector<tinyobj::material_t> objMaterials; //not using for now.
+		bool rc = false;
 		string errStr;
-		// load in the mesh and make the shape(s)
-		bool rc = tinyobj::LoadObj(TOshapesSphere, objMaterials, errStr, (resourceDirectory + "/sphere.obj").c_str());
-		if (!rc)
-		{
-			cerr << errStr << endl;
-		}
-		else
-		{
-
-			sphere = make_shared<Shape>();
-			sphere->createShape(TOshapesSphere[0]);
-
-			sphere->measure();
-			sphere->Init();
-			shaderManager.SetModel("Sphere", sphere);
+		for (size_t i = 0; i < filenames.size(); ++i) {
+			rc = tinyobj::LoadObj(TOshapes[i], objMaterials, errStr, (resourceDirectory + "/" + filenames[i] + ".obj").c_str());
+			if (!rc) {
+				cerr << errStr << endl;
+				exit(EXIT_FAILURE);
+			}
+			else {
+				//some obj files have multiple shapes, read just the first one for now.
+				shared_ptr<Shape> shape = make_shared<Shape>();
+				shape->createShape(TOshapes[i][0]); //the first (0'th) shape read in of the i'th file.
+				shape->measure();
+				shape->Init();
+				
+				shaderManager.SetModel(filenames[i], shape);
+			}
 		}
 	}
 

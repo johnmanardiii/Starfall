@@ -52,19 +52,20 @@ void ComponentManager::Init(std::string resourceDirectory)
     //these generates random things between the two values. Currently supports floats and vec3's, but is easy to add to.
     RandomGenerator randMove(-10, 10);
     RandomGenerator randTrans(-8, 8);
-    RandomGenerator randScale(0.005, 0.020);
+    RandomGenerator randScale(0.5, 2);
 
     //make some starting objects, with the same assets but different starting positions and velocities.
     for (int i = 0; i < state.GetInitialCount(); i++) {
-        string sphereName = "Sphere" + to_string(state.GetCount());
-        string sphereShapeFileName = "Sphere";
+        string sphereName = "suzanne" + to_string(state.GetCount());
+        string sphereShapeFileName = "suzanne";
         shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
         shared_ptr<Movement> movement = make_shared<Movement>(sphereName, vec3(randMove.GetFloat(), 0, randMove.GetFloat()));
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
         shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
         shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
         transform->ApplyTranslation(vec3(randTrans.GetFloat(), 0, randTrans.GetFloat()));
-        transform->ApplyScale(randScale.GetVec3());
+        float scale = randScale.GetFloat();
+        transform->ApplyScale(vec3(scale, 1, scale));
 
         vector<shared_ptr<Component>> sphereComps = { renderer, movement, transform, collision, collect };
         AddGameObject(sphereName, sphereComps);

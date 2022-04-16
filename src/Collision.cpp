@@ -34,7 +34,7 @@ void Collision::Resolve(shared_ptr<Collision> other, float frameTime) {
     float otherRadius = other->getRadius();
 
     if (glm::distance(center, otherCenter) <= radius + otherRadius) {
-        vec3 collisionDirection = center - otherCenter;
+        vec3 collisionDirection = normalize(otherCenter - center);
         updateBasedOnCollision(collisionDirection, frameTime);
         other->updateBasedOnCollision(-collisionDirection, frameTime);
     }
@@ -42,9 +42,11 @@ void Collision::Resolve(shared_ptr<Collision> other, float frameTime) {
 
 void Collision::updateBasedOnCollision(vec3 collisionDirection, float frameTime) {
     //velocity vector is reflected.
-    //movement->SetVel(glm::reflect(movement->GetVel(), collisionDirection));
-    //the position advances one step.
-    //movement->Move(frameTime);
+    vec3 newVel = glm::reflect(movement->GetVel(), collisionDirection);
+    movement->SetVel(newVel);
+    
+    //the position advances a little bit of a step.
+    movement->Move(frameTime / 5.0);
 }
 
 void Collision::Update(float frameTime, ComponentManager* compMan)
