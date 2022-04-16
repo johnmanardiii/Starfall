@@ -25,7 +25,8 @@ public:
 private:
     glm::vec3 getCenterOfBBox();
     float getRadius();
-
+    void collideWithGroundPlane(float frameTime, ComponentManager* compMan);
+    void collideWithCamera(float frameTime, ComponentManager* compMan);
     Shape shape;
     shared_ptr<Movement> movement;
     shared_ptr<Transform> transform;

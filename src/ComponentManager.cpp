@@ -76,7 +76,7 @@ void ComponentManager::Init(std::string resourceDirectory)
 void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 {
     // update movements
-    for (auto& move : movements) 
+    for (auto& move : movements)
     {
         if (!move->IsActive) continue;
         move->Update(frameTime, this);
