@@ -42,9 +42,9 @@ void Collision::Resolve(shared_ptr<Collision> other, float frameTime) {
 
 void Collision::updateBasedOnCollision(vec3 collisionDirection, float frameTime) {
     //velocity vector is reflected.
-    movement->SetVel(glm::reflect(movement->GetVel(), collisionDirection));
+    //movement->SetVel(glm::reflect(movement->GetVel(), collisionDirection));
     //the position advances one step.
-    movement->Move(frameTime);
+    //movement->Move(frameTime);
 }
 
 void Collision::Update(float frameTime, ComponentManager* compMan)

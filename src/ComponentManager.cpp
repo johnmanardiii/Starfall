@@ -1,10 +1,4 @@
 #include "ComponentManager.h"
-void ComponentManager::DeleteObject(GameObject obj)
-{
-    // TODO removes all components specified in a Game Object's object list. 
-    // e.x. gameobject with (0, -1, 1) removes first component, first position, and third component, second position.
-    // just realized that references will change if positions are shifted around.
-}
 
 GameObject ComponentManager::GetObject(string name)
 {
@@ -13,7 +7,7 @@ GameObject ComponentManager::GetObject(string name)
     auto it = objects.find(name);
     if (it == objects.end()) {
         std::cerr << "GetObject with name: " << name << " was not found in objects list." << std::endl;
-        exit(1);
+        throw std::runtime_error("object not found");
     }
     return it->second;
 }
@@ -42,7 +36,6 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 
 void ComponentManager::Init(std::string resourceDirectory)
 {
-    
     camera = Camera::GetInstance(vec3(0,1,0));
     //TODO get real data in here, about starting information of components.
 
@@ -56,18 +49,26 @@ void ComponentManager::Init(std::string resourceDirectory)
     prog->addUniform("M");
     prog->addAttribute("vertPos");
     
-    string sphereName = "Sphere0";
-    string sphereShapeFileName = "Sphere";
-    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
-    shared_ptr<Movement> movement = make_shared<Movement>(sphereName, vec3(16,0,8));
-    shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
-    shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
-    shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
-    transform->ApplyTranslation(vec3(0.0f, 1.0f, -3.0f));
-    transform->ApplyScale(vec3(0.01f, 0.01f, 0.01f));
+    //these generates random things between the two values. Currently supports floats and vec3's, but is easy to add to.
+    RandomGenerator randMove(-10, 10);
+    RandomGenerator randTrans(-8, 8);
+    RandomGenerator randScale(0.005, 0.020);
 
-    vector<shared_ptr<Component>> sphereComps = { renderer, movement, transform, collision, collect};
-    AddGameObject(sphereName, sphereComps);
+    //make some starting objects, with the same assets but different starting positions and velocities.
+    for (int i = 0; i < state.GetInitialCount(); i++) {
+        string sphereName = "Sphere" + to_string(state.GetCount());
+        string sphereShapeFileName = "Sphere";
+        shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
+        shared_ptr<Movement> movement = make_shared<Movement>(sphereName, vec3(randMove.GetFloat(), 0, randMove.GetFloat()));
+        shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
+        shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
+        shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
+        transform->ApplyTranslation(vec3(randTrans.GetFloat(), 0, randTrans.GetFloat()));
+        transform->ApplyScale(randScale.GetVec3());
+
+        vector<shared_ptr<Component>> sphereComps = { renderer, movement, transform, collision, collect };
+        AddGameObject(sphereName, sphereComps);
+    }
 }
 
 void ComponentManager::UpdateComponents(float frameTime, int width, int height)
@@ -82,9 +83,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     for (auto& giver : collisions) {
         //TODO do collisions with the player, and then the ground border here.
         if (!giver->IsActive) continue;  //don't collide with destroyed objects.
-        cout << glm::to_string(movements[0]->GetVel()) << endl;
         giver->Update(frameTime, this);
-        cout << glm::to_string(movements[0]->GetVel()) << endl;
         for (auto& receiver : collisions) { //the naive n^2 approach.
             if (!receiver->IsActive) continue; //don't collide with destroyed objects.
             if (giver.get() == receiver.get()) continue; //don't collide with yourself, that's just ridiculous.
@@ -252,7 +251,7 @@ void ComponentManager::RemoveGameObject(string name)
             renderers[index]->IsActive = false;
             rendererSlots.push(index);
         }
-        else if (name == componentVectorNames[4]) { //render
+        else if (name == componentVectorNames[4]) { //collect
             collects[index]->IsActive = false;
             collectSlots.push(index);
         }
