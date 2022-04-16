@@ -47,15 +47,7 @@ bool WindowManager::Init(int const width, int const height)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
 	// Create a windowed mode window and its OpenGL context.
-
-	if (width <= 0 && height <= 0) {
-		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		windowHandle = glfwCreateWindow(mode->width, mode->height, "hello 3D", glfwGetPrimaryMonitor(), nullptr);
-	}
-	else {
-		windowHandle = glfwCreateWindow(width, height, "hello 3D", nullptr, nullptr);
-	}
-
+	windowHandle = glfwCreateWindow(width, height, "hello 3D", nullptr, nullptr);
 	if (! windowHandle)
 	{
 		glfwTerminate();
