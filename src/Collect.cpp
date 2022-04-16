@@ -23,7 +23,7 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 	//shoot off into the sky after 3s
 	else if (flashAmount > 3 * flashSpeed)
 	{   
-		movement->ApplyVel((0.1f * movement->GetVel()) + vec3(0, 1, 0));
+		movement->ApplyVel((0.005f * movement->GetVel()) + vec3(0, 0.05, 0));
 		movement->IsActive = true;
 	} 
 
