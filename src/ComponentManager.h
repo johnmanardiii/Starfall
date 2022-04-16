@@ -56,7 +56,7 @@ private:
     map<string, GameObject> objects;
     
     //something to hold game state information.
-    GameState state = GameState(10, this);
+    GameState state = GameState(40, this);
 
     //the various components
     //one camera for now

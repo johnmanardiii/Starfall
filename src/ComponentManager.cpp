@@ -51,8 +51,8 @@ void ComponentManager::Init(std::string resourceDirectory)
     
     //these generates random things between the two values. Currently supports floats and vec3's, but is easy to add to.
     RandomGenerator randMove(-10, 10);
-    RandomGenerator randTrans(-8, 8);
-    RandomGenerator randScale(0.5, 2);
+    RandomGenerator randTrans(-40, 40);
+    RandomGenerator randScale(0.2, 2);
 
     //make some starting objects, with the same assets but different starting positions and velocities.
     for (int i = 0; i < state.GetInitialCount(); i++) {
