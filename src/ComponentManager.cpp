@@ -83,7 +83,28 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 {
     //the first thing that should happen in every frame. Stores total time.
     state.IncTotalFrameTime(frameTime);
+    if (state.ShouldSpawn()) {
+        RandomGenerator randMove(-10, 10);
+        RandomGenerator randTrans(-40, 40);
+        RandomGenerator randScale(0.2, 2);
 
+        string sphereName = "suzanne" + to_string(state.TotalObjectsEverMade);
+        string sphereShapeFileName = "suzanne";
+        shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
+        vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
+        shared_ptr<Movement> movement = make_shared<Movement>(sphereName, startingVelocity);
+        shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
+        shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
+        shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
+        transform->ApplyTranslation(vec3(randTrans.GetFloat(), 1, randTrans.GetFloat()));
+
+        float scale = randScale.GetFloat();
+        transform->ApplyScale(vec3(scale, 1, scale));
+
+        vector<shared_ptr<Component>> sphereComps = { renderer, movement, transform, collision, collect };
+        AddGameObject(sphereName, sphereComps);
+        cout << "Added one more monkey!\n";
+    }
 
     
     // update movements
