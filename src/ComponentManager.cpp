@@ -1,6 +1,6 @@
 #include "ComponentManager.h"
 
-GameObject ComponentManager::GetObject(string name)
+GameObject ComponentManager::GetGameObject(string name)
 {
     //TODO this should return a reference/copy (discuss) to a game object
     //based on the key in a map.
@@ -55,7 +55,7 @@ void ComponentManager::Init(std::string resourceDirectory)
 
     //make some starting objects, with the same assets but different starting positions and velocities.
     for (int i = 0; i < state.GetInitialCount(); i++) {
-        string sphereName = "suzanne" + to_string(state.GetCount());
+        string sphereName = "suzanne" + to_string(i);
         string sphereShapeFileName = "suzanne";
         shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
@@ -73,10 +73,43 @@ void ComponentManager::Init(std::string resourceDirectory)
     }
 }
 
+// Iterate through all of the component vectors. Usually call Update on all of them, although
+// Collision is dependent on other Collision objects, so the pattern is different.
+//
+//What this does, is separate the game behavior into stages. You can be sure that if a component 
+//needs to access data from a different component type, all of those different component types are
+//synchronized to the same frame. 
 void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 {
+    //the first thing that should happen in every frame. Stores total time.
+    state.IncTotalFrameTime(frameTime);
+    if (state.ShouldSpawn()) {
+        RandomGenerator randMove(-10, 10);
+        RandomGenerator randTrans(-40, 40);
+        RandomGenerator randScale(0.2, 2);
+
+        string sphereName = "suzanne" + to_string(state.TotalObjectsEverMade);
+        string sphereShapeFileName = "suzanne";
+        shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
+        vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
+        shared_ptr<Movement> movement = make_shared<Movement>(sphereName, startingVelocity);
+        shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
+        shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
+        shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
+        transform->ApplyTranslation(vec3(randTrans.GetFloat(), 1, randTrans.GetFloat()));
+
+        float scale = randScale.GetFloat();
+        transform->ApplyScale(vec3(scale, 1, scale));
+
+        vector<shared_ptr<Component>> sphereComps = { renderer, movement, transform, collision, collect };
+        AddGameObject(sphereName, sphereComps);
+        state.TotalObjectsEverMade++;
+        cout << "\nAdded one more monkey!\n";
+    }
+
+    
     // update movements
-    for (auto& move : movements) 
+    for (auto& move : movements)
     {
         if (!move->IsActive) continue;
         move->Update(frameTime, this);
@@ -93,7 +126,6 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
             //Resolve updates gameObject information for both giver and receiver if a collision occurred.
             giver->Resolve(receiver, frameTime);
         }
-        
     }
 
     // update transforms based on movements.
@@ -228,7 +260,7 @@ int ComponentManager::getNextOpenSlot(OpenSlots& slots) {
 void ComponentManager::RemoveGameObject(string name)
 {
     //make a copy, don't actually remove from map until its components are all gone
-    GameObject obj = GetObject(name);
+    GameObject obj = GetGameObject(name);
     assert(name == obj.Name); //DEBUG quick sanity check
     map<string, size_t> comps = obj.GetComponentLocations();
     for (auto& comp : comps) {

@@ -33,18 +33,23 @@ public:
     size_t CurrentObjectCount() const { return objects.size(); }
 
     //from the name, gets a way to access all the object's data members.
-    GameObject GetObject(string name);
+    GameObject GetGameObject(string name);
     //anything the component manager needs to do BEFORE frame-by-frame operations
     void Init(std::string resourceDirectory);
     
-    //update components
+    //update components. Done once every render pass.
     void UpdateComponents(float frameTime, int width, int height);
+    //Make components, throw them in a vector<shared_ptr>> in any order, give it a name, and componentManager will manage it.
     void AddGameObject(string name, vector<shared_ptr<Component>> comps);
+    //deactivate object's components, free up their space, and remove the GameObject abstraction, completing the delete.
     void RemoveGameObject(string name);
-    //anything the component manager needs to do AFTER frame-by-frame operations
+    //anything the component manager needs to do AFTER frame-by-frame operations. Currently nothing.
     void Cleanup();
+    //useful if components of a game object need to grab references to each other.
     shared_ptr<Component> GetComponent(string, int);
     Camera& GetCamera() { return camera; } //direct access, camera isn't componentized yet.
+    GameState* GetGameState() { return &state; }
+    
 private:
     //helper functions to differentiate parts of AddGameObject.
     pair<string, size_t> addToComponentList(const shared_ptr<Component>& comp);
@@ -56,7 +61,7 @@ private:
     map<string, GameObject> objects;
     
     //something to hold game state information.
-    GameState state = GameState(40, this);
+    GameState state = GameState(100, this);
 
     //the various components
     //one camera for now
@@ -78,8 +83,5 @@ private:
     //Collect
     vector<shared_ptr<Collect>> collects; //TODO change type to collision, or bounding sphere/box.
     OpenSlots collectSlots;
-    
-    //Spawner
-    //TODO write singleton for spawner.
 };
 

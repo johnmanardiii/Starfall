@@ -51,9 +51,28 @@ void Collision::updateBasedOnCollision(vec3 collisionDirection, float frameTime)
 
 void Collision::Update(float frameTime, ComponentManager* compMan)
 {
+    collideWithGroundPlane(frameTime, compMan);
+    collideWithCamera(frameTime, compMan);
+}
+
+void Collision::collideWithCamera(float frameTime, ComponentManager* compMan) {
+    vec3 center = transform->GetPos();
+    vec3 camCenter = compMan->GetCamera().GetPos();
+    
+    float radius = getRadius();
+    float camRadius = compMan->GetCamera().GetRadius();
+    
+    if (glm::distance(center, camCenter) <= radius + camRadius) {
+        hasBeenTouchedByCamera = true;
+        compMan->GetGameState()->Collect();
+        
+    }
+}
+
+void Collision::collideWithGroundPlane(float frameTime, ComponentManager* compMan) {
     //hard-coded for now, this calculation will drastically change for the project.
-    float g_groundSize = 100; 
-    float g_scale = 0.5; 
+    float g_groundSize = 100;
+    float g_scale = 0.5;
     float g_edge = g_groundSize * g_scale;
 
 
@@ -76,7 +95,7 @@ void Collision::Update(float frameTime, ComponentManager* compMan)
 
     //y positive and negative
     //currently do nothing, the velocities in y should remain at 0.
-    
+
     //z positive and negative
     if (lowerBound(currentCenter.z) || upperBound(currentCenter.z)) {
         movement->SetVel(vec3(currentVelocity.x, currentVelocity.y, -currentVelocity.z));
@@ -87,8 +106,8 @@ void Collision::Update(float frameTime, ComponentManager* compMan)
     transform->SetRot(glm::rotation(vec3(0, 0, 1), normalize(movement->GetVel())));
 }
 
-void Collision::Init(ComponentManager* compMan){
-    GameObject obj = compMan->GetObject(Name);
+void Collision::Init(ComponentManager* compMan) {
+    GameObject obj = compMan->GetGameObject(Name);
     size_t transformIndex = obj.GetComponentLocation("Transform");
     size_t movementIndex = obj.GetComponentLocation("Movement");
 
