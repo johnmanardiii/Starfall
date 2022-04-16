@@ -1,163 +1,84 @@
+# API Guide
+# Component Data Structure
+## GameObject
+All a GameObject is, is a name, and a map between any components it might have, and the index of that component in ComponentManager's component vectors.
+GameObject has methods GetComponentLocation and GetComponentLocations in order to get these indices. This is important for linking components, described later.
 
-
-Orientation
-===============
-Introduction to graphics - Getting Started
-
-*Please note many systems can have slight variations - we've tried to explain and provide pointers but you will likely need to do some web searching as you encounter errors.  We will do our best to support you.*
-
-Introduction
-Alongside CMake, there are two basic tools we need to set up in order to get started with OGL on any platform. However setup of these tools will vary by operating system. 
-
-GLFW: A cross-platform window management system intended for use with graphics projects. Provides a unified way to interact with and draw on windows, and get input from the keyboard, mouse, or gamepads. 
-GLM: The OpenGL math library provides many useful tools for doing math for computer graphics. It is modelled after GLSL to make syntax and operations more convenient and familiar. 
-
-Cross-Platform Steps:
-
-1. Create a Directory for Graphics Libraries
-We recommend that you decide on a common location to place the libraries we’re setting up in this document. It can be wherever you like, so we’ll refer to it simply as ‘your graphics library directory’ moving forward. 
-
-2. GLM Setup
-GLM is a header only library, which fortunately makes setup convenient.
-Step 1:
-Go to the GLM release page on Github and download the zip file for the latest release. Find and download the lastest release
-https://github.com/g-truc/glm/releases  You can also use a package manager to install if desired.
-Step 2: 
-Extract the contents of the ‘glm’ directory out of the zip file and to your library directory. 
+### Adding a GameObject
+In ComponentManager::Init(), if at program start, or in ComponentManager::UpdateComponents, if during program:
+- Give the GameObject a unique name, one that hasn't been used before.
+- If it's renderable (has a Renderer component) specify the name of the .obj file (without the extension) as well.
+- Create shared_ptr's (of the final, derived type) to any components you want the object to have.
+- Initialize the component's starting values.
+- Make a vector<shared_ptr<Component>> of those components, and pass that and the unique name to AddGameObject.
 
 
 
-3. GLFW setup
-Step 1: 
-Visit https://github.com/glfw/glfw/releases and download the latest version as a zip file. This should be done through the link glfw-3.x.x.zip, not the WIN32, WIN64, or MACOS links. You can also use a package manager to install if desired.
-Step 2: 
-Extract the zip contents into your graphics library directory. 
+## Component
+A component is a piece of a GameObject, that has a part of its data and behavior. It's a virtual class, with derived classes requiring Update and Init, described below. Each component has a Name, and an IsActive determining if its Update() will be called in the render loop. The rest is up to the derived class.
+### Update
+Each Update will be called every frame, for all active components. 
 
+### Init
+If a Component of a GameObject needs data from other Components of the same GameObject, Init() will acquire shared_ptr's to the relevant classes. This will allow read-writes between components. Init() is called after AddGameObject (in ComponentManager) is called for the component, so all the components should be in a valid state. the Collect Component is heavily linked, as it receives and updates information across a huge amount of its total components, and it serves as a good example of how to do this.
 
+### Adding a new Component:
+- Make a new derived class that inherits Component, or a derived class of Component (TextureRenderer does this already, for an example).
+- Implement an Init: (this function can do nothing if it doesn't depend on other components.)
+	- call componentManager->GetGameObject(Name) to get the indices of the other components you want to link.
+	- call componentManager->GetComponent("ComponentName", index) to get a shared_ptr<Component> of the specified component.
+	- static_pointer_cast the shared pointer to the concrete type.
+- Implement an Update (this function can do nothing)
+	- Update should be called per-frame, but implementation details are up to the component.
+	- It's probably a good idea to make a new function for anything that doesn't always happen per-frame.
+- Add the data structure to ComponentManager.
+	- Add a vector<shared_ptr<YourDerivedType>> and name it something recognizable as holding those components.
+	- Add an OpenSlots, with a similar naming scheme.
+	- Add the chosen name to componentVectorNames.
+	- Add things to ComponentManager. Upon reading this subsection specifically, I'm planning on reworking this specific part to make adding new components less of a pain. The rest will probably stay the same.
+		- Add a condition to ComponentManager::GetComponent, in the same format as the others.
+		- Add a condition to ComponentManager::AddGameObject, that calls Init, in the same format as the others.
+		- Add a condition to ComponentManager::addToComponentList, in the same format as the others.
+		- Add a condiion to ComponentManager::RemoveGameObject, in the same format as the others.
+	- Add in a loop in ComponentManager::UpdateComponents that calls Update on all active components in the vector, or whatever other behavior is desired for those components.
+## ComponentManager
+ComponentManager is the heart of the program. It provides abstractions for the setup, updating, and teardown of the various Components that make up GameObjects.
 
+### Data Layout
+Each derived-class Component has a corresponding vector of shared pointers, and a priority queue filled with the indices of components whose GameObject has been removed, and are ready to be overwritten.
 
+AddGameObject and RemoveGameObject should be used to deal with this data structure. There is also a vector of the "official" component names (componentVectorNames) that can be used to properly link components.
 
-Installing prerequisite software described for each system
-=======================================================
+### Init
+Where GameObjects get initially added, before the first render pass.
+Details about adding GameObjects are in "Adding a Game Object".
 
+### UpdateComponents
+Overall, this loop:
+- Does things like add GameObjects at the beginning.
+- For every component type except Renderer,
+	- checks whether the component is still active
+	- calls Update on the component.
+- Updates the camera data.
+- For Renderer, specifically after updating camera,
+	- checks whether the Renderer is active
+	- calls Update on the Renderer, which draws itself.
 
+This is different for collision, because Collision components interact with other Collision components, as well as the edges of the ground and the camera.
 
+## Camera
+Singleton class, that currently performs common first-person camera transforms. Receives data from glfw callbacks and updates every frame. Currently implements its own collision detection for the purposes of Lab, but that is easily stripped out.
 
-Mac OS X
---------
+## Game State
+This will change drastically, as it now just holds global state data and compute for the lab2 game. Things that might still be useful are:
 
-You may have some of these already installed (such as XCode).   Otherwise you can use homebrew/macports or install these manually.  *In general, students have had more success installing directly not from a package manager on a mac (see above).*
+- cumulativeFrameTime and IncTotalFrameTime()
 
-- Xcode developer tools. You'll need to log in with your Apple ID.
-- CMake (<http://cmake.org/download/>)
-- [GLM](http://brewformulas.org/Glm)
-- [GLFW3](http://brewformulas.org/glfw)
-
-Make sure the commands `g++` and `cmake` work from the command prompt.
-
-
-Windows
--------
-
-You may have some of these already installed, instructions just included for completeness.  First, download **Visual Studio Community 2017 or you can use VS Code - just make sure you install a C++ compiler**.
-Make sure to install the C++ development tools.
-
-Download these:
-
-- CMake (<http://cmake.org/download/>). Make sure to add CMake to the system
-  path when asked to do so.
-- [vcpkg](https://github.com/Microsoft/vcpkg)
-
-Make sure the command `cmake` works from the command prompt.
-
-Now use `vcpkg` to install `glm` and `glfw3`
-
-
-Ubuntu Linux
-------------
-(These have not been updated recently - proceed with caution)
-You'll need the following if you don't have them already.
-
-	> sudo apt-get update
-	> sudo apt-get install g++
-	> sudo apt-get install cmake
-	> sudo apt-get install libglfw3-dev
-	> sudo apt-get install libglfw3-dev
-
-You may or may not need these:
-
-	> sudo apt-get install freeglut3-dev
-	> sudo apt-get install libxrandr-dev
-	> sudo apt-get install libxinerama-dev
-	> sudo apt-get install libxcursor-dev
-
-Building and Running the Lab/Assignment
-=======================================
-
-All platforms (except Lab windows)
-----------------------------------
-
-We'll perform an "out-of- source" build, which means that the binary files
-will not be in the same directory as the source files. In the folder that
-contains CMakeLists.txt, run the following.
-
-	> mkdir build
-	> cd build
-
-Then run one of the following *from the build folder*, depending on your
-choice of platform and IDE.
-
-
-OSX & Linux Makefile
---------------------
-
-	> cmake ..
-
-This will generate a Makefile that you can use to compile your code. To
-compile the code, run the generated Makefile.
-
-	> make -j4
-
-The `-j` argument speeds up the compilation by multithreading the compiler.
-This will generate an executable, which you can run by typing
-
-	> ./draw 
-
-To change the compiler, read [this
-page](http://cmake.org/Wiki/CMake_FAQ#How_do_I_use_a_different_compiler.3F).
-The best way is to use environment variables before calling cmake. For
-example, to use the Intel C++ compiler:
-
-	> which icpc # copy the path
-	> CXX=/path/to/icpc cmake ..
-
-
-You can explore using XCode, but current instructions focus on a command line build (you may edit files in any editor, e.g. sublime, etc.)
-
-
-Windows Visual Studio 2015,2017,2019
---------------------------
-
-(These have not been recently tested due to instructional staff not having Windows machines - take with a grain of salt)!
-
-Or on your own machine, if you would prefer to use CMake.
-
-Use [vcpkg](https://github.com/Microsoft/vcpkg) to install `glfw3` and `glm`. Follow instructions found under "Quick Start: Windows".
-
-	> cmake ..
-
-By default on Windows, CMake will generate a Visual Studio solution file, e.g. `Lab00.sln`, which you can open by double-clicking.
-If you get a version mismatch, you may have to specify your visual studio version, for example:
-
-	> cmake -G "Visual Studio 14 2015" ..
-
-Other versions of Visual Studio are listed on the CMake page
-(<http://cmake.org/cmake/help/latest/manual/cmake-generators.7.html>).
-
-- To build and run the project, right-click on e.g. `Lab0` in the project explorer
-  and then click on "Set as Startup Project." Then press F7 (Build Solution)
-  and then F5 (Start Debugging).
-- To add a commandline argument, right-click on e.g. `Lab0` in
-  the project explorer and then click on "Properties" and then click on
-  "Debugging."
-
+## RandomGenerator
+provides an easy way to get a lot of uniformly-distributed random floats and vec3's. Should be fairly straightforward to add more data types.
+```
+RandomGenerator rg(-10, 10);
+float f = rg.GetFloat() //gets a random float in the range [-10,10] inclusive.
+```
+## Ground (drawGround, initGround)
+the CPU-defined data used for the ground plane. We can either expand on this or load a flat mesh from an obj file.

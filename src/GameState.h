@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <iomanip>
 
 class ComponentManager;
 using namespace std;
@@ -10,7 +11,7 @@ public:
         INITIAL_OBJECT_COUNT(init),
         currentObjectCount(init),
         objectsCollected(0),
-        SECONDS_BETWEEN_NEW_GAME_OBJ(5),
+        SECONDS_BETWEEN_NEW_GAME_OBJ(10),
         spawnFrames(0),
         cumulativeFrameTime(0),
         TotalObjectsEverMade(init)
@@ -36,6 +37,13 @@ public:
     const int ReportObjectsCollected() const { return objectsCollected; }
     //spawnFrames is the number of seconds since an object was last spawned.
     bool ShouldSpawn() {
+        if(currentObjectCount == 0){
+            cout << "You Win! Collected: " << objectsCollected << " objects in "
+                << cumulativeFrameTime << " seconds, a rate of " << setprecision(2) <<
+            (objectsCollected / cumulativeFrameTime) << " per second." << endl;
+            setprecision(defaultp);
+            exit(EXIT_SUCCESS);
+        }
         if (spawnFrames >= SECONDS_BETWEEN_NEW_GAME_OBJ) {
             spawnFrames = 0;
             currentObjectCount++;
