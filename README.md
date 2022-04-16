@@ -20,8 +20,27 @@ A component is a piece of a GameObject, that has a part of its data and behavior
 Each Update will be called every frame, for all active components. 
 
 ### Init
-If a Component of a GameObject needs data from other Components of the same GameObject, Init() will acquire shared_ptr's to the relevant classes. This will allow read-writes between components. Init() is called after AddGameObject (in ComponentManager) is called for the component, so all the components should be in a valid state.
+If a Component of a GameObject needs data from other Components of the same GameObject, Init() will acquire shared_ptr's to the relevant classes. This will allow read-writes between components. Init() is called after AddGameObject (in ComponentManager) is called for the component, so all the components should be in a valid state. the Collect Component is heavily linked, as it receives and updates information across a huge amount of its total components, and it serves as a good example of how to do this.
 
+### Adding a new Component:
+- Make a new derived class that inherits Component, or a derived class of Component (TextureRenderer does this already, for an example).
+- Implement an Init: (this function can do nothing if it doesn't depend on other components.)
+	- call componentManager->GetGameObject(Name) to get the indices of the other components you want to link.
+	- call componentManager->GetComponent("ComponentName", index) to get a shared_ptr<Component> of the specified component.
+	- static_pointer_cast the shared pointer to the concrete type.
+- Implement an Update (this function can do nothing)
+	- Update should be called per-frame, but implementation details are up to the component.
+	- It's probably a good idea to make a new function for anything that doesn't always happen per-frame.
+- Add the data structure to ComponentManager.
+	- Add a vector<shared_ptr<YourDerivedType>> and name it something recognizable as holding those components.
+	- Add an OpenSlots, with a similar naming scheme.
+	- Add the chosen name to componentVectorNames.
+	- Add things to ComponentManager. Upon reading this subsection specifically, I'm planning on reworking this specific part to make adding new components less of a pain. The rest will probably stay the same.
+		- Add a condition to ComponentManager::GetComponent, in the same format as the others.
+		- Add a condition to ComponentManager::AddGameObject, that calls Init, in the same format as the others.
+		- Add a condition to ComponentManager::addToComponentList, in the same format as the others.
+		- Add a condiion to ComponentManager::RemoveGameObject, in the same format as the others.
+	- Add in a loop in ComponentManager::UpdateComponents that calls Update on all active components in the vector, or whatever other behavior is desired for those components.
 ## ComponentManager
 ComponentManager is the heart of the program. It provides abstractions for the setup, updating, and teardown of the various Components that make up GameObjects.
 
