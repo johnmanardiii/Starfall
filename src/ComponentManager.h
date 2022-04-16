@@ -11,6 +11,7 @@
 #include "RandomGenerator.h"
 #include "GameState.h"
 
+#include <glm/gtx/quaternion.hpp>
 #include <string>
 #include <memory>
 #include <map>

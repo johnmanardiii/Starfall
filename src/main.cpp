@@ -265,7 +265,7 @@ public:
 	void initGround(float g_groundY)
 	{
 
-		float g_groundSize = 20;
+		float g_groundSize = 100;
 
 		// A x-z plane at y = g_groundY of dimension [-g_groundSize, g_groundSize]^2
 		float GrndPos[] = {

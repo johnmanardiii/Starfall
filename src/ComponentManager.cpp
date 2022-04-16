@@ -59,11 +59,13 @@ void ComponentManager::Init(std::string resourceDirectory)
         string sphereName = "suzanne" + to_string(state.GetCount());
         string sphereShapeFileName = "suzanne";
         shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
-        shared_ptr<Movement> movement = make_shared<Movement>(sphereName, vec3(randMove.GetFloat(), 0, randMove.GetFloat()));
+        vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
+        shared_ptr<Movement> movement = make_shared<Movement>(sphereName, startingVelocity);
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
         shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
         shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
-        transform->ApplyTranslation(vec3(randTrans.GetFloat(), 0, randTrans.GetFloat()));
+        transform->ApplyTranslation(vec3(randTrans.GetFloat(), 1, randTrans.GetFloat()));
+        
         float scale = randScale.GetFloat();
         transform->ApplyScale(vec3(scale, 1, scale));
 

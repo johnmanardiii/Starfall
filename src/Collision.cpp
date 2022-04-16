@@ -52,8 +52,8 @@ void Collision::updateBasedOnCollision(vec3 collisionDirection, float frameTime)
 void Collision::Update(float frameTime, ComponentManager* compMan)
 {
     //hard-coded for now, this calculation will drastically change for the project.
-    float g_groundSize = 20; //x-z plane stretches from -20 to +20
-    float g_scale = 0.5; //scaled back, so final is -10 to +10.
+    float g_groundSize = 100; 
+    float g_scale = 0.5; 
     float g_edge = g_groundSize * g_scale;
 
 
@@ -69,7 +69,7 @@ void Collision::Update(float frameTime, ComponentManager* compMan)
     //x, positive and negative
     if (lowerBound(currentCenter.x) || upperBound(currentCenter.x)) {
         movement->SetVel(vec3(-currentVelocity.x, currentVelocity.y, currentVelocity.z));
-        movement->Update(frameTime, compMan); //advance one frame into the future to avoid "sticky" collisions.
+        movement->Update(frameTime / 5.0, compMan); //advance one frame into the future to avoid "sticky" collisions.
     }
     currentVelocity = movement->GetVel(); //get our velocity again, as it might have changed.
     currentCenter = transform->GetPos(); //same for position.
@@ -80,8 +80,11 @@ void Collision::Update(float frameTime, ComponentManager* compMan)
     //z positive and negative
     if (lowerBound(currentCenter.z) || upperBound(currentCenter.z)) {
         movement->SetVel(vec3(currentVelocity.x, currentVelocity.y, -currentVelocity.z));
-        movement->Update(frameTime, compMan); //advance one frame into the future to avoid "sticky" collisions.
+        movement->Update(frameTime / 5.0, compMan); //advance one frame into the future to avoid "sticky" collisions.
     }
+    //face the object towards its current velocity. The monkey's "front" faces towards positive z,
+    //so the quaternion needed is simply a rotation between that and the velocity angle.
+    transform->SetRot(glm::rotation(vec3(0, 0, 1), normalize(movement->GetVel())));
 }
 
 void Collision::Init(ComponentManager* compMan){
