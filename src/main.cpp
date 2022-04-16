@@ -215,7 +215,7 @@ public:
 	void Init(std::string resourceDirectory)
 	{
 		GLSL::checkVersion();
-		// lock the mouse cursor
+		// lock the mouse cursor 
 		glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		// Set background color.
 		glClearColor(.12f, .34f, .56f, 1.0f);
@@ -382,7 +382,7 @@ int main(int argc, char *argv[])
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
-	windowManager->Init(640, 480);
+	windowManager->Init(0, 0);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
 
