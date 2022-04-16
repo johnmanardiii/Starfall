@@ -28,10 +28,7 @@ class ComponentManager
     //using typedef to localize this long definition.
     typedef priority_queue<size_t, vector<size_t>, std::greater<size_t>> OpenSlots;
 public:
-    //bookkeeping
-    //the number of active objects at any given time.
-    size_t CurrentObjectCount() const { return objects.size(); }
-
+    
     //from the name, gets a way to access all the object's data members.
     GameObject GetGameObject(string name);
     //anything the component manager needs to do BEFORE frame-by-frame operations
