@@ -32,14 +32,8 @@ If a Component of a GameObject needs data from other Components of the same Game
 	- Update should be called per-frame, but implementation details are up to the component.
 	- It's probably a good idea to make a new function for anything that doesn't always happen per-frame.
 - Add the data structure to ComponentManager.
-	- Add a vector<shared_ptr<YourDerivedType>> and name it something recognizable as holding those components.
-	- Add an OpenSlots, with a similar naming scheme.
-	- Add the chosen name to componentVectorNames.
-	- Add things to ComponentManager. Upon reading this subsection specifically, I'm planning on reworking this specific part to make adding new components less of a pain. The rest will probably stay the same.
-		- Add a condition to ComponentManager::GetComponent, in the same format as the others.
-		- Add a condition to ComponentManager::AddGameObject, that calls Init, in the same format as the others.
-		- Add a condition to ComponentManager::addToComponentList, in the same format as the others.
-		- Add a condiion to ComponentManager::RemoveGameObject, in the same format as the others.
+	- In ComponentManager's constructor, invoke the default constructor and give the underlying components a name.
+	- Add a condition to ComponentManager::addToComponentList, in the same format as the others. Use the same name as in the constructor.
 	- Add in a loop in ComponentManager::UpdateComponents that calls Update on all active components in the vector, or whatever other behavior is desired for those components.
 ## ComponentManager
 ComponentManager is the heart of the program. It provides abstractions for the setup, updating, and teardown of the various Components that make up GameObjects.
