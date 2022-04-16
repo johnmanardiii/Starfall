@@ -40,6 +40,7 @@ public:
     void Update(double posX, double posY);
     void Init(ComponentManager* compMan) {} //does nothing, also not required to be called.
     void ProcessWASDInput();
+    void AdjustMovementSpeed(float multFactor) { movementSensitivity *= multFactor; }
     static Camera& GetInstance(vec3 pos) {
         static Camera instance(pos);
         return instance;
