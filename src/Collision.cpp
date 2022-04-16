@@ -44,7 +44,7 @@ void Collision::updateBasedOnCollision(vec3 collisionDirection, float frameTime)
     //velocity vector is reflected.
     vec3 newVel = glm::reflect(movement->GetVel(), collisionDirection);
     movement->SetVel(newVel);
-    
+    transform->SetRot(glm::rotation(vec3(0, 0, 1), normalize(movement->GetVel())));
     //the position advances a little bit of a step.
     movement->Move(frameTime / 2.0);
 }
