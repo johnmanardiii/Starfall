@@ -46,7 +46,7 @@ void Collision::updateBasedOnCollision(vec3 collisionDirection, float frameTime)
     movement->SetVel(newVel);
     
     //the position advances a little bit of a step.
-    movement->Move(frameTime / 5.0);
+    movement->Move(frameTime / 2.0);
 }
 
 void Collision::Update(float frameTime, ComponentManager* compMan)
@@ -69,7 +69,7 @@ void Collision::Update(float frameTime, ComponentManager* compMan)
     //x, positive and negative
     if (lowerBound(currentCenter.x) || upperBound(currentCenter.x)) {
         movement->SetVel(vec3(-currentVelocity.x, currentVelocity.y, currentVelocity.z));
-        movement->Update(frameTime / 5.0, compMan); //advance one frame into the future to avoid "sticky" collisions.
+        movement->Update(frameTime / 2.0, compMan); //advance 1/2 frame into the future to avoid "sticky" collisions.
     }
     currentVelocity = movement->GetVel(); //get our velocity again, as it might have changed.
     currentCenter = transform->GetPos(); //same for position.
@@ -80,7 +80,7 @@ void Collision::Update(float frameTime, ComponentManager* compMan)
     //z positive and negative
     if (lowerBound(currentCenter.z) || upperBound(currentCenter.z)) {
         movement->SetVel(vec3(currentVelocity.x, currentVelocity.y, -currentVelocity.z));
-        movement->Update(frameTime / 5.0, compMan); //advance one frame into the future to avoid "sticky" collisions.
+        movement->Update(frameTime / 2.0, compMan); //advance 1/2 frame into the future to avoid "sticky" collisions.
     }
     //face the object towards its current velocity. The monkey's "front" faces towards positive z,
     //so the quaternion needed is simply a rotation between that and the velocity angle.
