@@ -55,7 +55,7 @@ void ComponentManager::Init(std::string resourceDirectory)
 
     //make some starting objects, with the same assets but different starting positions and velocities.
     for (int i = 0; i < state.GetInitialCount(); i++) {
-        string sphereName = "suzanne" + to_string(state.GetCount());
+        string sphereName = "suzanne" + to_string(i);
         string sphereShapeFileName = "suzanne";
         shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
@@ -73,8 +73,19 @@ void ComponentManager::Init(std::string resourceDirectory)
     }
 }
 
+// Iterate through all of the component vectors. Usually call Update on all of them, although
+// Collision is dependent on other Collision objects, so the pattern is different.
+//
+//What this does, is separate the game behavior into stages. You can be sure that if a component 
+//needs to access data from a different component type, all of those different component types are
+//synchronized to the same frame. 
 void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 {
+    //the first thing that should happen in every frame. Stores total time.
+    state.IncTotalFrameTime(frameTime);
+
+
+    
     // update movements
     for (auto& move : movements)
     {
