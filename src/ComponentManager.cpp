@@ -1,5 +1,15 @@
 #include "ComponentManager.h"
 
+ComponentManager::ComponentManager()
+{
+    //specify what you want the components to be called here.
+    components["Movement"];
+    components["Transform"];
+    components["Collision"];
+    components["Renderer"];
+    components["Collect"];
+}
+
 GameObject ComponentManager::GetGameObject(string name)
 {
     //TODO this should return a reference/copy (discuss) to a game object
@@ -14,25 +24,12 @@ GameObject ComponentManager::GetGameObject(string name)
 
 shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 {
-    //add new components here!
-    if      (compName == componentVectorNames[0]) { //movement
-        return movements[index];
+    auto it = components.find(compName);
+    if (it == components.end()) {
+        std::cerr << "GetComponent with name: " << compName << " was not found in components list." << std::endl;
+        throw std::runtime_error("Component not found");
     }
-    else if (compName == componentVectorNames[1]) { //transform
-        return transforms[index];;
-    }
-    else if (compName == componentVectorNames[2]) { //collision
-        return collisions[index];;
-    }
-    else if (compName == componentVectorNames[3]) { //render
-        return renderers[index];
-    }
-    else if (compName == componentVectorNames[4]) { //collect
-        return collects[index];
-    }
-    else {
-        throw "unexpected component name error";
-    }
+    return it->second[index];
 }
 
 void ComponentManager::Init(std::string resourceDirectory)
@@ -110,34 +107,35 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 
     
     // update movements
-    for (auto& move : movements)
+    for (auto& move : components["Movement"])
     {
         if (!move->IsActive) continue;
         move->Update(frameTime, this);
     }
     //resolve collisions.
-    for (auto& giver : collisions) {
+    for (auto& giver : components["Collision"]) {
+        
         //TODO do collisions with the player, and then the ground border here.
         if (!giver->IsActive) continue;  //don't collide with destroyed objects.
         giver->Update(frameTime, this);
-        for (auto& receiver : collisions) { //the naive n^2 approach.
+        for (auto& receiver : components["Collision"]) { //the naive n^2 approach.
             if (!receiver->IsActive) continue; //don't collide with destroyed objects.
             if (giver.get() == receiver.get()) continue; //don't collide with yourself, that's just ridiculous.
             //now we know that both objects are active, and could potentially collide.
             //Resolve updates gameObject information for both giver and receiver if a collision occurred.
-            giver->Resolve(receiver, frameTime);
+            static_pointer_cast<Collision>(giver)->Resolve(static_pointer_cast<Collision>(receiver), frameTime);
         }
     }
 
     // update transforms based on movements.
-    for (auto& trans : transforms)
+    for (auto& trans : components["Transform"])
     {
         if (!trans->IsActive) continue;
         trans->Update(frameTime, this);
     }
 
     // update flashing animation
-    for (auto& collect : collects)
+    for (auto& collect : components["Collect"])
     {
         if (!collect->IsActive) continue;
         collect->Update(frameTime, this);
@@ -148,7 +146,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     camera.Update(frameTime, this);
     //finally update renderers/draw.
 
-    for (auto& rend : renderers)
+    for (auto& rend : components["Renderer"])
     {
         if (!rend->IsActive) continue;
         rend->Update(frameTime, this);
@@ -168,27 +166,12 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
         objComps.insert(p);
     }
     objects[name] = GameObject(name, objComps);
-    //add new components here!
+    //call Init on all of a GameObject's components, now that they are initialized.
     for (auto& comp : objects[name].GetComponentLocations()) {
         string name = comp.first;
         size_t index = comp.second;
 
-        if (name == componentVectorNames[0]) { //movement
-            movements[index]->Init(this);
-        }
-        else if (name == componentVectorNames[1]) { //transform
-            transforms[index]->Init(this);
-        } 
-        else if (name == componentVectorNames[2]) { //collision
-            collisions[index]->Init(this);
-        }
-        else if (name == componentVectorNames[3]) { //render
-            renderers[index]->Init(this);
-        }
-        else if (name == componentVectorNames[4]) { //collect
-            collects[index]->Init(this);
-        }
-        //TODO add additional potential components.
+        GetComponent(name, index)->Init(this);
     }//end processing component vector freeing
 }
 
@@ -196,46 +179,44 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
 pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Component>& comp) {
     //these series of checks check whether an attempted cast returns a nullptr, indicating that
     //a cast could/couldn't take place, effectively type-checking the object.
-    int index = -1; //if this remains at -1 there wasn't a successful cast.
+    int index = -1;
     string compType = "undefinedComponentType"; //make it really obvious if not detected.
-    if (auto ptr = dynamic_pointer_cast<Movement>(comp)) {
-        index = getNextOpenSlot(movementSlots);
-        compType = componentVectorNames[0];
-        addHelper(ptr, movements, index);
+    shared_ptr<Component> ptr;
+    if (ptr = dynamic_pointer_cast<Movement>(comp)) {
+        //type name here, same as in constructor.
+        compType = "Movement";
     }
-    else if (auto ptr = dynamic_pointer_cast<Transform>(comp)) {
-        index = getNextOpenSlot(transformSlots);
-        compType = componentVectorNames[1];
-        addHelper(ptr, transforms, index);
+    else if (ptr = dynamic_pointer_cast<Transform>(comp)) {
+        compType = "Transform";
     }
-    else if (auto ptr = dynamic_pointer_cast<Collision>(comp)) {
-        index = getNextOpenSlot(collisionSlots);
-        compType = componentVectorNames[2];
-        addHelper(ptr, collisions, index);
+    else if (ptr = dynamic_pointer_cast<Collision>(comp)) {
+        compType = "Collision";
     }
-    else if (auto ptr = dynamic_pointer_cast<Renderer>(comp)) {
-        index = getNextOpenSlot(rendererSlots);
-        compType = componentVectorNames[3];
-        addHelper(ptr, renderers, index);
+    else if (ptr = dynamic_pointer_cast<Renderer>(comp)) {
+        compType = "Renderer";
     }
-    else if (auto ptr = dynamic_pointer_cast<Collect>(comp)) {
-        index = getNextOpenSlot(rendererSlots);
-        compType = componentVectorNames[4];
-        addHelper(ptr, collects, index);
+    else if (ptr = dynamic_pointer_cast<Collect>(comp)) {
+        compType = "Collect";
     }
     //TODO the other concrete types. Format should be pretty much identical.
-    if (index == -1 || compType == "undefinedComponentType") {
+    
+    if (compType == "undefinedComponentType" || components.find(compType) == components.end()) {
         cerr << "new components should have a similar else-if block, that casts to the "
              << "concrete type before insertion into the component vector." << endl;
+        throw std::runtime_error("index returned: " + to_string(index) + ", compType returned: " + compType);
     }
+
+    index = getNextOpenSlot(componentOpenSlots[compType]);
+    addHelper(ptr, components[compType], index);
+
     // finally(this should happen at the end, unconditionally, for all component types :
     //return the index where the component resides now.
     return make_pair(compType, index); //insert this into the GameObject.
 }
 
 //This modifies compList by inserting comp.
-template<typename T>
-void ComponentManager::addHelper(shared_ptr<T> comp, vector<shared_ptr<T>>& compList, int& index) {
+template<typename CONCRETE, typename ABSTRACT>
+void ComponentManager::addHelper(shared_ptr<CONCRETE> comp, vector<shared_ptr<ABSTRACT>>& compList, int& index) {
     if (index == -1) {
         index = static_cast<int>(compList.size());
         compList.push_back(comp);
@@ -270,27 +251,8 @@ void ComponentManager::RemoveGameObject(string name)
 
         //free up for insertion. Do this by supplying the component's
         //indices for use by a new component, and marking the component as not in use.
-        if (name == componentVectorNames[0]) { //movement
-            movements[index]->IsActive = false;
-            movementSlots.push(index); 
-        }
-        else if (name == componentVectorNames[1]) { //transform
-            transforms[index]->IsActive = false;
-            transformSlots.push(index);
-        } 
-        else if (name == componentVectorNames[2]) { //collision
-            movements[index]->IsActive = false;
-            collisionSlots.push(index);
-        }
-        else if (name == componentVectorNames[3]) { //render
-            renderers[index]->IsActive = false;
-            rendererSlots.push(index);
-        }
-        else if (name == componentVectorNames[4]) { //collect
-            collects[index]->IsActive = false;
-            collectSlots.push(index);
-        }
-        //TODO add additional potential components.
+        GetComponent(name, index)->IsActive = false;
+        componentOpenSlots[name].push(index);
     }//end processing component vector freeing
 
     //no longer referenced anywhere, delete from map.
