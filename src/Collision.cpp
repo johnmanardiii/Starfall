@@ -56,7 +56,15 @@ void Collision::Update(float frameTime, ComponentManager* compMan)
 }
 
 void Collision::collideWithCamera(float frameTime, ComponentManager* compMan) {
-
+    vec3 center = transform->GetPos();
+    vec3 camCenter = compMan->GetCamera().GetPos();
+    
+    float radius = getRadius();
+    float camRadius = compMan->GetCamera().GetRadius();
+    
+    if (glm::distance(center, camCenter) <= radius + camRadius) {
+        hasBeenTouchedByCamera = true;
+    }
 }
 
 void Collision::collideWithGroundPlane(float frameTime, ComponentManager* compMan) {

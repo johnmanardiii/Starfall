@@ -12,6 +12,7 @@ public:
     int GetCount();
     void Collect() { objectsCollected++; }
     void IncTotalFrameTime(float frameTime) { cumulativeFrameTime += frameTime; }
+    float GetTotalFrameTime() const { return cumulativeFrameTime; }
 private:
     ComponentManager* compMan;
     const int INITIAL_OBJECT_COUNT;

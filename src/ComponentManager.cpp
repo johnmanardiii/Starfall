@@ -93,7 +93,6 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
             //Resolve updates gameObject information for both giver and receiver if a collision occurred.
             giver->Resolve(receiver, frameTime);
         }
-        
     }
 
     // update transforms based on movements.

@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "Collision.h"
 #include "TextureRenderer.h"
 #include <memory>
 #include <string>
@@ -16,4 +17,5 @@ private:
 	float flashAmount = 0;
 	float flashSpeed = 0;
 	shared_ptr<TextureRenderer> renderer;
+	shared_ptr<Collision> collision;
 };

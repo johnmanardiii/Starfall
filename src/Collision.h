@@ -22,11 +22,14 @@ public:
     void Resolve(shared_ptr<Collision> other, float frameTime);
     void updateBasedOnCollision(glm::vec3 collisionDirection, float frameTime);
     void Update(float frameTime, ComponentManager* compMan);
+    bool IsCollected() const { return hasBeenTouchedByCamera; }
 private:
     glm::vec3 getCenterOfBBox();
     float getRadius();
     void collideWithGroundPlane(float frameTime, ComponentManager* compMan);
     void collideWithCamera(float frameTime, ComponentManager* compMan);
+
+    bool hasBeenTouchedByCamera = false;
     Shape shape;
     shared_ptr<Movement> movement;
     shared_ptr<Transform> transform;

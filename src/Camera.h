@@ -45,7 +45,8 @@ public:
         return instance;
     }
     mat4 GetView() { return view; }
-
+    const vec3 GetPos() const { return pos; }
+    const float GetRadius() const { return 1.0f; }
     // must call CalcPerspective before using GetPerspective
     const mat4 GetPerspective() const { return perspective; }
     void CalcPerspective(int width, int height);
