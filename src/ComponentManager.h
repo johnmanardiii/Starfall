@@ -14,7 +14,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include <string>
 #include <memory>
-#include <map>
+#include <map> // uses red-black tree, guarantees ordering of keys
+#include <unordered_map> //uses hashtable
 #include <vector>
 #include <queue>
 #include <iostream>
@@ -27,6 +28,7 @@ class ComponentManager
     //a queue that is automatically sorted, with smaller elements at the top.
     //using typedef to localize this long definition.
     typedef priority_queue<size_t, vector<size_t>, std::greater<size_t>> OpenSlots;
+    
 public:
     
     //from the name, gets a way to access all the object's data members.
@@ -55,7 +57,7 @@ private:
     void addHelper(shared_ptr<T> comp, vector<shared_ptr<T>>& compList, int& index);
 
     //the objects
-    map<string, GameObject> objects;
+    unordered_map<string, GameObject> objects;
     
     //something to hold game state information.
     GameState state = GameState(100, this);

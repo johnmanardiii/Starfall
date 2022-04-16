@@ -157,10 +157,10 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 
 void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)
 {
-    map<type_info*, size_t> componentList;
+    unordered_map<type_info*, size_t> componentList;
     //don't care what container is used to pass in components,
     //Pad unused components with null.
-    map<string, size_t> objComps;
+    unordered_map<string, size_t> objComps;
     for (const auto& comp : comps) {
         if (!comp) continue; //null check
         //if not null
@@ -263,7 +263,7 @@ void ComponentManager::RemoveGameObject(string name)
     //make a copy, don't actually remove from map until its components are all gone
     GameObject obj = GetGameObject(name);
     assert(name == obj.Name); //DEBUG quick sanity check
-    map<string, size_t> comps = obj.GetComponentLocations();
+    unordered_map<string, size_t> comps = obj.GetComponentLocations();
     for (auto& comp : comps) {
         string name = comp.first;
         size_t index = comp.second;

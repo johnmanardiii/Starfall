@@ -1,9 +1,9 @@
 #pragma once
-#include <map>
+#include <unordered_map>
 #include <typeinfo>
 #include <string>
 
-using std::map;
+using std::unordered_map;
 using std::string;
 
 class GameObject
@@ -13,15 +13,15 @@ public:
         Name("test"),
         IsActive(true),
         components() {};
-    GameObject(string name, map<string, size_t> comps) : 
+    GameObject(string name, unordered_map<string, size_t> comps) : 
         Name(name),  
         IsActive(true),
         components(comps){};
     bool IsActive; //whether the component is active. might remove.
     string Name; //the name of the object.
-    const map<string, size_t>& GetComponentLocations() { return components; }
+    const unordered_map<string, size_t>& GetComponentLocations() { return components; }
     size_t GetComponentLocation(string comp) {return components[comp];}
 private:
-    map<string, size_t> components; //component or int to point to component
+    unordered_map<string, size_t> components; //component or int to point to component
 };
 
