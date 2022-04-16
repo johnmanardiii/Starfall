@@ -8,12 +8,12 @@ public:
     GameState(const int init, ComponentManager* man) :
         compMan(man),
         INITIAL_OBJECT_COUNT(init),
-        currentObjectCount(INITIAL_OBJECT_COUNT),
+        currentObjectCount(init),
         objectsCollected(0),
         SECONDS_BETWEEN_NEW_GAME_OBJ(5),
         spawnFrames(0),
         cumulativeFrameTime(0),
-        TotalObjectsEverMade(INITIAL_OBJECT_COUNT)
+        TotalObjectsEverMade(init)
     {}
     const int GetInitialCount() const { return INITIAL_OBJECT_COUNT; }
     int GetCount() { return
@@ -39,7 +39,6 @@ public:
         if (spawnFrames >= SECONDS_BETWEEN_NEW_GAME_OBJ) {
             spawnFrames = 0;
             currentObjectCount++;
-            TotalObjectsEverMade++;
             return true;
         }
         return false;

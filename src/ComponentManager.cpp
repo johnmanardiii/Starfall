@@ -1,6 +1,6 @@
 #include "ComponentManager.h"
 
-GameObject ComponentManager::GetObject(string name)
+GameObject ComponentManager::GetGameObject(string name)
 {
     //TODO this should return a reference/copy (discuss) to a game object
     //based on the key in a map.
@@ -103,7 +103,8 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 
         vector<shared_ptr<Component>> sphereComps = { renderer, movement, transform, collision, collect };
         AddGameObject(sphereName, sphereComps);
-        cout << "Added one more monkey!\n";
+        state.TotalObjectsEverMade++;
+        cout << "\nAdded one more monkey!\n";
     }
 
     
@@ -259,7 +260,7 @@ int ComponentManager::getNextOpenSlot(OpenSlots& slots) {
 void ComponentManager::RemoveGameObject(string name)
 {
     //make a copy, don't actually remove from map until its components are all gone
-    GameObject obj = GetObject(name);
+    GameObject obj = GetGameObject(name);
     assert(name == obj.Name); //DEBUG quick sanity check
     map<string, size_t> comps = obj.GetComponentLocations();
     for (auto& comp : comps) {

@@ -33,7 +33,7 @@ public:
     size_t CurrentObjectCount() const { return objects.size(); }
 
     //from the name, gets a way to access all the object's data members.
-    GameObject GetObject(string name);
+    GameObject GetGameObject(string name);
     //anything the component manager needs to do BEFORE frame-by-frame operations
     void Init(std::string resourceDirectory);
     

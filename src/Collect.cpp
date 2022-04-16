@@ -31,7 +31,7 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 
 void Collect::Init(ComponentManager* compMan)
 {
-	GameObject obj = compMan->GetObject(Name);
+	GameObject obj = compMan->GetGameObject(Name);
 	int index = obj.GetComponentLocation("Renderer");
 	renderer = static_pointer_cast<TextureRenderer>(compMan->GetComponent("Renderer", index));
 

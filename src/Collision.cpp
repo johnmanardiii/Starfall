@@ -107,7 +107,7 @@ void Collision::collideWithGroundPlane(float frameTime, ComponentManager* compMa
 }
 
 void Collision::Init(ComponentManager* compMan) {
-    GameObject obj = compMan->GetObject(Name);
+    GameObject obj = compMan->GetGameObject(Name);
     size_t transformIndex = obj.GetComponentLocation("Transform");
     size_t movementIndex = obj.GetComponentLocation("Movement");
 
