@@ -14,6 +14,7 @@ GameObject ComponentManager::GetGameObject(string name)
 
 shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 {
+    //add new components here!
     if      (compName == componentVectorNames[0]) { //movement
         return movements[index];
     }
@@ -167,7 +168,7 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
         objComps.insert(p);
     }
     objects[name] = GameObject(name, objComps);
-    
+    //add new components here!
     for (auto& comp : objects[name].GetComponentLocations()) {
         string name = comp.first;
         size_t index = comp.second;

@@ -2,6 +2,7 @@
 
 //forward declare
 class ComponentManager;
+class Collision;
 class Movement;
 class Transform;
 class Collect;
