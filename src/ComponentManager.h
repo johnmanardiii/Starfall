@@ -60,7 +60,7 @@ private:
     unordered_map<string, GameObject> objects;
     
     //something to hold game state information.
-    GameState state = GameState(100, this);
+    GameState state = GameState(30, this);
 
     //the various components
     unordered_map <string, vector<shared_ptr<Component>>> components;

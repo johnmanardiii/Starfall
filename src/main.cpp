@@ -154,7 +154,7 @@ public:
 		int width, height, channels;
 		char filepath[1000];
 
-		// load saturn texture
+		// load cat texture
 		string str = resourceDirectory + "/cat.jpg";
 		strcpy(filepath, str.c_str());
 		unsigned char *data = stbi_load(filepath, &width, &height, &channels, 4);
@@ -169,6 +169,22 @@ public:
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		shaderManager.SetTexture("Cat", tex);
+
+		// load saturn texture
+		str = resourceDirectory + "/grass.jpg";
+		strcpy(filepath, str.c_str());
+		data = stbi_load(filepath, &width, &height, &channels, 4);
+		glGenTextures(1, &tex);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		shaderManager.SetTexture("Grass", tex);
 
 		auto prog = make_shared<Program>();
 		prog->setVerbose(true);
@@ -257,6 +273,11 @@ public:
 		glEnableVertexAttribArray(2);
 		glBindBuffer(GL_ARRAY_BUFFER, ground.texBuffObj);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+		glUniform1f(curS->getUniform("flashAmt"), 0.0f);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, shaderManager.GetTexture("Grass"));
 
 		// draw!
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ground.indexBuffObj);
@@ -368,7 +389,8 @@ public:
 		
 		// Draw mesh using GLSL.
 
-		drawGround(prog, width, height);
+		//drawGround(prog, width, height);
+		drawGround(shaderManager.GetShader("Texture"), width, height);
 	}
 };
 
@@ -388,7 +410,7 @@ int main(int argc, char *argv[])
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
-	windowManager->Init(640, 480);
+	windowManager->Init(1280, 720);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
 

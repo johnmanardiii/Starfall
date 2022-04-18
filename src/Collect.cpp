@@ -17,7 +17,7 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 	
 	//delete after 6s
 	if (flashAmount > 6 * flashSpeed) {
-		cout << "Deleting self" << endl; 
+		cout << endl << "Deleting self" << endl; 
 		compMan->RemoveGameObject(Name);
 	}
 	//shoot off into the sky after 3s
