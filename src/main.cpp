@@ -381,10 +381,6 @@ public:
 		// Clear framebuffer.
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Use the local matrices for lab 4
-		float aspect = width / (float)height;
-		// createPerspectiveMat(P, 70.0f, aspect, 0.1, 100.0f);
-
 		componentManager.UpdateComponents(frameTime, width, height);
 		
 		// Draw mesh using GLSL.
