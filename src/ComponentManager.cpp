@@ -182,20 +182,20 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
     int index = -1;
     string compType = "undefinedComponentType"; //make it really obvious if not detected.
     shared_ptr<Component> ptr;
-    if (ptr = dynamic_pointer_cast<Movement>(comp)) {
+    if (nullptr != (ptr = dynamic_pointer_cast<Movement>(comp))) {
         //type name here, same as in constructor.
         compType = "Movement";
     }
-    else if (ptr = dynamic_pointer_cast<Transform>(comp)) {
+    else if (nullptr != (ptr = dynamic_pointer_cast<Transform>(comp))) {
         compType = "Transform";
     }
-    else if (ptr = dynamic_pointer_cast<Collision>(comp)) {
+    else if (nullptr != (ptr = dynamic_pointer_cast<Collision>(comp))) {
         compType = "Collision";
     }
-    else if (ptr = dynamic_pointer_cast<Renderer>(comp)) {
+    else if (nullptr != (ptr = dynamic_pointer_cast<Renderer>(comp))) {
         compType = "Renderer";
     }
-    else if (ptr = dynamic_pointer_cast<Collect>(comp)) {
+    else if (nullptr != (ptr = dynamic_pointer_cast<Collect>(comp))) {
         compType = "Collect";
     }
     //TODO the other concrete types. Format should be pretty much identical.
