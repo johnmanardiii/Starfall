@@ -14,6 +14,14 @@ using glm::mat4;
 using glm::normalize;
 
 
+// TODO: Figure out how to make this framerate independent.
+/*template<typename T>
+T exponential_growth(T actual, T goal, float factor, float frametime)
+{
+    return actual + (goal - actual) * factor * frametime;
+}*/
+
+
 class Camera : public Component
 {
 private:
@@ -24,6 +32,12 @@ private:
     vec3 w = vec3(0), u = vec3(0); //the camera basis vectors TODO move into move component
     mat4 view = mat4(1.0f);
     mat4 perspective = mat4(1.0f);
+    const float lowFov = 70.0f;
+    const float highFov = 100.0f;
+    const float currentFov = 70.0f;
+    const float camDistLateral = 12.0f;
+    const float camDistHeight = 4.0f;
+    vec3 get_wanted_pos(ComponentManager* compMan);
     
     float movementSensitivity = 0.05f;
     bool firstMouseMovement = true; //used to avoid the sudden camera movement the first time the application receives mouse movement.

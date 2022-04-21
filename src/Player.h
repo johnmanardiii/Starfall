@@ -21,14 +21,19 @@ class Player
 private:
 	Player(vec3 pos);
 	vec3 pos = vec3(0);
-	float movementSensitivity = 0.05f;
+	float speed = 9.0f;	// speed in units/second
+	float playerYOffset = 2.2f;
+	float rotationSpeed = 90.0f;	// degrees per second
 	shared_ptr<Transform> trans = NULL;
+	void SetPosToGround();
 public:
 	const std::string pName = "player";
 	void Update(float frameTime, ComponentManager* compMan);
-	bool IsWASDPressed[4] = { false, false, false, false };
+	bool inputBuffer[4] = { false, false, false, false };
 	void ProcessWASDInput();
+	vec3 GetForward();
 	void Init(ComponentManager* compMan);
+	const vec3 GetPosition() { return pos; }
 	static Player& GetInstance(vec3 pos) {
 		static Player instance(pos);
 		return instance;

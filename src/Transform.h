@@ -30,6 +30,8 @@ public:
 	void Init(ComponentManager* manager);
 
 	void CalcModelMat();
+	vec3 GetForward();
+	vec3 GetRight();
 private:
 	vec3 position = vec3(0.0f, 0.0f, 0.0f);
 	quat rotation = quat(0, 0, 0, 1);

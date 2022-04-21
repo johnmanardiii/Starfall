@@ -91,37 +91,37 @@ public:
 		}
         //camera movement
         if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-                componentManager.GetPlayer().IsWASDPressed[0] = true;
+                componentManager.GetPlayer().inputBuffer[0] = true;
                 //eyePos -= movementSensitivity * w;
             }
             
         if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-            componentManager.GetPlayer().IsWASDPressed[1] = true;
+            componentManager.GetPlayer().inputBuffer[1] = true;
             //eyePos += movementSensitivity * u;
         }
         if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-            componentManager.GetPlayer().IsWASDPressed[2] = true;
+            componentManager.GetPlayer().inputBuffer[2] = true;
             //eyePos += movementSensitivity * w;
         }
 
         if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-            componentManager.GetPlayer().IsWASDPressed[3] = true;
+            componentManager.GetPlayer().inputBuffer[3] = true;
             //eyePos -= movementSensitivity * u;
         }
 
         if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
-            componentManager.GetPlayer().IsWASDPressed[0] = false;
+            componentManager.GetPlayer().inputBuffer[0] = false;
         }
 
         if (key == GLFW_KEY_A && action == GLFW_RELEASE) {
-            componentManager.GetPlayer().IsWASDPressed[1] = false;
+            componentManager.GetPlayer().inputBuffer[1] = false;
         }
         if (key == GLFW_KEY_S && action == GLFW_RELEASE) {
-            componentManager.GetPlayer().IsWASDPressed[2] = false;
+            componentManager.GetPlayer().inputBuffer[2] = false;
         }
 
         if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
-            componentManager.GetPlayer().IsWASDPressed[3] = false;
+            componentManager.GetPlayer().inputBuffer[3] = false;
         }
 	}
 
@@ -319,7 +319,7 @@ public:
 		
 		//the obj files you want to load. Add more to read them all.
 		vector<string> filenames = { "sphere", "suzanne", "LUNA/luna_arm", 
-			"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head" };
+			"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head", "test_plane"};
 		//where the data is held
 		vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
 		vector<tinyobj::material_t> objMaterials; //not using for now.

@@ -37,10 +37,9 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 
 void ComponentManager::Init(std::string resourceDirectory)
 {
-    camera = Camera::GetInstance(vec3(0,1,0));
-
     // initialize the player
     shared_ptr<Transform> transform = make_shared<Transform>(player.pName);
+    //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
     shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
     std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer };
     transform->SetPos(vec3(0, 1, 2));
@@ -82,8 +81,8 @@ void ComponentManager::Init(std::string resourceDirectory)
     }
 
     string floorName = "Floor";
-    shared_ptr<Renderer> renderer = make_shared<TerrainRenderer>("Cat", "Cat", floorName);
-    shared_ptr<Transform> transform = make_shared<Transform>(floorName);
+    renderer = make_shared<TerrainRenderer>("Cat", "Cat", floorName);
+    transform = make_shared<Transform>(floorName);
     transform->SetPos(vec3(50, 1, -50));
     vector<shared_ptr<Component>> floorComps = { renderer, transform };
     AddGameObject(floorName, floorComps);
@@ -165,6 +164,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     //update camera position.
     camera.CalcPerspective(width, height);
     camera.Update(frameTime, this);
+
     //finally update renderers/draw.
 
     for (auto& rend : components["Renderer"])
