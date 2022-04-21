@@ -186,6 +186,23 @@ public:
 
 		shaderManager.SetTexture("Grass", tex);
 
+		// load alpha particle texture
+		str = resourceDirectory + "/alpha.bmp";
+		strcpy(filepath, str.c_str());
+		data = stbi_load(filepath, &width, &height, &channels, 4);
+		glGenTextures(1, &tex);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		shaderManager.SetTexture("Alpha", tex);
+
+
 		auto prog = make_shared<Program>();
 		prog->setVerbose(true);
 		prog->setShaderNames(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag.glsl");
@@ -205,10 +222,29 @@ public:
 
 		shaderManager.SetShader("Texture", prog);
 
-		
-		
-		
-		
+		auto partProg = make_shared<Program>();
+		partProg->setVerbose(true);
+		partProg->setShaderNames(
+			resourceDirectory + "/particle_vert.glsl",
+			resourceDirectory + "/particle_frag.glsl");
+		partProg->Init();
+		partProg->addUniform("P");
+		partProg->addUniform("M");
+		partProg->addUniform("V");
+		partProg->addUniform("alphaTexture");
+		partProg->addAttribute("vertPos");
+		partProg->addAttribute("pColor");
+		if (!partProg->Init())
+		{
+			std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+			exit(1);
+		}
+		GLuint PartLocation = glGetUniformLocation(partProg->pid, "particle");
+		//glUseProgram(partProg->pid);
+		//glUniform1i(PartLocation, 0);
+
+		shaderManager.SetShader("particle", partProg);
+
 		//the obj files you want to load. Add more to read them all.
 		vector<string> filenames = { "sphere", "suzanne" };
 		//where the data is held
@@ -243,7 +279,7 @@ public:
 		glClearColor(.12f, .34f, .56f, 1.0f);
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
-
+		glPointSize(14.0f);
 		InitShaderManager(resourceDirectory);
 		// do ComponentManager's init here
 		componentManager.Init(resourceDirectory);
