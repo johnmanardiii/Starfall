@@ -44,7 +44,27 @@ void ComponentManager::Init(std::string resourceDirectory)
     std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer };
     transform->SetPos(vec3(0, 1, 2));
     AddGameObject(player.pName, playerComps);
-    player.Init(this);
+
+    // initialize body parts as separate objects
+    shared_ptr<Transform> headTrans = make_shared<Transform>(player.pHeadName);
+    //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    renderer = make_shared<TextureRenderer>("LUNA/luna_head", "Luna", player.pHeadName);
+    std::vector<std::shared_ptr<Component>> headComps = { headTrans, renderer };
+    AddGameObject(player.pHeadName, headComps);
+
+    shared_ptr<Transform> arm1Trans = make_shared<Transform>(player.pArm1Name);
+    //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    renderer = make_shared<TextureRenderer>("LUNA/luna_arm", "Luna", player.pArm1Name);
+    std::vector<std::shared_ptr<Component>> arm1Comps = { arm1Trans, renderer };
+    AddGameObject(player.pArm1Name, arm1Comps);
+
+    shared_ptr<Transform> arm2Trans = make_shared<Transform>(player.pArm2Name);
+    //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    renderer = make_shared<TextureRenderer>("LUNA/luna_arm2", "Luna", player.pArm2Name);
+    std::vector<std::shared_ptr<Component>> arm2Comps = { arm2Trans, renderer };
+    AddGameObject(player.pArm2Name, arm2Comps);
+
+    player.Init(this, headTrans, arm1Trans, arm2Trans);
 
     // Initialize the GLSL program, just for the ground plane.
     auto prog = make_shared<Program>();

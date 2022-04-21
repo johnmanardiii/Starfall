@@ -57,7 +57,6 @@ void Camera::Update(double posX, double posY)
         sin(yRot),
         sin(xRot) * cos(yRot)));
     u = cross(w, vec3(0, 1, 0)); //right is forward cross up.
-
 }
 
 void Camera::CalcPerspective(int width, int height)

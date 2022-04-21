@@ -39,9 +39,15 @@ Player::Player(vec3 pos) : pos (pos)
 
 }
 
-void Player::Init(ComponentManager* compMan)
+void Player::Init(ComponentManager* compMan, shared_ptr<Transform> head,
+    shared_ptr<Transform> arm1, shared_ptr<Transform> arm2)
 {
     GameObject obj = compMan->GetGameObject(pName);
     size_t index = obj.GetComponentLocation("Transform");
     trans = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
+
+    // set child transforms
+    headTrans = head;
+    arm1Trans = arm1;
+    arm2Trans = arm2;
 }
