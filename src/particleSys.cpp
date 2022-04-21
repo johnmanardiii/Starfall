@@ -97,12 +97,12 @@ void particleSys::update(float frameTime, shared_ptr<Transform> trans) {
 	vec4 perspect;
 	quat rot;
 	glm::decompose(trans->GetModelMat(), scale, rot, translate, skew, perspect);
-	start = trans->GetPos();
+	//start = trans->GetPos();
     //update the particles
 	for (int i = 0; i < particles.size(); i++) {
 		if (i == 0) {
 			vec3 p = particles[i]->getPosition();
-			cout << "point1: " << p.x << " " << p.y << " " << p.z << endl;
+			cout << "point1 for: " << trans->Name << " " << p.x << " " << p.y << " " << p.z << endl;
 		}
         particles[i]->update(totalTime, frameTime, vec3(0.0f), trans->GetPos());
 		points[i * 3 + 0] = particles[i]->getPosition().x;

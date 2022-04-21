@@ -20,8 +20,8 @@ float randFloat(float l, float h)
 Particle::Particle(vec3 start, vec4 color) :
 	position(start),
 	velocity(0.0f),
-	lifespan(2.0f),
-	tEnd(1.0f),
+	lifespan(0.0f),
+	tEnd(0.0f),
 	scale(10.0f),
 	color(color)
 {
