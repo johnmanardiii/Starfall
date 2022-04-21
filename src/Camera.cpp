@@ -7,6 +7,7 @@ void Camera::Update(float frameTime, ComponentManager* compMan)
         cos(xRot) * cos(yRot),
         sin(yRot),
         sin(xRot) * cos(yRot)));
+    pos.y = sin(pos.x / 10.0f) * sin(pos.z / 10.0f) * 5+ 1;
     vec3 up = vec3(0, 1, 0);
     mat4 lookAt = glm::lookAt(pos, pos + target, up); //first person camera. "looks at" the direction of target from the starting point of pos.
     view = lookAt; //something can watch view and do something based on that value.
@@ -37,6 +38,7 @@ void Camera::Update(double posX, double posY)
         sin(yRot),
         sin(xRot) * cos(yRot)));
     u = cross(w, vec3(0, 1, 0)); //right is forward cross up.
+
 }
 
 void Camera::CalcPerspective(int width, int height)

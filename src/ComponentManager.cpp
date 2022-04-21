@@ -1,4 +1,5 @@
 #include "ComponentManager.h"
+#include "TerrainRenderer.h"
 
 ComponentManager::ComponentManager()
 {
@@ -79,6 +80,13 @@ void ComponentManager::Init(std::string resourceDirectory)
         vector<shared_ptr<Component>> sphereComps = { renderer, movement, transform, collision, collect };
         AddGameObject(sphereName, sphereComps);
     }
+
+    string floorName = "Floor";
+    shared_ptr<Renderer> renderer = make_shared<TerrainRenderer>("Cat", "Cat", floorName);
+    shared_ptr<Transform> transform = make_shared<Transform>(floorName);
+    transform->SetPos(vec3(50, 1, -50));
+    vector<shared_ptr<Component>> floorComps = { renderer, transform };
+    AddGameObject(floorName, floorComps);
 }
 
 // Iterate through all of the component vectors. Usually call Update on all of them, although
