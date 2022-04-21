@@ -58,7 +58,7 @@ void Collision::Update(float frameTime, ComponentManager* compMan)
 void Collision::collideWithPlayer(float frameTime, ComponentManager* compMan) {
     vec3 center = transform->GetPos();
     vec3 playerPos = compMan->GetPlayer().GetPosition();
-    cout << "Luna current position: " << glm::to_string(playerPos) << endl;
+    
     float radius = getRadius();
     float camRadius = compMan->GetCamera().GetRadius();
     

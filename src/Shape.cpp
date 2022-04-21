@@ -95,8 +95,8 @@ void Shape::Init()
 	// Unbind the arrays
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	auto error = glGetError();
-	assert(error == GL_NO_ERROR);
+	
+	assert(glGetError() == GL_NO_ERROR);
 }
 
 void Shape::draw(const shared_ptr<Program> prog) const
