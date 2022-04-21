@@ -16,7 +16,7 @@ public:
 	vec3 GetPos();
 	quat GetRot();
 	vec3 GetScale();
-	const mat4 GetModelMat() const { return M; };
+	virtual const mat4 GetModelMat() const { return M; };
 
 	void SetPos(vec3);
 	void SetRot(quat);
@@ -26,11 +26,14 @@ public:
 	void ApplyRotation(float, vec3);
 	void ApplyScale(vec3);
 
-	void Update(float frameTime, ComponentManager* compMan);
+	virtual void Update(float frameTime, ComponentManager* compMan);
 	void Init(ComponentManager* manager);
 
-	void CalcModelMat();
-private:
+	virtual void CalcModelMat();
+	vec3 GetForward();
+	vec3 GetRight();
+	mat4 GetM() { return M; }
+protected:
 	vec3 position = vec3(0.0f, 0.0f, 0.0f);
 	quat rotation = quat(0, 0, 0, 1);
 	vec3 scale = vec3(1.0f, 1.0f, 1.0f);

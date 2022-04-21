@@ -91,37 +91,37 @@ public:
 		}
         //camera movement
         if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-                componentManager.GetCamera().IsWASDPressed[0] = true;
+                componentManager.GetPlayer().inputBuffer[0] = true;
                 //eyePos -= movementSensitivity * w;
             }
             
         if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-            componentManager.GetCamera().IsWASDPressed[1] = true;
+            componentManager.GetPlayer().inputBuffer[1] = true;
             //eyePos += movementSensitivity * u;
         }
         if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-            componentManager.GetCamera().IsWASDPressed[2] = true;
+            componentManager.GetPlayer().inputBuffer[2] = true;
             //eyePos += movementSensitivity * w;
         }
 
         if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-            componentManager.GetCamera().IsWASDPressed[3] = true;
+            componentManager.GetPlayer().inputBuffer[3] = true;
             //eyePos -= movementSensitivity * u;
         }
 
         if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
-            componentManager.GetCamera().IsWASDPressed[0] = false;
+            componentManager.GetPlayer().inputBuffer[0] = false;
         }
 
         if (key == GLFW_KEY_A && action == GLFW_RELEASE) {
-            componentManager.GetCamera().IsWASDPressed[1] = false;
+            componentManager.GetPlayer().inputBuffer[1] = false;
         }
         if (key == GLFW_KEY_S && action == GLFW_RELEASE) {
-            componentManager.GetCamera().IsWASDPressed[2] = false;
+            componentManager.GetPlayer().inputBuffer[2] = false;
         }
 
         if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
-            componentManager.GetCamera().IsWASDPressed[3] = false;
+            componentManager.GetPlayer().inputBuffer[3] = false;
         }
 	}
 
@@ -147,6 +147,73 @@ public:
 		glViewport(0, 0, width, height);
 	}
 
+#define MESHSIZE 100
+	void InitTerrain() {
+		TerrainS terrain;
+		terrain.numVerts = MESHSIZE * MESHSIZE * 6;
+		//generate the VAO
+		glGenVertexArrays(1, &terrain.VAOId);
+		glBindVertexArray(terrain.VAOId);
+
+		//generate vertex buffer to hand off to OGL
+		GLuint terrainPosBuf;
+		glGenBuffers(1, &terrainPosBuf);
+		glBindBuffer(GL_ARRAY_BUFFER, terrainPosBuf);
+		vec3 *vertices = (vec3*) malloc(MESHSIZE * MESHSIZE * 4 * sizeof(vec3));
+		for (int x = 0; x < MESHSIZE; x++)
+			for (int z = 0; z < MESHSIZE; z++)
+			{
+				vertices[x * 4 + z * MESHSIZE * 4 + 0] = vec3(0.0, 0.0, 0.0) + vec3(x, 0, z);
+				vertices[x * 4 + z * MESHSIZE * 4 + 1] = vec3(1.0, 0.0, 0.0) + vec3(x, 0, z);
+				vertices[x * 4 + z * MESHSIZE * 4 + 2] = vec3(1.0, 0.0, 1.0) + vec3(x, 0, z);
+				vertices[x * 4 + z * MESHSIZE * 4 + 3] = vec3(0.0, 0.0, 1.0) + vec3(x, 0, z);
+			}
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * MESHSIZE * MESHSIZE * 4, vertices, GL_DYNAMIC_DRAW);
+		glEnableVertexAttribArray(0);
+		free(vertices);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		//tex coords
+		float t = 1. / 100;
+		vec2 *tex = (vec2*) malloc(MESHSIZE * MESHSIZE * 4 * sizeof(vec2));
+		for (int x = 0; x < MESHSIZE; x++)
+			for (int y = 0; y < MESHSIZE; y++)
+			{
+				tex[x * 4 + y * MESHSIZE * 4 + 0] = vec2(0.0, 0.0) + vec2(x, y) * t;
+				tex[x * 4 + y * MESHSIZE * 4 + 1] = vec2(t, 0.0) + vec2(x, y) * t;
+				tex[x * 4 + y * MESHSIZE * 4 + 2] = vec2(t, t) + vec2(x, y) * t;
+				tex[x * 4 + y * MESHSIZE * 4 + 3] = vec2(0.0, t) + vec2(x, y) * t;
+			}
+
+		GLuint terrainTexBuf;
+		glGenBuffers(1, &terrainTexBuf);
+		//set the current state to focus on our vertex buffer
+		glBindBuffer(GL_ARRAY_BUFFER, terrainTexBuf);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * MESHSIZE * MESHSIZE * 4, tex, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		free(tex);
+
+		glGenBuffers(1, &terrain.IndexBuff);
+		//set the current state to focus on our vertex buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain.IndexBuff);
+		GLushort *elements = (GLushort*) malloc(MESHSIZE * MESHSIZE * 6 * sizeof(GLushort));
+		int ind = 0;
+		for (int i = 0; i < MESHSIZE * MESHSIZE * 6; i += 6, ind += 4)
+		{
+			elements[i + 0] = ind + 0;
+			elements[i + 1] = ind + 1;
+			elements[i + 2] = ind + 2;
+			elements[i + 3] = ind + 0;
+			elements[i + 4] = ind + 2;
+			elements[i + 5] = ind + 3;
+		}
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * MESHSIZE * MESHSIZE * 6, elements, GL_STATIC_DRAW);
+		glBindVertexArray(0);
+		free(elements);
+		shaderManager.Terrain = terrain;
+	}
+
 	void InitShaderManager(const std::string &resourceDirectory)
 	{
 		shaderManager = ShaderManager::GetInstance();
@@ -170,6 +237,21 @@ public:
 
 		shaderManager.SetTexture("Cat", tex);
 
+		str = resourceDirectory + "/LUNA/LUNA_test_tex.png";
+		strcpy(filepath, str.c_str());
+		data = stbi_load(filepath, &width, &height, &channels, 4);
+		glGenTextures(1, &tex);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		shaderManager.SetTexture("Luna", tex);
+
 		// load saturn texture
 		str = resourceDirectory + "/grass.jpg";
 		strcpy(filepath, str.c_str());
@@ -185,9 +267,28 @@ public:
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		shaderManager.SetTexture("Grass", tex);
-
+    
 		// load alpha particle texture
 		str = resourceDirectory + "/alpha.bmp";
+    
+    strcpy(filepath, str.c_str());
+		data = stbi_load(filepath, &width, &height, &channels, 4);
+		glGenTextures(1, &tex);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+    
+    shaderManager.SetTexture("Alpha", tex);
+    
+    
+		// load noise texture
+		str = resourceDirectory + "/noiseTex.png";
+
 		strcpy(filepath, str.c_str());
 		data = stbi_load(filepath, &width, &height, &channels, 4);
 		glGenTextures(1, &tex);
@@ -200,7 +301,7 @@ public:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		shaderManager.SetTexture("Alpha", tex);
+		shaderManager.SetTexture("noiseTex", tex);
 
 
 		auto prog = make_shared<Program>();
@@ -234,19 +335,49 @@ public:
 		partProg->addUniform("alphaTexture");
 		partProg->addAttribute("vertPos");
 		partProg->addAttribute("pColor");
-		if (!partProg->Init())
-		{
-			std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
-			exit(1);
-		}
-		GLuint PartLocation = glGetUniformLocation(partProg->pid, "particle");
+    
+    GLuint PartLocation = glGetUniformLocation(partProg->pid, "particle");
 		glUseProgram(partProg->pid);
 		glUniform1i(PartLocation, 0);
 
 		shaderManager.SetShader("particle", partProg);
 
+		// Terrain Shader
+		auto heightProg = make_shared<Program>();
+		heightProg->setVerbose(true);
+		heightProg->setShaderNames(resourceDirectory + "/height_vertex.glsl", resourceDirectory + "/height_frag.glsl", resourceDirectory + "/height_geom.glsl");
+		if (!heightProg->Init())
+
+		{
+			std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+			exit(1);
+		}
+
+		heightProg->addUniform("P");
+		heightProg->addUniform("V");
+		heightProg->addUniform("M");
+		heightProg->addUniform("camoff");
+		heightProg->addUniform("campos");
+		heightProg->addUniform("lightDir");
+		heightProg->addAttribute("vertPos");
+		heightProg->addAttribute("vertTex");
+		assert(glGetError() == GL_NO_ERROR);
+
+		TexLocation = glGetUniformLocation(heightProg->pid, "tex");
+		GLuint TexLocation2 = glGetUniformLocation(heightProg->pid, "tex2");
+		GLuint TexLocation3 = glGetUniformLocation(heightProg->pid, "noiseTex");
+		glUseProgram(heightProg->pid);
+		glUniform1i(TexLocation, 0);
+		glUniform1i(TexLocation2, 1);
+		glUniform1i(TexLocation3, 2);
+
+		assert(glGetError() == GL_NO_ERROR);
+
+		shaderManager.SetShader("Height", heightProg);
+
 		//the obj files you want to load. Add more to read them all.
-		vector<string> filenames = { "sphere", "suzanne" };
+		vector<string> filenames = { "sphere", "suzanne", "LUNA/luna_arm", 
+			"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head"};
 		//where the data is held
 		vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
 		vector<tinyobj::material_t> objMaterials; //not using for now.
@@ -268,6 +399,8 @@ public:
 				shaderManager.SetModel(filenames[i], shape);
 			}
 		}
+
+		InitTerrain();
 	}
 
 	void Init(std::string resourceDirectory)
@@ -423,9 +556,7 @@ public:
 		componentManager.UpdateComponents(frameTime, width, height);
 		
 		// Draw mesh using GLSL.
-
-		//drawGround(prog, width, height);
-		drawGround(shaderManager.GetShader("Texture"), width, height);
+		//drawGround(shaderManager.GetShader("Texture"), width, height);
 	}
 };
 
@@ -446,7 +577,7 @@ int main(int argc, char *argv[])
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
-	windowManager->Init(1280, 720);
+	windowManager->Init(1920, 1200);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
 

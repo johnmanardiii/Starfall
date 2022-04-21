@@ -1,4 +1,7 @@
 #include "ComponentManager.h"
+#include "TerrainRenderer.h"
+#include "PlayerTransform.h"
+#include "EulerTransform.h"
 
 ComponentManager::ComponentManager()
 {
@@ -35,7 +38,36 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 
 void ComponentManager::Init(std::string resourceDirectory)
 {
-    camera = Camera::GetInstance(vec3(0,1,0));
+    // initialize the player
+    shared_ptr<EulerTransform> pTransform = make_shared<EulerTransform>(player.pName);
+    shared_ptr<Transform> transform = pTransform;
+    //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer };
+    transform->SetPos(vec3(0, 1, 2));
+    transform->SetScale(vec3(.5));
+    AddGameObject(player.pName, playerComps);
+
+    // initialize body parts as separate objects
+    shared_ptr<Transform> headTrans = make_shared<PlayerTransform>(player.pHeadName, transform);
+    //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    renderer = make_shared<TextureRenderer>("LUNA/luna_head", "Luna", player.pHeadName);
+    std::vector<std::shared_ptr<Component>> headComps = { headTrans, renderer };
+    AddGameObject(player.pHeadName, headComps);
+
+    shared_ptr<Transform> arm1Trans = make_shared<PlayerTransform>(player.pArm1Name, transform);
+    //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    renderer = make_shared<TextureRenderer>("LUNA/luna_arm", "Luna", player.pArm1Name);
+    std::vector<std::shared_ptr<Component>> arm1Comps = { arm1Trans, renderer };
+    AddGameObject(player.pArm1Name, arm1Comps);
+
+    shared_ptr<Transform> arm2Trans = make_shared<PlayerTransform>(player.pArm2Name, transform);
+    //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    renderer = make_shared<TextureRenderer>("LUNA/luna_arm2", "Luna", player.pArm2Name);
+    std::vector<std::shared_ptr<Component>> arm2Comps = { arm2Trans, renderer };
+    AddGameObject(player.pArm2Name, arm2Comps);
+
+    player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans);
 
     // Initialize the GLSL program, just for the ground plane.
     auto prog = make_shared<Program>();
@@ -71,6 +103,13 @@ void ComponentManager::Init(std::string resourceDirectory)
         vector<shared_ptr<Component>> sphereComps = { renderer, movement, transform, collision, collect, particles };
         AddGameObject(sphereName, sphereComps);
     }
+
+    string floorName = "Floor";
+    renderer = make_shared<TerrainRenderer>("Cat", "Cat", floorName);
+    transform = make_shared<Transform>(floorName);
+    transform->SetPos(vec3(50, 1, -50));
+    vector<shared_ptr<Component>> floorComps = { renderer, transform };
+    AddGameObject(floorName, floorComps);
 }
 
 // Iterate through all of the component vectors. Usually call Update on all of them, although
@@ -144,9 +183,13 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         collect->Update(frameTime, this);
     }
 
+    // update the player
+    player.Update(frameTime, this);
+
     //update camera position.
     camera.CalcPerspective(width, height);
     camera.Update(frameTime, this);
+
     //finally update renderers/draw.
 
 

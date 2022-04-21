@@ -5,6 +5,12 @@
 #include <string>
 #include <memory>
 
+struct TerrainS {
+	GLuint VAOId;
+	GLuint IndexBuff;
+	int numVerts;
+};
+
 using namespace std;
 class ShaderManager
 {
@@ -12,6 +18,7 @@ public:
 	shared_ptr<Program> GetShader(string);
 	GLuint GetTexture(string name) { return textures[name]; }
 	shared_ptr<Shape> GetModel(string);
+	TerrainS Terrain;
 
 	void SetShader(string, shared_ptr<Program>);
 	void SetTexture(string name, GLuint tex) { textures[name] = tex; }

@@ -41,6 +41,16 @@ void Transform::Update(float frameTime, ComponentManager* compMan) { CalcModelMa
 
 void Transform::Init(ComponentManager* compMan) {}
 
+vec3 Transform::GetForward()
+{
+	return mat3(this->rotation) * vec3(0, 0, -1);	// assumes forward of model is z = -1.
+}
+
+vec3 Transform::GetRight()
+{
+	return normalize(cross(vec3(0, 1, 0), GetForward()));
+}
+
 void Transform::CalcModelMat()
 {
 	mat4 i = mat4(1.0f);

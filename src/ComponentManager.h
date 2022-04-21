@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 #include "Camera.h"
+#include "Player.h"
 #include "Component.h"
 #include "Movement.h"
 #include "Collect.h"
@@ -48,6 +49,7 @@ public:
     //useful if components of a game object need to grab references to each other.
     shared_ptr<Component> GetComponent(string, int);
     Camera& GetCamera() { return camera; } //direct access, camera isn't componentized yet.
+    Player& GetPlayer() { return player; }
     GameState* GetGameState() { return &state; }
     
 private:
@@ -68,5 +70,6 @@ private:
     unordered_map <string, OpenSlots> componentOpenSlots;
     //one camera for now
     Camera& camera = Camera::GetInstance(vec3(0,1,0));
+    Player& player = Player::GetInstance(vec3(0, 1, 0));
 };
 

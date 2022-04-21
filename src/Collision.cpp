@@ -52,18 +52,18 @@ void Collision::updateBasedOnCollision(vec3 collisionDirection, float frameTime)
 void Collision::Update(float frameTime, ComponentManager* compMan)
 {
     collideWithGroundPlane(frameTime, compMan);
-    collideWithCamera(frameTime, compMan);
+    collideWithPlayer(frameTime, compMan);
 }
 
-void Collision::collideWithCamera(float frameTime, ComponentManager* compMan) {
+void Collision::collideWithPlayer(float frameTime, ComponentManager* compMan) {
     vec3 center = transform->GetPos();
-    vec3 camCenter = compMan->GetCamera().GetPos();
+    vec3 playerPos = compMan->GetPlayer().GetPosition();
     
     float radius = getRadius();
     float camRadius = compMan->GetCamera().GetRadius();
     
-    if (glm::distance(center, camCenter) <= radius + camRadius) {
-        hasBeenTouchedByCamera = true;
+    if (glm::distance(center, playerPos) <= radius + camRadius) {
+        hasBeenTouchedByPlayer = true;
         compMan->GetGameState()->Collect();
     }
 }
