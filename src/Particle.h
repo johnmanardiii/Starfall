@@ -27,7 +27,7 @@ class Particle
 public:
 	Particle(vec3 pos, vec4 color);
 	virtual ~Particle();
-	void load(vec3 start);
+	
 	void rebirth(float currentTotalTime, vec3 start);
 	void update(float totalTime, float frameTime, const glm::vec3 &g, const vec3 start);
 	const vec3 &getPosition() const { return position; };

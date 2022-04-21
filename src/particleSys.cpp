@@ -22,13 +22,13 @@ particleSys::particleSys(int numParticles, vec3 source) {
 	numP = numParticles;	
 	totalTime = 0.0f;
 	g = vec3(0.0f, -0.098, 0.0f);
+	
 	start = source;
+	cout << "here" << start.x << " " << start.y << " " << start.z << endl;
 	View = glm::mat4(1.0);
 }
 
 void particleSys::gpuSetup() {
-
-  cout << "start: " << start.x << " " << start.y << " " <<start.z << endl;
 	for (int i=0; i < numP; i++) {
 		points[i*3+0] = start.x;
 		points[i*3+1] = start.y;
@@ -36,7 +36,7 @@ void particleSys::gpuSetup() {
 		vec4 color = (vec4(randFloat(0, 0.4), randFloat(0, 0.4), randFloat(0, 0.4), 0.0) + vec4(0.4, 0.2, 0.2, 1.0));
 		auto particle = make_shared<Particle>(start, color);
 		particles.push_back(particle);
-		particle->load(start + vec3(randFloat(-1,1), randFloat(-1, 1),randFloat(-1, 1)));
+		particle->rebirth(totalTime, start);
 
 		//To do - how can you integrate unique colors per particle?
 		pointColors[i * 3 + 0] = particles.at(i)->getColor().r;
@@ -62,84 +62,59 @@ void particleSys::gpuSetup() {
    assert(glGetError() == GL_NO_ERROR);
 }
 
-void particleSys::reSet() {
-	for (int i=0; i < numP; i++) {
-		particles[i]->load(start);
-	}
-}
 
 void particleSys::drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> trans) {
 	prog->bind();
 	glBindVertexArray(vertArrObj);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, ShaderManager::GetInstance().GetTexture("Alpha"));
-	
+	cout << start.x << " " << start.y << " " << start.z << endl;
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(Projection));
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(View));
-	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(trans->GetModelMat()));
+	mat4 Model = glm::translate(mat4(1.0f),trans->GetPos());
+	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(Model));
 
 	int v_pos = prog->getAttribute("vertPos");
 	GLSL::enableVertexAttribArray(v_pos);
 	glBindBuffer(GL_ARRAY_BUFFER, vertBuffObj);
 	glVertexAttribPointer(v_pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glBufferData(GL_ARRAY_BUFFER, points.size(), reinterpret_cast<GLfloat*>(points.data()), GL_STREAM_DRAW);
-	//glBufferSubData(GL_ARRAY_BUFFER, 0, points.size(), reinterpret_cast<GLfloat*>(points.data()));
 	glVertexAttribDivisor(v_pos, 1);
 
 	int c_pos = prog->getAttribute("pColor");
 	GLSL::enableVertexAttribArray(c_pos);
 	glBindBuffer(GL_ARRAY_BUFFER, colBuffObj);
 	glVertexAttribPointer(c_pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	//glBufferData(GL_ARRAY_BUFFER, pointColors.size(), reinterpret_cast<GLfloat*>(pointColors.data()), GL_STREAM_DRAW);
-	//glBufferSubData(GL_ARRAY_BUFFER, 0, pointColors.size(), reinterpret_cast<GLfloat*>(pointColors.data()));
+	glBufferData(GL_ARRAY_BUFFER, pointColors.size(), reinterpret_cast<GLfloat*>(pointColors.data()), GL_STREAM_DRAW);
 	glVertexAttribDivisor(c_pos, 1);
-	//specific instancing offsets.
+	
 	// Draw the points
 	glDrawArraysInstanced(GL_POINTS, 0, 1, numP);
 	//reset, no instancing.
-	glVertexAttribDivisor(0, 0);
-	glVertexAttribDivisor(1, 0);
+	
 	//std::cout << "Any Gl errors2: " << glGetError() << std::endl;
 	//glDisableVertexAttribArray(0);
 	prog->unbind();
 }
 
-void particleSys::update(float frameTime, vec3 source) {
-
-  
-  //update the particles
+void particleSys::update(float frameTime, shared_ptr<Transform> trans) {
+	
+    //update the particles
 	for (int i = 0; i < particles.size(); i++) {
-        particles[i]->update(totalTime, frameTime, g, source);
+        particles[i]->update(totalTime, frameTime, g, trans->GetPos());
 		points[i * 3 + 0] = particles.at(i)->getPosition().x;
 		points[i * 3 + 1] = particles.at(i)->getPosition().y;
 		points[i * 3 + 2] = particles.at(i)->getPosition().z;
-  }
+    }
   
-  totalTime += frameTime;
+    totalTime += frameTime;
  
-  // Sort the particles by Z
-  //temp->rotate(camRot, vec3(0, 1, 0));
-  //be sure that camera matrix is updated prior to this update
-  vec3 s, t, sk;
-  vec4 p;
-  quat r;
-  glm::decompose(View, s, r, t, sk, p);
-  sorter.C = glm::toMat4(r); 
-  sort(particles.begin(), particles.end(), sorter);
-
-
-  //update the GPU data
-   //verts
-   glBindBuffer(GL_ARRAY_BUFFER, vertBuffObj);
-   glBufferData(GL_ARRAY_BUFFER, points.size(), NULL, GL_STREAM_DRAW);
-   glBufferSubData(GL_ARRAY_BUFFER, 0, points.size(), reinterpret_cast<GLfloat*>(points.data()));
-   
-   //colors
-   glBindBuffer(GL_ARRAY_BUFFER, colBuffObj);
-   glBufferData(GL_ARRAY_BUFFER, pointColors.size(), NULL, GL_STREAM_DRAW);
-   glBufferSubData(GL_ARRAY_BUFFER, 0, pointColors.size(), reinterpret_cast<GLfloat*>(pointColors.data()));
-   
-   //unbind
-   glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+    // Sort the particles by Z
+    //be sure that camera matrix is updated prior to this update
+    vec3 s, t, sk;
+    vec4 p;
+    quat r;
+    glm::decompose(View, s, r, t, sk, p);
+    sorter.C = glm::toMat4(r); 
+    sort(particles.begin(), particles.end(), sorter);
 }

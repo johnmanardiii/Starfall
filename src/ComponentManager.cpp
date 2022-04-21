@@ -47,7 +47,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     prog->addUniform("M");
     prog->addAttribute("vertPos");
     
-    //these generates random things between the two values. Currently supports floats and vec3's, but is easy to add to.
+    //these generate random things between the two values. Currently supports floats and vec3's, but is easy to add to.
     RandomGenerator randMove(-10, 10);
     RandomGenerator randTrans(-40, 40);
     RandomGenerator randScale(0.2, 2);

@@ -31,18 +31,14 @@ Particle::~Particle()
 {
 }
 
-void Particle::load(vec3 start)
-{
-	// Random initialization
-	rebirth(0.0f, start);
-}
+
 
 /* all particles born at the origin */
 void Particle::rebirth(float currentTotalTime, vec3 start)
 {
 	float vMult = 7.0f;
 	
-	position = vec3(start.x, start.y, start.z);
+	position = start;
 	velocity.x = randFloat(-0.6f, 0.6f) * vMult;
 	velocity.y = randFloat(-0.6f, 0.6f) * vMult;
 	velocity.z = randFloat(-0.6f, 0.6f) * vMult;

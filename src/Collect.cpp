@@ -1,5 +1,6 @@
 #include "Collect.h"
 #include "ComponentManager.h"
+#include "ParticleStaticSplash.h"
 #include <iostream>
 void Collect::Update(float frameTime, ComponentManager* compMan)
 {
@@ -10,6 +11,8 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 		flashAmount += flashSpeed * frameTime;
 		renderer->SetFlashAmt(sin(flashAmount));
 		//start taking over the other components.
+		particle->IsActive = true;
+		cout << "TF x " << transform->GetPos().x << "y " << transform->GetPos().y << "z " << transform->GetPos().z << endl;
 		movement->IsActive = false; // a really easy way to get something to stop moving. Deletion works as normal.
 		collision->IsActive = false; // now it doesn't collide with anything.
 		transform->ApplyRotation(frameTime * 16, vec3(0, 0, 1));
@@ -23,6 +26,7 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 	//shoot off into the sky after 3s
 	else if (flashAmount > 3 * flashSpeed)
 	{   
+		particle->IsActive = false;
 		movement->ApplyVel((0.005f * movement->GetVel()) + vec3(0, 0.05, 0));
 		movement->IsActive = true;
 	} 
@@ -43,4 +47,8 @@ void Collect::Init(ComponentManager* compMan)
 
 	index = obj.GetComponentLocation("Movement");
 	movement = static_pointer_cast<Movement>(compMan->GetComponent("Movement", index));
+
+	index = obj.GetComponentLocation("Particle");
+	particle = static_pointer_cast<ParticleStaticSplashRenderer>(compMan->GetComponent("Particle", index));
+	particle->IsActive = false;
 }

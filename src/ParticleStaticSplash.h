@@ -21,10 +21,7 @@ public:
     void Update(float frameTime, ComponentManager* compMan);
     void Init(ComponentManager* compMan);
 
-
     std::unique_ptr<particleSys> particles;
-    
-
 private:
     float startTime = 0;
     GLuint texture;

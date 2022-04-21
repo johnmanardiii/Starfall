@@ -51,8 +51,7 @@ public:
 	float randFloat(float l, float h);
 	void drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> trans);
 	void gpuSetup();
-	void update(float frameTime, vec3 source);
-	void reSet();
+	void update(float frameTime, shared_ptr<Transform> trans);
 	void setCamera(mat4 inC) {View = inC;}
 	void setProjection(mat4 inP) { Projection = inP; }
 };
