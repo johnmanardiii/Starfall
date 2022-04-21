@@ -10,8 +10,9 @@ void ParticleStaticSplashRenderer::Update(float frameTime, ComponentManager* com
 
 void ParticleStaticSplashRenderer::Draw(float frameTime)
 {
+    trans->CalcModelMat();
     particles->drawMe(prog, trans);
-    particles->update(frameTime);
+    particles->update(frameTime, trans->GetPos());
 }
 
 void ParticleStaticSplashRenderer::Init(ComponentManager* compMan)

@@ -36,7 +36,7 @@ void particleSys::gpuSetup() {
 		vec4 color = (vec4(randFloat(0, 0.4), randFloat(0, 0.4), randFloat(0, 0.4), 0.0) + vec4(0.4, 0.2, 0.2, 1.0));
 		auto particle = make_shared<Particle>(start, color);
 		particles.push_back(particle);
-		particle->load(start + vec3(randFloat(-10,10), randFloat(-10, 10),randFloat(-10, 10)));
+		particle->load(start + vec3(randFloat(-1,1), randFloat(-1, 1),randFloat(-1, 1)));
 
 		//To do - how can you integrate unique colors per particle?
 		pointColors[i * 3 + 0] = particles.at(i)->getColor().r;
@@ -82,8 +82,8 @@ void particleSys::drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> tr
 	GLSL::enableVertexAttribArray(v_pos);
 	glBindBuffer(GL_ARRAY_BUFFER, vertBuffObj);
 	glVertexAttribPointer(v_pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	//glBufferData(GL_ARRAY_BUFFER, points.size(), reinterpret_cast<GLfloat*>(points.data()), GL_STREAM_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, points.size(), reinterpret_cast<GLfloat*>(points.data()));
+	glBufferData(GL_ARRAY_BUFFER, points.size(), reinterpret_cast<GLfloat*>(points.data()), GL_STREAM_DRAW);
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, points.size(), reinterpret_cast<GLfloat*>(points.data()));
 	glVertexAttribDivisor(v_pos, 1);
 
 	int c_pos = prog->getAttribute("pColor");
@@ -91,7 +91,7 @@ void particleSys::drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> tr
 	glBindBuffer(GL_ARRAY_BUFFER, colBuffObj);
 	glVertexAttribPointer(c_pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	//glBufferData(GL_ARRAY_BUFFER, pointColors.size(), reinterpret_cast<GLfloat*>(pointColors.data()), GL_STREAM_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, pointColors.size(), reinterpret_cast<GLfloat*>(pointColors.data()));
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, pointColors.size(), reinterpret_cast<GLfloat*>(pointColors.data()));
 	glVertexAttribDivisor(c_pos, 1);
 	//specific instancing offsets.
 	// Draw the points
@@ -104,12 +104,12 @@ void particleSys::drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> tr
 	prog->unbind();
 }
 
-void particleSys::update(float frameTime) {
+void particleSys::update(float frameTime, vec3 source) {
 
   
   //update the particles
 	for (int i = 0; i < particles.size(); i++) {
-        particles[i]->update(totalTime, frameTime, g, start);
+        particles[i]->update(totalTime, frameTime, g, source);
 		points[i * 3 + 0] = particles.at(i)->getPosition().x;
 		points[i * 3 + 1] = particles.at(i)->getPosition().y;
 		points[i * 3 + 2] = particles.at(i)->getPosition().z;
