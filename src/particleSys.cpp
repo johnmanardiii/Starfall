@@ -22,9 +22,7 @@ particleSys::particleSys(int numParticles, vec3 source) {
 	numP = numParticles;	
 	totalTime = 0.0f;
 	g = vec3(0.0f, -0.098, 0.0f);
-	
 	start = source;
-	cout << "here" << start.x << " " << start.y << " " << start.z << endl;
 	View = glm::mat4(1.0);
 }
 
@@ -38,28 +36,27 @@ void particleSys::gpuSetup() {
 		particles.push_back(particle);
 		particle->rebirth(totalTime, start);
 
-		//To do - how can you integrate unique colors per particle?
 		pointColors[i * 3 + 0] = particles.at(i)->getColor().r;
 		pointColors[i * 3 + 1] = particles.at(i)->getColor().g;
 		pointColors[i * 3 + 2] = particles.at(i)->getColor().b;
 	}
 
-	//generate the VAO
-   glGenVertexArrays(1, &vertArrObj);
-   glBindVertexArray(vertArrObj);
-
-   //generate vertex buffer to hand off to OGL - using instancing
-   glGenBuffers(1, &vertBuffObj);
-   //set the current state to focus on our vertex buffer
-   glBindBuffer(GL_ARRAY_BUFFER, vertBuffObj);
-   //actually memcopy the data - only do this once
-   glBufferData(GL_ARRAY_BUFFER, points.size(), reinterpret_cast<GLfloat*>(points.data()), GL_STREAM_DRAW);
-   
-   glGenBuffers(1, &colBuffObj);
-   glBindBuffer(GL_ARRAY_BUFFER, colBuffObj);
-   glBufferData(GL_ARRAY_BUFFER, pointColors.size(), reinterpret_cast<GLfloat*>(pointColors.data()), GL_STREAM_DRAW);
-
-   assert(glGetError() == GL_NO_ERROR);
+    //generate the VAO
+    glGenVertexArrays(1, &vertArrObj);
+    glBindVertexArray(vertArrObj);
+    
+    //generate vertex buffer to hand off to OGL - using instancing
+    glGenBuffers(1, &vertBuffObj);
+    //set the current state to focus on our vertex buffer
+    glBindBuffer(GL_ARRAY_BUFFER, vertBuffObj);
+    //actually memcopy the data - only do this once
+    glBufferData(GL_ARRAY_BUFFER, points.size(), reinterpret_cast<GLfloat*>(points.data()), GL_STREAM_DRAW);
+    
+    glGenBuffers(1, &colBuffObj);
+    glBindBuffer(GL_ARRAY_BUFFER, colBuffObj);
+    glBufferData(GL_ARRAY_BUFFER, pointColors.size(), reinterpret_cast<GLfloat*>(pointColors.data()), GL_STREAM_DRAW);
+    
+    assert(glGetError() == GL_NO_ERROR);
 }
 
 
@@ -68,7 +65,7 @@ void particleSys::drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> tr
 	glBindVertexArray(vertArrObj);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, ShaderManager::GetInstance().GetTexture("Alpha"));
-	cout << start.x << " " << start.y << " " << start.z << endl;
+	cout << "start" << start.x << " " << start.y << " " << start.z << endl;
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(Projection));
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(View));
 	mat4 Model = glm::translate(mat4(1.0f),trans->GetPos());
@@ -90,21 +87,31 @@ void particleSys::drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> tr
 	
 	// Draw the points
 	glDrawArraysInstanced(GL_POINTS, 0, 1, numP);
-	//reset, no instancing.
 	
-	//std::cout << "Any Gl errors2: " << glGetError() << std::endl;
-	//glDisableVertexAttribArray(0);
 	prog->unbind();
 }
 
 void particleSys::update(float frameTime, shared_ptr<Transform> trans) {
-	
+	trans->GetModelMat();
+	vec3 scale, translate, skew;
+	vec4 perspect;
+	quat rot;
+	glm::decompose(trans->GetModelMat(), scale, rot, translate, skew, perspect);
+	start = trans->GetPos();
     //update the particles
 	for (int i = 0; i < particles.size(); i++) {
-        particles[i]->update(totalTime, frameTime, g, trans->GetPos());
-		points[i * 3 + 0] = particles.at(i)->getPosition().x;
-		points[i * 3 + 1] = particles.at(i)->getPosition().y;
-		points[i * 3 + 2] = particles.at(i)->getPosition().z;
+		if (i == 0) {
+			vec3 p = particles[i]->getPosition();
+			cout << "point1: " << p.x << " " << p.y << " " << p.z << endl;
+		}
+        particles[i]->update(totalTime, frameTime, vec3(0.0f), trans->GetPos());
+		points[i * 3 + 0] = particles[i]->getPosition().x;
+		points[i * 3 + 1] = particles[i]->getPosition().y;
+		points[i * 3 + 2] = particles[i]->getPosition().z;
+		if (i == 0) {
+			vec3 p = particles[i]->getPosition();
+			cout << "point2: " << p.x << " " << p.y << " " << p.z << endl;
+		}
     }
   
     totalTime += frameTime;

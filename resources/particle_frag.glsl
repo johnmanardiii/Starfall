@@ -10,5 +10,6 @@ out vec4 outColor;
 void main()
 {
 	float alpha = texture(alphaTexture, gl_PointCoord).r;
+	if (alpha < 0.7) discard;
 	outColor = vec4(partCol, alpha);
 }

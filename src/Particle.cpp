@@ -53,10 +53,9 @@ void Particle::rebirth(float currentTotalTime, vec3 start)
 
 void Particle::update(float totalTime, float frameTime, const vec3 &g, const vec3 source)
 {
-	
 	//very simple update
 	position += frameTime * velocity;
-	velocity += frameTime * g * 10.0f;
+	velocity += frameTime * g * 100.0f;
 	if (totalTime > tEnd) {
 		rebirth(totalTime, source);
 	}

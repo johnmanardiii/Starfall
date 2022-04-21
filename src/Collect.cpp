@@ -12,7 +12,8 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 		renderer->SetFlashAmt(sin(flashAmount));
 		//start taking over the other components.
 		particle->IsActive = true;
-		cout << "TF x " << transform->GetPos().x << "y " << transform->GetPos().y << "z " << transform->GetPos().z << endl;
+		auto t = transform->GetPos();
+		cout << "collect: " << t.x << " " << t.y << " " << t.z << endl;
 		movement->IsActive = false; // a really easy way to get something to stop moving. Deletion works as normal.
 		collision->IsActive = false; // now it doesn't collide with anything.
 		transform->ApplyRotation(frameTime * 16, vec3(0, 0, 1));
