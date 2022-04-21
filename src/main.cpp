@@ -124,6 +124,14 @@ public:
         if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
             componentManager.GetPlayer().inputBuffer[3] = false;
         }
+		if (key == GLFW_KEY_V && action == GLFW_PRESS) {
+			static bool isLines = false;
+			isLines = !isLines;
+			if (isLines)
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			else
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
 	}
 
 	void mouseCallback(GLFWwindow *window, int button, int action, int mods)

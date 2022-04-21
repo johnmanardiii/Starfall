@@ -20,15 +20,15 @@ void main()
 {
 	vec2 texcoords=vertTex;
 	float t=1./100.;
-	texcoords -= vec2(camoff.x,camoff.z)*t;
+	texcoords += vec2(camoff.x,camoff.z)*t;
 	float height = texture(tex, texcoords/100.).r;
 	height *= 40.0;
 
 
 	vec4 tpos =  vec4(vertPos, 1.0);
 	tpos =  M * tpos;
-	tpos.z -=camoff.z;
-	tpos.x -=camoff.x;
+	tpos.z +=camoff.z;
+	tpos.x +=camoff.x;
 
 	float proc_height = rand(floor(tpos.xz * 0.05)) * 0;
 	proc_height += rand(floor(tpos.xz * 0.1)) * 0.8;

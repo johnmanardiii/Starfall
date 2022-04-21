@@ -21,10 +21,11 @@ public:
 
 	void Update(float frameTime, ComponentManager* compMan);
 	void Init(ComponentManager*);
-	void Move(float frameTime);
+	void virtual Move(float frameTime);
+protected:
+	std::shared_ptr<Transform> trans;
+	vec3 velocity;
 
 private:
 	
-	vec3 velocity;
-	std::shared_ptr<Transform> trans;
 };
