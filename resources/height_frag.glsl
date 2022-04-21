@@ -13,17 +13,17 @@ uniform vec3 campos;
 uniform vec3 lightDir;
 uniform mat4 V;
 
-float diffuseContrast = 1.5;
+float diffuseContrast = 2;
 vec3 shadowColor = vec3(0.611, 0.44, 0.32);
 vec3 terrainColor = vec3(1, 0.79, 0.65);
 float sandStrength = 0.2;
 
-float rimStrength = 0.1;
+float rimStrength = 0.3;
 float rimPower = 20;
 vec3 rimColor = vec3(1, 0.79, 0.94);
 
 
-float oceanSpecularStrength = 0.25;
+float oceanSpecularStrength = 0.3;
 float oceanSpecularPower = 100;
 vec3 oceanSpecularColor = vec3(1, 0.79, 0.94);
 
@@ -81,8 +81,8 @@ void main()
 	
 	vec3 sandNormal = SandNormal(frag_norm, texcoords);
 	vec3 view = normalize(vec3(V[0][2], V[1][2], V[2][2]));
-	vec3 rim = RimLighting(frag_norm, -view);
-	vec3 oceanSpecColor = OceanSpecular(frag_norm, lightDir, view);
+	vec3 rim = RimLighting(frag_norm, view);
+	vec3 oceanSpecColor = OceanSpecular(frag_norm, lightDir, -view);
 
 	vec3 spec = clamp(max(rim, oceanSpecColor), vec3(0), vec3(1));
 

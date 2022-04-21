@@ -22,7 +22,7 @@ void TerrainRenderer::Draw(float frameTime)
 	offset.x = (int)pos.x;
 	offset.z = (int)pos.z;
 
-	vec3 lightDir = normalize(vec3(0, -1, 1)); // Hardcoded for now
+	vec3 lightDir = normalize(vec3(1000, 0, 100)); // Hardcoded for now
 
 	glUniform3fv(prog->getUniform("camoff"), 1, &offset[0]);
 	glUniform3fv(prog->getUniform("campos"), 1, &pos[0]);
