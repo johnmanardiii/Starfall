@@ -13,15 +13,6 @@ using glm::vec3;
 using glm::mat4;
 using glm::normalize;
 
-
-// TODO: Figure out how to make this framerate independent.
-/*template<typename T>
-T exponential_growth(T actual, T goal, float factor, float frametime)
-{
-    return actual + (goal - actual) * factor * frametime;
-}*/
-
-
 class Camera : public Component
 {
 private:

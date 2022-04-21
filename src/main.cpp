@@ -339,7 +339,7 @@ public:
 		
 		//the obj files you want to load. Add more to read them all.
 		vector<string> filenames = { "sphere", "suzanne", "LUNA/luna_arm", 
-			"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head", "test_plane"};
+			"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head"};
 		//where the data is held
 		vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
 		vector<tinyobj::material_t> objMaterials; //not using for now.

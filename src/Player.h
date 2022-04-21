@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "TextureRenderer.h"
 #include "GameObject.h"
+#include "RollTransform.h"
 #include <vector>
 #include <memory>
 #include <string>
@@ -21,12 +22,20 @@ class Player
 private:
 	Player(vec3 pos);
 	vec3 pos = vec3(0);
-	float speed = 9.0f;	// speed in units/second
-	float playerYOffset = 2.2f;
+	float speed = 15.0f;	// speed in units/second
+	float playerYOffset = -1.5f;	// target move pos
+	float currentFloatOffset = 0;
 	float rotationSpeed = 90.0f;	// degrees per second
+	float idleTime = 0.0f;
+	const float idleHeight = .4f;
+	float currentSpeed = 0.0f;
+	float currentRotationChange = 0.0f;
+	float currentZRotation = 0.0f;
+	void AnimatePlayerModel(float frameTime);
 	shared_ptr<Transform> trans = NULL;
 	void SetPosToGround();
-
+	void AddIdleOffset(float frameTime);
+	shared_ptr<RollTransform> pTransform;
 	shared_ptr<Transform> headTrans;
 	shared_ptr<Transform> arm1Trans;
 	shared_ptr<Transform> arm2Trans;
@@ -39,8 +48,9 @@ public:
 	bool inputBuffer[4] = { false, false, false, false };
 	void ProcessWASDInput();
 	vec3 GetForward();
-	void Init(ComponentManager* compMan, shared_ptr<Transform> head, 
-		shared_ptr<Transform> arm1, shared_ptr<Transform> arm2);
+	void Init(ComponentManager* compMan, shared_ptr<RollTransform> pTrans, 
+		shared_ptr<Transform> head, shared_ptr<Transform> arm1,
+		shared_ptr<Transform> arm2);
 	const vec3 GetPosition() { return pos; }
 	static Player& GetInstance(vec3 pos) {
 		static Player instance(pos);
