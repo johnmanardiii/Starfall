@@ -29,17 +29,17 @@ public:
 	virtual ~Particle();
 	void load(vec3 start);
 	void rebirth(float t, vec3 start);
-	void update(float t, float h, const glm::vec3 &g, const vec3 start);
-	const vec3 &getPosition() const { return x; };
-	const vec3 &getVelocity() const { return v; };
+	void update(float totalTime, float frameTime, const glm::vec3 &g, const vec3 start);
+	const vec3 &getPosition() const { return position; };
+	const vec3 &getVelocity() const { return velocity; };
 	const vec4 &getColor() const { return color; };
 	
 private:
 	float charge; // +1 or -1
-	float m; // mass
-	float d; // viscous damping
-	vec3 x; // position
-	vec3 v; // velocity
+	float mass; // mass
+	float damping; // viscous damping
+	vec3 position; // position
+	vec3 velocity; // velocity
 	float lifespan; // how long this particle lives
 	float tEnd;     // time this particle dies
 	float scale;

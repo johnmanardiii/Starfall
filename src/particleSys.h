@@ -6,7 +6,7 @@
 #include <vector>
 #include "Particle.h"
 #include "Program.h"
-
+#include "Transform.h"
 using namespace glm;
 using namespace std;
 
@@ -29,31 +29,32 @@ public:
 class particleSys {
 private:
 	vector<shared_ptr<Particle>> particles;
-	float t, h; //?
+	float totalTime;
 	vec3 g; //gravity
 	int numP;
 	vec3 start;
 	ParticleSorter sorter;
 
-	//this is not great that this is hard coded - you can make it better
-	GLfloat points[900];
-	float pointColors[900];
+	vector<GLfloat> points;
+	vector<float> pointColors;
 	
-
-	mat4 theCamera;
+	mat4 View;
+	mat4 Projection;
 	unsigned vertArrObj;
 	unsigned vertBuffObj;
 	unsigned colArrObj;
 	unsigned colBuffObj;
 	
 public:
-	particleSys(vec3 source);
+	particleSys(int numParticles, vec3 source);
+	
 	float randFloat(float l, float h);
-	void drawMe(std::shared_ptr<Program> prog);
+	void drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> trans);
 	void gpuSetup();
-	void update();
-	void reSet(vec3 ballV);
-	void setCamera(mat4 inC) {theCamera = inC;}
+	void update(float frameTime);
+	void reSet();
+	void setCamera(mat4 inC) {View = inC;}
+	void setProjection(mat4 inP) { Projection = inP; }
 };
 
 

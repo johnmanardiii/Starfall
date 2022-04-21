@@ -240,8 +240,8 @@ public:
 			exit(1);
 		}
 		GLuint PartLocation = glGetUniformLocation(partProg->pid, "particle");
-		//glUseProgram(partProg->pid);
-		//glUniform1i(PartLocation, 0);
+		glUseProgram(partProg->pid);
+		glUniform1i(PartLocation, 0);
 
 		shaderManager.SetShader("particle", partProg);
 
@@ -278,8 +278,11 @@ public:
 		// Set background color.
 		glClearColor(.12f, .34f, .56f, 1.0f);
 		// Enable z-buffer test.
-		glEnable(GL_DEPTH_TEST);
-		glPointSize(14.0f);
+		
+		CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
+		CHECKED_GL_CALL(glEnable(GL_BLEND));
+		CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+		glPointSize(5.0f);
 		InitShaderManager(resourceDirectory);
 		// do ComponentManager's init here
 		componentManager.Init(resourceDirectory);
@@ -428,6 +431,7 @@ public:
 
 int main(int argc, char *argv[])
 {
+	srand(time(0));
 	// Where the resources are loaded from
 	std::string resourceDir = "../resources";
 
