@@ -1,7 +1,7 @@
 #include "ComponentManager.h"
 #include "TerrainRenderer.h"
 #include "PlayerTransform.h"
-#include "RollTransform.h"
+#include "EulerTransform.h"
 
 ComponentManager::ComponentManager()
 {
@@ -40,12 +40,13 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 void ComponentManager::Init(std::string resourceDirectory)
 {
     // initialize the player
-    shared_ptr<RollTransform> pTransform = make_shared<RollTransform>(player.pName);
+    shared_ptr<EulerTransform> pTransform = make_shared<EulerTransform>(player.pName);
     shared_ptr<Transform> transform = pTransform;
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
     shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
     std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer };
     transform->SetPos(vec3(0, 1, 2));
+    transform->SetScale(vec3(.5));
     AddGameObject(player.pName, playerComps);
 
     // initialize body parts as separate objects

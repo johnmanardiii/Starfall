@@ -19,6 +19,10 @@ void Player::AnimatePlayerModel(float frameTime)
     float goalZRotation = -currentRotationChange * 15.0f;
     currentZRotation = exponential_growth(currentZRotation, goalZRotation, .02 * 60.0f, frameTime);
     pTransform->SetRoll(currentZRotation);
+
+    float goalForwardsRotation = currentSpeed > 0 ? 40.0f : 0.0f;   // TODO add this to player class as const
+    currentXRotation = exponential_growth(currentXRotation, goalForwardsRotation, .02 * 60.0f, frameTime);
+    pTransform->SetLean(currentXRotation);
 }
 
 void Player::Update(float frameTime, ComponentManager* compMan)
@@ -28,6 +32,8 @@ void Player::Update(float frameTime, ComponentManager* compMan)
     // store result of A and D as intended rotation
     float inputRotation = inputBuffer[3] - inputBuffer[1];
 
+    // TODO: add acceleration to input, and make luna lean forward and backward
+    // based on acceleration rather than direct speed.
     currentSpeed = speedInput * speed;
     currentRotationChange = -inputRotation * glm::radians(rotationSpeed);
 
@@ -87,7 +93,7 @@ Player::Player(vec3 pos) : pos (pos)
 
 }
 
-void Player::Init(ComponentManager* compMan, shared_ptr<RollTransform> pTrans, 
+void Player::Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans, 
     shared_ptr<Transform> head,shared_ptr<Transform> arm1,
     shared_ptr<Transform> arm2)
 {

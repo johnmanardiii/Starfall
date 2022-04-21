@@ -7,7 +7,7 @@
 #include "Renderer.h"
 #include "TextureRenderer.h"
 #include "GameObject.h"
-#include "RollTransform.h"
+#include "EulerTransform.h"
 #include <vector>
 #include <memory>
 #include <string>
@@ -31,11 +31,12 @@ private:
 	float currentSpeed = 0.0f;
 	float currentRotationChange = 0.0f;
 	float currentZRotation = 0.0f;
+	float currentXRotation = 0.0f;
 	void AnimatePlayerModel(float frameTime);
 	shared_ptr<Transform> trans = NULL;
 	void SetPosToGround();
 	void AddIdleOffset(float frameTime);
-	shared_ptr<RollTransform> pTransform;
+	shared_ptr<EulerTransform> pTransform;
 	shared_ptr<Transform> headTrans;
 	shared_ptr<Transform> arm1Trans;
 	shared_ptr<Transform> arm2Trans;
@@ -48,7 +49,7 @@ public:
 	bool inputBuffer[4] = { false, false, false, false };
 	void ProcessWASDInput();
 	vec3 GetForward();
-	void Init(ComponentManager* compMan, shared_ptr<RollTransform> pTrans, 
+	void Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
 		shared_ptr<Transform> head, shared_ptr<Transform> arm1,
 		shared_ptr<Transform> arm2);
 	const vec3 GetPosition() { return pos; }
