@@ -43,6 +43,6 @@ void main()
 	vertex_pos = tpos.xyz;
 	vertex_height = tpos.y;
 
-	gl_Position = M * tpos;
+	gl_Position = tpos;
 	vertex_tex = vertTex;
 }
