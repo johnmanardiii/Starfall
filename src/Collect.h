@@ -5,8 +5,6 @@
 #include <memory>
 #include <string>
 
-class ParticleStaticSplashRenderer;
-
 class Collect : public Component
 {
 public:
@@ -22,5 +20,4 @@ private:
 	shared_ptr<Collision> collision;
 	shared_ptr<Transform> transform;
 	shared_ptr<Movement> movement;
-	shared_ptr<ParticleStaticSplashRenderer> particle;
 };
