@@ -268,6 +268,22 @@ public:
 
 		shaderManager.SetTexture("Grass", tex);
 
+		// load noise texture
+		str = resourceDirectory + "/noiseTex.png";
+		strcpy(filepath, str.c_str());
+		data = stbi_load(filepath, &width, &height, &channels, 4);
+		glGenTextures(1, &tex);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		shaderManager.SetTexture("noiseTex", tex);
+
 		// Texture Shader
 		auto prog = make_shared<Program>();
 		prog->setVerbose(true);
@@ -292,7 +308,7 @@ public:
 		// Terrain Shader
 		auto heightProg = make_shared<Program>();
 		heightProg->setVerbose(true);
-		heightProg->setShaderNames(resourceDirectory + "/height_vertex.glsl", resourceDirectory + "/height_frag.glsl");
+		heightProg->setShaderNames(resourceDirectory + "/height_vertex.glsl", resourceDirectory + "/height_frag.glsl", resourceDirectory + "/height_geom.glsl");
 		if (!heightProg->Init())
 		{
 			std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
@@ -303,15 +319,19 @@ public:
 		heightProg->addUniform("M");
 		heightProg->addUniform("camoff");
 		heightProg->addUniform("campos");
+		heightProg->addUniform("lightDir");
 		heightProg->addAttribute("vertPos");
 		heightProg->addAttribute("vertTex");
 		assert(glGetError() == GL_NO_ERROR);
 
 		TexLocation = glGetUniformLocation(heightProg->pid, "tex");
 		GLuint TexLocation2 = glGetUniformLocation(heightProg->pid, "tex2");
+		GLuint TexLocation3 = glGetUniformLocation(heightProg->pid, "noiseTex");
 		glUseProgram(heightProg->pid);
 		glUniform1i(TexLocation, 0);
 		glUniform1i(TexLocation2, 1);
+		glUniform1i(TexLocation3, 2);
+
 		assert(glGetError() == GL_NO_ERROR);
 
 		shaderManager.SetShader("Height", heightProg);
@@ -515,7 +535,7 @@ int main(int argc, char *argv[])
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
-	windowManager->Init(1280, 720);
+	windowManager->Init(1920, 1200);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
 

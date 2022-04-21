@@ -19,6 +19,7 @@ public:
 		prog = shaderMan.GetShader("Height");
 		texture = shaderMan.GetTexture(tex);
 		heightTexture = shaderMan.GetTexture(heightTex);
+		noiseTexture = shaderMan.GetTexture("noiseTex");
 		terrain = shaderMan.Terrain;
 	}
 	void Update(float frameTime, ComponentManager& compMan) { Draw(frameTime); }
@@ -29,4 +30,5 @@ private:
 	TerrainS terrain;
 	GLuint texture;
 	GLuint heightTexture;
+	GLuint noiseTexture;
 };

@@ -1,4 +1,4 @@
-#version 330 core
+#version 410 core
 layout(location = 0) in vec3 vertPos;
 layout(location = 1) in vec2 vertTex;
 
@@ -18,7 +18,6 @@ float rand(vec2 co){
 
 void main()
 {
-
 	vec2 texcoords=vertTex;
 	float t=1./100.;
 	texcoords -= vec2(camoff.x,camoff.z)*t;
@@ -44,6 +43,6 @@ void main()
 	vertex_pos = tpos.xyz;
 	vertex_height = tpos.y;
 
-	gl_Position = P * V * tpos;
+	gl_Position = M * tpos;
 	vertex_tex = vertTex;
 }
