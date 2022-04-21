@@ -34,12 +34,9 @@ private:
 public:
     //Camera(Camera const&) = delete; //to explicitly delete the copy constructor
     //write something to the application's view matrix directly. TODO change this access with an event manager class.
-    bool IsWASDPressed[4] = {false, false, false, false};
-    
     void Update(float frameTime, ComponentManager* compMan);
     void Update(double posX, double posY);
     void Init(ComponentManager* compMan) {} //does nothing, also not required to be called.
-    void ProcessWASDInput();
     void AdjustMovementSpeed(float multFactor) { movementSensitivity *= multFactor; }
     static Camera& GetInstance(vec3 pos) {
         static Camera instance(pos);

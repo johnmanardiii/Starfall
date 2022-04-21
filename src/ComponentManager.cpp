@@ -8,6 +8,8 @@ ComponentManager::ComponentManager()
     components["Collision"];
     components["Renderer"];
     components["Collect"];
+
+    //player.InitializePlayer(this);
 }
 
 GameObject ComponentManager::GetGameObject(string name)
@@ -35,6 +37,14 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 void ComponentManager::Init(std::string resourceDirectory)
 {
     camera = Camera::GetInstance(vec3(0,1,0));
+
+    // initialize the player
+    shared_ptr<Transform> transform = make_shared<Transform>(player.pName);
+    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer };
+    transform->SetPos(vec3(0, 1, 2));
+    AddGameObject(player.pName, playerComps);
+    player.Init(this);
 
     // Initialize the GLSL program, just for the ground plane.
     auto prog = make_shared<Program>();
@@ -140,6 +150,9 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         if (!collect->IsActive) continue;
         collect->Update(frameTime, this);
     }
+
+    // update the player
+    player.Update(frameTime, this);
 
     //update camera position.
     camera.CalcPerspective(width, height);
