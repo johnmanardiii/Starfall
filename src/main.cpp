@@ -267,9 +267,28 @@ public:
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		shaderManager.SetTexture("Grass", tex);
-
+    
+		// load alpha particle texture
+		str = resourceDirectory + "/alpha.bmp";
+    
+    strcpy(filepath, str.c_str());
+		data = stbi_load(filepath, &width, &height, &channels, 4);
+		glGenTextures(1, &tex);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+    
+    shaderManager.SetTexture("Alpha", tex);
+    
+    
 		// load noise texture
 		str = resourceDirectory + "/noiseTex.png";
+
 		strcpy(filepath, str.c_str());
 		data = stbi_load(filepath, &width, &height, &channels, 4);
 		glGenTextures(1, &tex);
@@ -284,7 +303,7 @@ public:
 
 		shaderManager.SetTexture("noiseTex", tex);
 
-		// Texture Shader
+
 		auto prog = make_shared<Program>();
 		prog->setVerbose(true);
 		prog->setShaderNames(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag.glsl");
@@ -304,16 +323,36 @@ public:
 
 		shaderManager.SetShader("Texture", prog);
 
-		
+		auto partProg = make_shared<Program>();
+		partProg->setVerbose(true);
+		partProg->setShaderNames(
+			resourceDirectory + "/particle_vert.glsl",
+			resourceDirectory + "/particle_frag.glsl");
+		partProg->Init();
+		partProg->addUniform("P");
+		partProg->addUniform("M");
+		partProg->addUniform("V");
+		partProg->addUniform("alphaTexture");
+		partProg->addAttribute("vertPos");
+		partProg->addAttribute("pColor");
+    
+    GLuint PartLocation = glGetUniformLocation(partProg->pid, "particle");
+		glUseProgram(partProg->pid);
+		glUniform1i(PartLocation, 0);
+
+		shaderManager.SetShader("particle", partProg);
+
 		// Terrain Shader
 		auto heightProg = make_shared<Program>();
 		heightProg->setVerbose(true);
 		heightProg->setShaderNames(resourceDirectory + "/height_vertex.glsl", resourceDirectory + "/height_frag.glsl", resourceDirectory + "/height_geom.glsl");
 		if (!heightProg->Init())
+
 		{
 			std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
 			exit(1);
 		}
+
 		heightProg->addUniform("P");
 		heightProg->addUniform("V");
 		heightProg->addUniform("M");
@@ -335,8 +374,7 @@ public:
 		assert(glGetError() == GL_NO_ERROR);
 
 		shaderManager.SetShader("Height", heightProg);
-		
-		
+
 		//the obj files you want to load. Add more to read them all.
 		vector<string> filenames = { "sphere", "suzanne", "LUNA/luna_arm", 
 			"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head"};
@@ -373,8 +411,11 @@ public:
 		// Set background color.
 		glClearColor(.12f, .34f, .56f, 1.0f);
 		// Enable z-buffer test.
-		glEnable(GL_DEPTH_TEST);
-
+		
+		CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
+		CHECKED_GL_CALL(glEnable(GL_BLEND));
+		CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+		glPointSize(10.0f);
 		InitShaderManager(resourceDirectory);
 		// do ComponentManager's init here
 		componentManager.Init(resourceDirectory);
@@ -521,6 +562,7 @@ public:
 
 int main(int argc, char *argv[])
 {
+	srand(time(0));
 	// Where the resources are loaded from
 	std::string resourceDir = "../resources";
 
