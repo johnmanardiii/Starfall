@@ -20,7 +20,7 @@ void main()
 	M0[1] = vec4(0.0, 1.0, 0.0, 0.0);
 	M0[2] = vec4(0.0, 0.0, 1.0, 0.0);
 
-	gl_Position = P * V * M0 * vec4(vertPos.xyz, 1.0);
+	gl_Position = P * V * vec4(vertPos.xyz, 1.0);
 
 	partCol = pColor;
 }
