@@ -421,7 +421,7 @@ public:
 		// do ComponentManager's init here
 		componentManager.Init(resourceDirectory);
 		audioEngine.Init(resourceDirectory);
-		audioEngine.PlaySoundOnce("tomorrow.mp3");
+		audioEngine.Play("tomorrow.mp3");
 	}
 
 	void drawGround(std::shared_ptr<Program> curS, int width, int height)
