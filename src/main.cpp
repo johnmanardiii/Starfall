@@ -14,6 +14,7 @@ Z. Wood + S. Sueda
 #include "ComponentManager.h"
 #include "Event.h"
 #include "EventManager.h"
+#include "Audio.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -43,7 +44,7 @@ public:
 	ComponentManager componentManager;
 	ShaderManager& shaderManager = ShaderManager::GetInstance();
 	WindowManager *windowManager = nullptr;
-
+	AudioEngine audioEngine;
 	typedef struct Ground
 	{
 		GLuint VertexArrayID;
@@ -419,6 +420,8 @@ public:
 		InitShaderManager(resourceDirectory);
 		// do ComponentManager's init here
 		componentManager.Init(resourceDirectory);
+		audioEngine.Init(resourceDirectory);
+		audioEngine.PlaySoundOnce("tomorrow.mp3");
 	}
 
 	void drawGround(std::shared_ptr<Program> curS, int width, int height)
@@ -613,6 +616,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Quit program.
+	application->audioEngine.Cleanup();
 	windowManager->shutdown();
 	return 0;
 }
