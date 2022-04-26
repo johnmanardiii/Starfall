@@ -87,7 +87,7 @@ void main()
 	vec3 spec = clamp(max(rim, oceanSpecColor), vec3(0), vec3(1));
 
 	vec3 diffuseColor = DiffuseColor(sandNormal, lightDir);
-	color.rgb = spec + diffuseColor;
+	color.rgb = spec + diffuseColor * 0.7;
 
 
 	//color.rgb = vec3(1, 0, 0);

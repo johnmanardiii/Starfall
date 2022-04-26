@@ -35,8 +35,8 @@ void main()
 	proc_height += rand(floor(tpos.xz * 0.5)) * 0.4;
 	proc_height += rand(floor(tpos.xz)) * 0.3;
 
-	proc_height = sin(tpos.x / 10.) * sin(tpos.z / 10.) * 5;
-
+	proc_height = sin(tpos.x / 10.) * sin(tpos.z / 10.) * 10 * cos(tpos.x * 0.2) * cos(tpos.z * 0.1);
+	//proc_height = sin(tpos.x / 10.) * 5 * sin(tpos.x * 0.07);
 	tpos.y -= 5;
 	//tpos.y += height;
 	tpos.y += proc_height;
