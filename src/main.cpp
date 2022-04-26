@@ -280,7 +280,7 @@ public:
 		// load alpha particle texture
 		str = resourceDirectory + "/alpha.bmp";
     
-    strcpy(filepath, str.c_str());
+		strcpy(filepath, str.c_str());
 		data = stbi_load(filepath, &width, &height, &channels, 4);
 		glGenTextures(1, &tex);
 		glActiveTexture(GL_TEXTURE0);
@@ -292,7 +292,7 @@ public:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
     
-    shaderManager.SetTexture("Alpha", tex);
+		shaderManager.SetTexture("Alpha", tex);
     
     
 		// load noise texture
