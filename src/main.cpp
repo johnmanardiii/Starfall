@@ -14,6 +14,8 @@ Z. Wood + S. Sueda
 #include "ComponentManager.h"
 #include "Event.h"
 #include "EventManager.h"
+#include "Audio.h"
+#include "PostProcessing.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -26,6 +28,9 @@ Z. Wood + S. Sueda
 using namespace std;
 using namespace glm;
 
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
+
 /* Global data associated with triangle geometry - this will likely vary
 in later programs - so is left explicit for now  */
 static const GLfloat g_vertex_buffer_data[] = {
@@ -37,13 +42,14 @@ static const GLfloat g_vertex_buffer_data[] = {
 /* A big global wrapper for all our data */
 class Application : public EventCallbacks
 {
-
+private:
+	shared_ptr<PostProcessing> postProcessing;
 public:
 	// the component manager.
 	ComponentManager componentManager;
 	ShaderManager& shaderManager = ShaderManager::GetInstance();
 	WindowManager *windowManager = nullptr;
-
+	AudioEngine audioEngine;
 	typedef struct Ground
 	{
 		GLuint VertexArrayID;
@@ -405,6 +411,8 @@ public:
 
 	void Init(std::string resourceDirectory)
 	{
+
+
 		GLSL::checkVersion();
 		// lock the mouse cursor
 		glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -417,8 +425,13 @@ public:
 		CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 		glPointSize(10.0f);
 		InitShaderManager(resourceDirectory);
+
+		// initialize post processing
+		postProcessing = make_shared<PostProcessing>(windowManager);
 		// do ComponentManager's init here
 		componentManager.Init(resourceDirectory);
+		audioEngine.Init(resourceDirectory);
+		audioEngine.Play("tomorrow.mp3");
 	}
 
 	void drawGround(std::shared_ptr<Program> curS, int width, int height)
@@ -523,18 +536,6 @@ public:
 		prog->addAttribute("vertPos");
 
 		initGround(0.0);
-
-		// generate the VAO
-		/*glGenVertexArrays(1, &VertexArrayID);
-		glBindVertexArray(VertexArrayID);
-
-		//generate vertex buffer to hand off to OGL
-		glGenBuffers(1, &vertexBufferID);
-		//set the current state to focus on our vertex buffer
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		//actually memcopy the data - only do this once
-		glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
-		*/
 	}
 
 	void render(float frameTime)
@@ -545,18 +546,12 @@ public:
 		auto V = make_shared<MatrixStack>();
 		auto P = make_shared<MatrixStack>();
 
-		// Get current frame buffer size.
-		int width, height;
-		glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
-		glViewport(0, 0, width, height);
+		// clear all framebuffers
+		postProcessing->ClearFramebuffers();
+		componentManager.UpdateComponents(frameTime, postProcessing->get_width(), postProcessing->get_height());
 
-		// Clear framebuffer.
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		componentManager.UpdateComponents(frameTime, width, height);
+		// render post-processing
 		
-		// Draw mesh using GLSL.
-		//drawGround(shaderManager.GetShader("Texture"), width, height);
 	}
 };
 
@@ -577,7 +572,7 @@ int main(int argc, char *argv[])
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
-	windowManager->Init(1920, 1200);
+	windowManager->Init(SCREEN_WIDTH, SCREEN_HEIGHT);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
 
@@ -613,6 +608,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Quit program.
+	application->audioEngine.Cleanup();
 	windowManager->shutdown();
 	return 0;
 }
