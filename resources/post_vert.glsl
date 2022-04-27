@@ -1,4 +1,4 @@
-#version 330 core
+#version 410 core
 // code started from LearnOpenGL code
 layout (location = 0) in vec2 vertPos;
 layout (location = 1) in vec2 texCoord;

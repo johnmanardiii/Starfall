@@ -87,8 +87,6 @@ PostProcessing::PostProcessing(WindowManager* wm)
 	{
 		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
 	}
-
-	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glViewport(0, 0, width, height);
 	// Clear default framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
