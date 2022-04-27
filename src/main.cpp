@@ -551,7 +551,7 @@ public:
 		componentManager.UpdateComponents(frameTime, postProcessing->get_width(), postProcessing->get_height());
 
 		// render post-processing
-		
+		postProcessing->RenderPostProcessing();
 	}
 };
 
