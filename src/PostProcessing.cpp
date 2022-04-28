@@ -70,10 +70,12 @@ PostProcessing::PostProcessing(WindowManager* wm)
 	// Create offscreen color texture and bind it to framebuffer
 	glGenTextures(1, &base_color);
 	glBindTexture(GL_TEXTURE_2D, base_color);
-	// TODO: make this larger than 8 bit texture for hdr.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// make the texture a floating point texture for HDR
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, base_color, 0);
 
 	glGenRenderbuffers(1, &base_depth_stencil);
@@ -92,6 +94,9 @@ PostProcessing::PostProcessing(WindowManager* wm)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// initialize Bloom rendering object
+	bloom = make_shared<Bloom>();
 }
 
 PostProcessing::~PostProcessing()
@@ -121,12 +126,20 @@ void PostProcessing::ClearFramebuffers()
 
 void PostProcessing::RenderPostProcessing()
 {
+	// Generate the mipmaps for the rendered scene
+	glBindTexture(GL_TEXTURE_2D, base_color);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// generate bloom
+	bloom->RenderBloom(quad_vao, base_color);
+
 	glDisable(GL_DEPTH_TEST);
 	// bind default framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	simple_prog->bind();
 	glBindVertexArray(quad_vao);
 	glActiveTexture(GL_TEXTURE0);
+	// TODO: bind in bloom texture and additive blend
 	glBindTexture(GL_TEXTURE_2D, base_color);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	simple_prog->unbind();
