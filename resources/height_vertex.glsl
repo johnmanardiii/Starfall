@@ -36,8 +36,8 @@ void main()
 	proc_height = sin(tpos.x / 10.) * sin(tpos.z / 10.) * 10.0 * cos(tpos.x * 0.2) * cos(tpos.z * 0.1);
 	tpos.y -= 5;
 
-	vec3 b = tpos.xyz + vec3(0.001f, 0.0f, 0.001f), 
-		c = tpos.xyz - vec3(0.001f, 0.0f, 0.001f);
+	vec3 b = tpos.xyz + vec3(0.1f, 0.0f, 0.1f), 
+		c = tpos.xyz + vec3(0.1f, 0.0f, -0.1f);
 
 	tpos.y += proc_height;
 
@@ -53,5 +53,5 @@ void main()
 	frag_pos = tpos.xyz;
 	frag_height = tpos.y;
 	frag_tex = vertTex;
-	frag_norm = ab;
+	frag_norm = n;
 }

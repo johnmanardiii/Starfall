@@ -99,6 +99,5 @@ void main()
 	len=clamp(len,0,1);
 	color.a=1-len;
 	//color.rgb = normalize(frag_norm);
-	color.rgb = frag_norm;
 	
 }
