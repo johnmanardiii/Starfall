@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 	// may need to initialize or set up different data and state
 
 	application->Init(resourceDir);
-	application->initGeom(resourceDir);
+	
 
 	// Loop until the user closes the window.
 	auto lastTime = chrono::high_resolution_clock::now();
