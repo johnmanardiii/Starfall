@@ -50,18 +50,18 @@ public:
 
 	// Data necessary to give our triangle to OpenGL
 	GLuint vertexBufferID;
+	//callbacks
 	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	void mouseCallback(GLFWwindow* window, int button, int action, int mods);
 	void mouseMovementCallback(GLFWwindow* window, double posX, double posY);
 	void resizeCallback(GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); }
 
 #define MESHSIZE 100
+	//initialization
 	void InitTerrain();
 	void InitShaderManager(const std::string& resourceDirectory);
 	void Init(std::string resourceDirectory);
-	void drawGround(std::shared_ptr<Program> curS, int width, int height);
-	void initGround(float g_groundY);
-	void initGeom(const std::string& resourceDirectory);
-
+	
+	//render loop
 	void render(float frameTime);
 };
