@@ -1,9 +1,14 @@
 #pragma once
 
+#include "GLSL.h"
 #include "ComponentManager.h"
 #include "Event.h"
 #include "EventManager.h"
 #include "Audio.h"
+
+#include "Program.h"
+#include "Shape.h"
+#include "MatrixStack.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>

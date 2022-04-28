@@ -6,10 +6,8 @@ Z. Wood + S. Sueda
 #include <glad/glad.h>
 #include <chrono>
 
-#include "GLSL.h"
-#include "Program.h"
-#include "Shape.h"
-#include "MatrixStack.h"
+
+
 #include "Application.h"
 #include "WindowManager.h"
 
