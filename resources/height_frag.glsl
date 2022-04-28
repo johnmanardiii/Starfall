@@ -3,7 +3,7 @@ out vec4 color;
 in vec3 frag_pos;
 in vec2 frag_tex;
 in vec3 frag_norm;
-in float vertex_height;
+in float frag_height;
 
 uniform sampler2D tex;
 uniform sampler2D tex2;
@@ -98,5 +98,7 @@ void main()
 	len/=8.;
 	len=clamp(len,0,1);
 	color.a=1-len;
+	//color.rgb = normalize(frag_norm);
+	color.rgb = frag_norm;
 	
 }

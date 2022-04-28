@@ -354,7 +354,7 @@ public:
 		// Terrain Shader
 		auto heightProg = make_shared<Program>();
 		heightProg->setVerbose(true);
-		heightProg->setShaderNames(resourceDirectory + "/height_vertex.glsl", resourceDirectory + "/height_frag.glsl", resourceDirectory + "/height_geom.glsl");
+		heightProg->setShaderNames(resourceDirectory + "/height_vertex.glsl", resourceDirectory + "/height_frag.glsl");// , resourceDirectory + "/height_geom.glsl");
 		if (!heightProg->Init())
 
 		{

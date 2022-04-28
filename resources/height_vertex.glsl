@@ -5,9 +5,10 @@ layout(location = 1) in vec2 vertTex;
 uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
-out vec3 vertex_pos;
-out vec2 vertex_tex;
-out float vertex_height;
+out vec3 frag_pos;
+out vec2 frag_tex;
+out vec3 frag_norm;
+out float frag_height;
 uniform sampler2D tex;
 uniform vec3 camoff;
 
@@ -30,19 +31,27 @@ void main()
 	tpos.z +=camoff.z;
 	tpos.x +=camoff.x;
 
-	float proc_height = rand(floor(tpos.xz * 0.05)) * 0;
-	proc_height += rand(floor(tpos.xz * 0.1)) * 0.8;
-	proc_height += rand(floor(tpos.xz * 0.5)) * 0.4;
-	proc_height += rand(floor(tpos.xz)) * 0.3;
+	float proc_height;
 
-	proc_height = sin(tpos.x / 10.) * sin(tpos.z / 10.) * 10 * cos(tpos.x * 0.2) * cos(tpos.z * 0.1);
-	//proc_height = sin(tpos.x / 10.) * 5 * sin(tpos.x * 0.07);
+	proc_height = sin(tpos.x / 10.) * sin(tpos.z / 10.) * 10.0 * cos(tpos.x * 0.2) * cos(tpos.z * 0.1);
 	tpos.y -= 5;
-	//tpos.y += height;
-	tpos.y += proc_height;
-	vertex_pos = tpos.xyz;
-	vertex_height = tpos.y;
 
-	gl_Position = tpos;
-	vertex_tex = vertTex;
+	vec3 b = tpos.xyz + vec3(0.001f, 0.0f, 0.001f), 
+		c = tpos.xyz - vec3(0.001f, 0.0f, 0.001f);
+
+	tpos.y += proc_height;
+
+	b.y += sin(b.x / 10.) * sin(b.z / 10.) * 10.0 * cos(b.x * 0.2) * cos(b.z * 0.1);
+	c.y += sin(c.x / 10.) * sin(c.z / 10.) * 10.0 * cos(c.x * 0.2) * cos(c.z * 0.1);
+	vec3 ab = (tpos.xyz - b);
+	ab = normalize(ab);
+	vec3 ac = (tpos.xyz - c);
+	ac = normalize(ac);
+	vec3 n = normalize(cross(ab,ac));
+
+	gl_Position = P * V * tpos;
+	frag_pos = tpos.xyz;
+	frag_height = tpos.y;
+	frag_tex = vertTex;
+	frag_norm = ab;
 }
