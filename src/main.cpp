@@ -6,28 +6,14 @@ Z. Wood + S. Sueda
 #include <glad/glad.h>
 #include <chrono>
 
-#include "GLSL.h"
-#include "Program.h"
-#include "Shape.h"
-#include "MatrixStack.h"
 #include "Application.h"
 #include "WindowManager.h"
-
-
 
 using namespace std;
 using namespace glm;
 
 /* Global data associated with triangle geometry - this will likely vary
 in later programs - so is left explicit for now  */
-static const GLfloat g_vertex_buffer_data[] = {
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		-1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f};
-
-/* A big global wrapper for all our data */
-
 
 int main(int argc, char *argv[])
 {
@@ -54,7 +40,6 @@ int main(int argc, char *argv[])
 	// may need to initialize or set up different data and state
 
 	application->Init(resourceDir);
-	application->initGeom(resourceDir);
 
 	// Loop until the user closes the window.
 	auto lastTime = chrono::high_resolution_clock::now();
