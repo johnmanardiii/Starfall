@@ -145,89 +145,33 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	shaderManager = ShaderManager::GetInstance();
 	GLuint tex;
 	int width, height, channels;
-	char filepath[1000];
+	
+	//this lambda does a general loadTexture. Can add more parameters to change its behavior if needed.
+	auto loadTexture = [this, resourceDirectory, &tex, &width, &height, &channels] //captures
+	(string filename, string managerIdentifer) { //parameters
+		char filepath[1000];
+		string str = resourceDirectory + filename;
+		strcpy(filepath, str.c_str());
+		unsigned char* data = stbi_load(filepath, &width, &height, &channels, 4);
+		glGenTextures(1, &tex);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
 
-	// load cat texture
-	string str = resourceDirectory + "/cat.jpg";
-	strcpy(filepath, str.c_str());
-	unsigned char* data = stbi_load(filepath, &width, &height, &channels, 4);
-	glGenTextures(1, &tex);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
+		shaderManager.SetTexture(managerIdentifer, tex);
+	};
 
-	shaderManager.SetTexture("Cat", tex);
-
-	str = resourceDirectory + "/LUNA/LUNA_test_tex.png";
-	strcpy(filepath, str.c_str());
-	data = stbi_load(filepath, &width, &height, &channels, 4);
-	glGenTextures(1, &tex);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	shaderManager.SetTexture("Luna", tex);
-
-	// load saturn texture
-	str = resourceDirectory + "/grass.jpg";
-	strcpy(filepath, str.c_str());
-	data = stbi_load(filepath, &width, &height, &channels, 4);
-	glGenTextures(1, &tex);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	shaderManager.SetTexture("Grass", tex);
-
-	// load alpha particle texture
-	str = resourceDirectory + "/alpha.bmp";
-
-	strcpy(filepath, str.c_str());
-	data = stbi_load(filepath, &width, &height, &channels, 4);
-	glGenTextures(1, &tex);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	shaderManager.SetTexture("Alpha", tex);
-
-
-	// load noise texture
-	str = resourceDirectory + "/noiseTex.png";
-
-	strcpy(filepath, str.c_str());
-	data = stbi_load(filepath, &width, &height, &channels, 4);
-	glGenTextures(1, &tex);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	shaderManager.SetTexture("noiseTex", tex);
+	// load all textures
+	loadTexture("/cat.jpg", "Cat");
+	loadTexture("/LUNA/LUNA_test_tex.png", "Luna");
+	loadTexture("/grass.jpg", "Grass");
+	loadTexture("/alpha.bmp", "Alpha");
+	loadTexture("/noiseTex.png", "noiseTex");
 
 
 	auto prog = make_shared<Program>();
