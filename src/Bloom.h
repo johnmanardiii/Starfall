@@ -10,9 +10,11 @@ private:
 	std::shared_ptr<Program> bloomThresholdProg;
 	std::shared_ptr<Program> bloomDownscaleProg;
 	std::shared_ptr<Program> bloomUpscaleProg;
+	void InitializeShaders();
+	void InitializeFramebuffers(int width, int height);
 public:
-	Bloom();
+	GLuint GetBloomTex() const { return bloomTex; }
+	Bloom(int width, int height);
 	~Bloom();
 	void RenderBloom(GLuint quad_vao, GLuint screenTexture);
-	GLuint GetBloomTexture();
 };

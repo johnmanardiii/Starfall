@@ -46,6 +46,8 @@ void PostProcessing::InitializeShaders()
 	GLuint TexLocation = glGetUniformLocation(simple_prog->pid, "screenTexture");
 	glUseProgram(simple_prog->pid);
 	glUniform1i(TexLocation, 0);
+	TexLocation = glGetUniformLocation(simple_prog->pid, "bloomTexture");
+	glUniform1i(TexLocation, 1);
 }
 
 PostProcessing::PostProcessing(WindowManager* wm)
@@ -58,7 +60,7 @@ PostProcessing::PostProcessing(WindowManager* wm)
 	// Get current frame buffer size.
 	glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClearColor(0.109375, 0.05859375, 0.21875, 1.0);
 	glViewport(0, 0, width, height);
 	// Clear default framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -96,12 +98,13 @@ PostProcessing::PostProcessing(WindowManager* wm)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// initialize Bloom rendering object
-	bloom = make_shared<Bloom>();
+	bloom = make_shared<Bloom>(width, height);
 }
 
 PostProcessing::~PostProcessing()
 {
 	glDeleteFramebuffers(1, &base_fbo);
+	//TODO: delete textures
 }
 
 void PostProcessing::ClearFramebuffers()
@@ -111,12 +114,10 @@ void PostProcessing::ClearFramebuffers()
 
 	// clear the base framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, base_fbo);
-	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	// clear the default framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	// set render target to default offscreen framebuffer
@@ -126,6 +127,7 @@ void PostProcessing::ClearFramebuffers()
 
 void PostProcessing::RenderPostProcessing()
 {
+	glDisable(GL_DEPTH_TEST);
 	// Generate the mipmaps for the rendered scene
 	glBindTexture(GL_TEXTURE_2D, base_color);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -133,14 +135,15 @@ void PostProcessing::RenderPostProcessing()
 	// generate bloom
 	bloom->RenderBloom(quad_vao, base_color);
 
-	glDisable(GL_DEPTH_TEST);
 	// bind default framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	simple_prog->bind();
 	glBindVertexArray(quad_vao);
 	glActiveTexture(GL_TEXTURE0);
-	// TODO: bind in bloom texture and additive blend
 	glBindTexture(GL_TEXTURE_2D, base_color);
+	// bind in bloom texture and additive blend
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, bloom->GetBloomTex());
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	simple_prog->unbind();
 }
