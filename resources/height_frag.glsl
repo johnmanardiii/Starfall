@@ -3,7 +3,7 @@ out vec4 color;
 in vec3 frag_pos;
 in vec2 frag_tex;
 in vec3 frag_norm;
-in float vertex_height;
+in float frag_height;
 
 uniform sampler2D tex;
 uniform sampler2D tex2;
@@ -75,7 +75,7 @@ void main()
 	float t=1./100.;
 	texcoords -= vec2(camoff.x,camoff.z)*t;
 
-	color.rgb = texture(tex2, texcoords*20).rgb;// * ((vertex_height + 10) / 20);
+	color.rgb = texture(tex2, texcoords*20).rgb;
 	color.a=1;
 
 	
@@ -87,16 +87,17 @@ void main()
 	vec3 spec = clamp(max(rim, oceanSpecColor), vec3(0), vec3(1));
 
 	vec3 diffuseColor = DiffuseColor(sandNormal, lightDir);
-	color.rgb = spec + diffuseColor;
+	color.rgb = spec + diffuseColor * 0.7;
 
 
 	//color.rgb = vec3(1, 0, 0);
 
 	
-	float len = length(frag_pos.xz+campos.xz);
+	float len = length(frag_pos.xz-campos.xz);
 	len-=41;
 	len/=8.;
 	len=clamp(len,0,1);
 	color.a=1-len;
+	//color.rgb = normalize(frag_norm);
 	
 }
