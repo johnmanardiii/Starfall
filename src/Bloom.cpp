@@ -15,6 +15,8 @@ void Bloom::InitializeShaders()
 	GLuint TexLocation = glGetUniformLocation(bloomThresholdProg->pid, "screenTexture");
 	glUseProgram(bloomThresholdProg->pid);
 	glUniform1i(TexLocation, 0);
+
+
 }
 
 void Bloom::InitializeFramebuffers(int width, int height)
@@ -32,6 +34,28 @@ void Bloom::InitializeFramebuffers(int width, int height)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomTex, 0);
+	// check if framebuffer is set up properly:
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	}
+	glViewport(0, 0, width, height);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// set up second bloom frame buffer object
+	glGenFramebuffers(1, &bloomFBO2);
+	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO2);
+	// Create offscreen color texture and bind it to framebuffer
+	glGenTextures(1, &bloomTex2);
+	glBindTexture(GL_TEXTURE_2D, bloomTex2);
+	// make the texture a floating point texture for HDR
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+	// NOTE THAT TOOK ME WAY TO LONG TO FIX, DON'T USE MIPMAP FILTERS IF NO MIPMAP DUHHHHH
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomTe2x, 0);
 	// check if framebuffer is set up properly:
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
