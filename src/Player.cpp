@@ -1,5 +1,4 @@
 #include "Player.h"
-#include "HeightCalc.h"
 #include "ComponentManager.h"
 #include <glm/gtx/quaternion.hpp>
 #include <iostream>

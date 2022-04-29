@@ -13,7 +13,6 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 		//start taking over the other components.
 		particle->IsActive = true;
 		auto t = transform->GetPos();
-		movement->IsActive = false; // a really easy way to get something to stop moving. Deletion works as normal.
 		collision->IsActive = false; // now it doesn't collide with anything.
 		transform->ApplyRotation(frameTime * 16, vec3(0, 0, 1));
 	}
@@ -26,8 +25,6 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 	else if (flashAmount > 3 * flashSpeed)
 	{   
 		particle->IsActive = false;
-		movement->ApplyVel((0.005f * movement->GetVel()) + vec3(0, 0.05, 0));
-		movement->IsActive = true;
 	} 
 
 }
@@ -43,9 +40,6 @@ void Collect::Init(ComponentManager* compMan)
 
 	index = obj.GetComponentLocation("Transform");
 	transform = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
-
-	index = obj.GetComponentLocation("Movement");
-	movement = static_pointer_cast<Movement>(compMan->GetComponent("Movement", index));
 
 	index = obj.GetComponentLocation("Particle");
 	particle = static_pointer_cast<ParticleStaticSplashRenderer>(compMan->GetComponent("Particle", index));

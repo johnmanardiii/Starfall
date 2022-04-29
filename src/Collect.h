@@ -21,6 +21,5 @@ private:
 	shared_ptr<TextureRenderer> renderer;
 	shared_ptr<Collision> collision;
 	shared_ptr<Transform> transform;
-	shared_ptr<Movement> movement;
 	shared_ptr<ParticleStaticSplashRenderer> particle;
 };

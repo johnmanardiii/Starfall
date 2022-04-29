@@ -215,7 +215,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	// Terrain Shader
 	auto heightProg = make_shared<Program>();
 	heightProg->setVerbose(true);
-	heightProg->setShaderNames(resourceDirectory + "/height_vertex.glsl", resourceDirectory + "/height_frag.glsl", resourceDirectory + "/height_geom.glsl");
+	heightProg->setShaderNames(resourceDirectory + "/height_vertex.glsl", resourceDirectory + "/height_frag.glsl");
 	if (!heightProg->Init())
 
 	{
@@ -246,7 +246,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	shaderManager.SetShader("Height", heightProg);
 
 	//the obj files you want to load. Add more to read them all.
-	vector<string> filenames = { "sphere", "suzanne", "LUNA/luna_arm",
+	vector<string> filenames = { "sphere", "icoSphere", "LUNA/luna_arm",
 		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head" };
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
