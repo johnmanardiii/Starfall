@@ -6,8 +6,7 @@ in vec2 TexCoord;
 uniform sampler2D threshTex;
 
 // A lot of code converted from: https://github.com/Kosmonaut3d/BloomFilter-for-Monogame-and-XNA/blob/master/Bloom%20Sample/Content/Shaders/BloomFilter/Bloom.fx
-// since the method of downsampling was a bit complicated
-//Just an average of 4 values.
+// since the method of downsampling was a bit complicated (need to ask if this is ok in office hours)
 vec4 Box4(vec4 p0, vec4 p1, vec4 p2, vec4 p3)
 {
 	return (p0 + p1 + p2 + p3) * 0.25f;
