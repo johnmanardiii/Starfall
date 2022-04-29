@@ -85,26 +85,6 @@ void ComponentManager::Init(std::string resourceDirectory)
     RandomGenerator randTrans(-40, 40);
     RandomGenerator randScale(0.2, 2);
 
-    //make some starting objects, with the same assets but different starting positions and velocities.
-    for (int i = 0; i < state.GetInitialCount(); i++) {
-        string sphereName = "suzanne" + to_string(i);
-        string sphereShapeFileName = "suzanne";
-        shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
-        shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
-        vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
-        shared_ptr<Movement> movement = make_shared<MonkeyMovement>(sphereName, startingVelocity);
-        shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
-        shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
-        shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
-        transform->ApplyTranslation(vec3(randTrans.GetFloat(), 0, randTrans.GetFloat()));
-        
-        float scale = randScale.GetFloat();
-        transform->ApplyScale(vec3(scale, 1, scale));
-
-        vector<shared_ptr<Component>> sphereComps = { renderer, movement, transform, collision, collect, particles };
-        AddGameObject(sphereName, sphereComps);
-    }
-
     string floorName = "Floor";
     renderer = make_shared<TerrainRenderer>("Cat", "Cat", floorName);
     transform = make_shared<Transform>(floorName);
@@ -128,21 +108,23 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         RandomGenerator randTrans(-40, 40);
         RandomGenerator randScale(0.2, 2);
 
-        string sphereName = "suzanne" + to_string(state.TotalObjectsEverMade);
-        string sphereShapeFileName = "suzanne";
-        shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
+        string sphereName = "icoSphere" + to_string(state.TotalObjectsEverMade);
+        string sphereShapeFileName = "icoSphere";
+        shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Alpha", sphereName);
         shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
         shared_ptr<Movement> movement = make_shared<MonkeyMovement>(sphereName, startingVelocity);
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
         shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
         shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
-        transform->ApplyTranslation(vec3(randTrans.GetFloat(), 1, randTrans.GetFloat()));
+        float x = randTrans.GetFloat();
+        float z = randTrans.GetFloat();
+        transform->ApplyTranslation(vec3(x, heightCalc(x, z), z));
 
         float scale = randScale.GetFloat();
         transform->ApplyScale(vec3(scale, 1, scale));
 
-        vector<shared_ptr<Component>> sphereComps = { renderer, movement, transform, collision, collect };
+        vector<shared_ptr<Component>> sphereComps = { renderer, particles, movement, transform, collision, collect };
         AddGameObject(sphereName, sphereComps);
         state.TotalObjectsEverMade++;
         cout << "\nAdded one more monkey!\n";

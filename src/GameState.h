@@ -11,7 +11,7 @@ public:
         INITIAL_OBJECT_COUNT(init),
         currentObjectCount(init),
         objectsCollected(0),
-        SECONDS_BETWEEN_NEW_GAME_OBJ(10),
+        SECONDS_BETWEEN_NEW_GAME_OBJ(3),
         spawnFrames(0),
         cumulativeFrameTime(0),
         TotalObjectsEverMade(init)
