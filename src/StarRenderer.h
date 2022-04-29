@@ -20,10 +20,7 @@ public:
         texture = shaderMan.GetTexture(tex);
         model = shaderMan.GetModel(mod);
     }
-    void Update(float frameTime, ComponentManager& compMan) { 
-        totalTime += frameTime;
-        Draw(frameTime); 
-    }
+    void Update(float frameTime, ComponentManager* compMan);
     void Init(ComponentManager* compMan);
     void Draw(float frameTime);
 

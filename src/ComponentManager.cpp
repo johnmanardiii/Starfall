@@ -110,7 +110,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 
         string sphereName = "icoSphere" + to_string(state.TotalObjectsEverMade);
         string sphereShapeFileName = "icoSphere";
-        shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Alpha", sphereName);
+        shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Metal", sphereName);
         shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);

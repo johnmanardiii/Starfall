@@ -172,6 +172,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/grass.jpg", "Grass");
 	loadTexture("/alpha.bmp", "Alpha");
 	loadTexture("/noiseTex.png", "noiseTex");
+	loadTexture("/metal.jpg", "Metal");
 
 	// used on Luna
 	auto prog = make_shared<Program>();
@@ -225,9 +226,15 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	starProg->addUniform("V");
 	starProg->addUniform("starTexture");
 	starProg->addUniform("totalTime");
-	partProg->addAttribute("vertPos");
-	partProg->addAttribute("vertNor");
-	partProg->addAttribute("vertTex");
+	starProg->addAttribute("vertPos");
+	starProg->addAttribute("vertNor");
+	starProg->addAttribute("vertTex");
+
+	GLuint StarLocation = glGetUniformLocation(starProg->pid, "Star");
+	glUseProgram(starProg->pid);
+	glUniform1i(StarLocation, 0);
+
+	shaderManager.SetShader("Star", starProg);
 
 
 	// Terrain Shader
