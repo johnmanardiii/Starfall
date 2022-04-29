@@ -173,7 +173,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/alpha.bmp", "Alpha");
 	loadTexture("/noiseTex.png", "noiseTex");
 
-
+	// used on Luna
 	auto prog = make_shared<Program>();
 	prog->setVerbose(true);
 	prog->setShaderNames(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag.glsl");
@@ -193,6 +193,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	shaderManager.SetShader("Texture", prog);
 
+	//used for particle effects on star fragments
 	auto partProg = make_shared<Program>();
 	partProg->setVerbose(true);
 	partProg->setShaderNames(
@@ -211,6 +212,23 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	glUniform1i(PartLocation, 0);
 
 	shaderManager.SetShader("particle", partProg);
+
+	//used for star fragments
+	auto starProg = make_shared<Program>();
+	starProg->setVerbose(true);
+	starProg->setShaderNames(
+		resourceDirectory + "/star_vert.glsl",
+		resourceDirectory + "/star_frag.glsl");
+	starProg->Init();
+	starProg->addUniform("P");
+	starProg->addUniform("M");
+	starProg->addUniform("V");
+	starProg->addUniform("starTexture");
+	starProg->addUniform("totalTime");
+	partProg->addAttribute("vertPos");
+	partProg->addAttribute("vertNor");
+	partProg->addAttribute("vertTex");
+
 
 	// Terrain Shader
 	auto heightProg = make_shared<Program>();
