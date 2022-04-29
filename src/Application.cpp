@@ -226,6 +226,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	starProg->addUniform("V");
 	starProg->addUniform("starTexture");
 	starProg->addUniform("totalTime");
+	starProg->addUniform("centerPos");
 	starProg->addAttribute("vertPos");
 	starProg->addAttribute("vertNor");
 	starProg->addAttribute("vertTex");

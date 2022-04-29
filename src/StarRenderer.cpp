@@ -23,6 +23,8 @@ void StarRenderer::Draw(float frameTime)
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M));
 
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
+	vec3 pos = trans->GetPos();
+	glUniform3f(prog->getUniform("centerPos"), pos.x, pos.y, pos.z);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
