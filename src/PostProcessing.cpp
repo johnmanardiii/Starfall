@@ -133,7 +133,8 @@ void PostProcessing::RenderPostProcessing()
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// generate bloom
-	bloom->RenderBloom(quad_vao, base_color);
+	bloom->RenderBloom(quad_vao, base_color, width, height);
+	glViewport(0, 0, width, height);
 
 	// bind default framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
