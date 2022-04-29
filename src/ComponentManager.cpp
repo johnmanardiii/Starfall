@@ -113,7 +113,6 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Alpha", sphereName);
         shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
-        shared_ptr<Movement> movement = make_shared<MonkeyMovement>(sphereName, startingVelocity);
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
         shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
         shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
@@ -124,13 +123,12 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         float scale = randScale.GetFloat();
         transform->ApplyScale(vec3(scale, 1, scale));
 
-        vector<shared_ptr<Component>> sphereComps = { renderer, particles, movement, transform, collision, collect };
+        vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collision, collect };
         AddGameObject(sphereName, sphereComps);
         state.TotalObjectsEverMade++;
         cout << "\nAdded one more monkey!\n";
     }
 
-    
     // update movements
     for (auto& move : components["Movement"])
     {
@@ -138,18 +136,10 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         move->Update(frameTime, this);
     }
     //resolve collisions.
-    for (auto& giver : components["Collision"]) {
-        
-        //TODO do collisions with the player, and then the ground border here.
+    for (auto& giver : components["Collision"])
+    {
         if (!giver->IsActive) continue;  //don't collide with destroyed objects.
         giver->Update(frameTime, this);
-        for (auto& receiver : components["Collision"]) { //the naive n^2 approach.
-            if (!receiver->IsActive) continue; //don't collide with destroyed objects.
-            if (giver.get() == receiver.get()) continue; //don't collide with yourself, that's just ridiculous.
-            //now we know that both objects are active, and could potentially collide.
-            //Resolve updates gameObject information for both giver and receiver if a collision occurred.
-            static_pointer_cast<Collision>(giver)->Resolve(static_pointer_cast<Collision>(receiver), frameTime);
-        }
     }
 
     // update transforms based on movements.

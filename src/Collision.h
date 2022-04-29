@@ -19,18 +19,15 @@ public:
         shape = *shaderMan.GetModel(model);
     }
     void Init(ComponentManager* manager);
-    void Resolve(shared_ptr<Collision> other, float frameTime);
-    void updateBasedOnCollision(glm::vec3 collisionDirection, float frameTime);
+    
     void Update(float frameTime, ComponentManager* compMan);
     bool IsCollected() const { return hasBeenTouchedByPlayer; }
     float getRadius();
 private:
     glm::vec3 getCenterOfBBox();
-    void collideWithGroundPlane(float frameTime, ComponentManager* compMan);
     void collideWithPlayer(float frameTime, ComponentManager* compMan);
 
     bool hasBeenTouchedByPlayer = false;
     Shape shape;
-    shared_ptr<Movement> movement;
     shared_ptr<Transform> transform;
 };
