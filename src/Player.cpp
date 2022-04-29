@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "HeightCalc.h"
 #include "ComponentManager.h"
 #include <glm/gtx/quaternion.hpp>
 #include <iostream>
@@ -84,8 +85,7 @@ void Player::AddIdleOffset(float frameTime)
 
 void Player::SetPosToGround()
 {
-    // hardcoded value from sin function that generates the terrain.
-    pos.y = sin(pos.x / 10.0f) * sin(pos.z / 10.0f) * 5 + playerYOffset;
+    pos.y = heightCalc(pos.x, pos.z);
 }
 
 Player::Player(vec3 pos) : pos (pos)

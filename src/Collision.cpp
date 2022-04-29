@@ -34,7 +34,9 @@ void Collision::Resolve(shared_ptr<Collision> other, float frameTime) {
     float otherRadius = other->getRadius();
 
     if (glm::distance(center, otherCenter) <= radius + otherRadius) {
-        vec3 collisionDirection = normalize(otherCenter - center);
+        vec3 collisionDirection = otherCenter - center;
+        collisionDirection.y = 0;
+        collisionDirection = normalize(collisionDirection);
         updateBasedOnCollision(collisionDirection, frameTime);
         other->updateBasedOnCollision(-collisionDirection, frameTime);
     }

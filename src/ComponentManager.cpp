@@ -2,6 +2,7 @@
 #include "TerrainRenderer.h"
 #include "PlayerTransform.h"
 #include "EulerTransform.h"
+#include "MonkeyMovement.h"
 
 ComponentManager::ComponentManager()
 {
@@ -91,11 +92,11 @@ void ComponentManager::Init(std::string resourceDirectory)
         shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
         shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
-        shared_ptr<Movement> movement = make_shared<Movement>(sphereName, startingVelocity);
+        shared_ptr<Movement> movement = make_shared<MonkeyMovement>(sphereName, startingVelocity);
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
         shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
         shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
-        transform->ApplyTranslation(vec3(randTrans.GetFloat(), 1, randTrans.GetFloat()));
+        transform->ApplyTranslation(vec3(randTrans.GetFloat(), 0, randTrans.GetFloat()));
         
         float scale = randScale.GetFloat();
         transform->ApplyScale(vec3(scale, 1, scale));
@@ -132,7 +133,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Cat", sphereName);
         shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
-        shared_ptr<Movement> movement = make_shared<Movement>(sphereName, startingVelocity);
+        shared_ptr<Movement> movement = make_shared<MonkeyMovement>(sphereName, startingVelocity);
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
         shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
         shared_ptr<Collect> collect = make_shared<Collect>(sphereName);

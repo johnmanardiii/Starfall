@@ -14,8 +14,7 @@ void TerrainRenderer::Draw(float frameTime)
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &cam.GetPerspective()[0][0]);
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &cam.GetView()[0][0]);
 
-	vec3 pos = -cam.GetPos();
-	//std::cout << "Campos x: " << pos.x << " y: " << pos.y << " z: " << pos.z << std::endl;
+	vec3 pos = cam.GetPos();
 	vec3 offset;
 	vec3 color_offset;
 	offset.y = 0;

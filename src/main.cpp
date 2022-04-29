@@ -12,9 +12,6 @@ Z. Wood + S. Sueda
 using namespace std;
 using namespace glm;
 
-/* Global data associated with triangle geometry - this will likely vary
-in later programs - so is left explicit for now  */
-
 int main(int argc, char *argv[])
 {
 	srand(time(0));
