@@ -14,10 +14,10 @@ public:
 	void Update(float, ComponentManager*);
 	void Init(ComponentManager*);
 
-	void BeginFlash() { flashSpeed = 10; }
+	void BeginCollect() { animSpeed = 10; }
 private:
-	float flashAmount = 0;
-	float flashSpeed = 0;
+	float timeElapsed = 0;
+	float animSpeed = 0;
 	shared_ptr<TextureRenderer> renderer;
 	shared_ptr<Collision> collision;
 	shared_ptr<Transform> transform;

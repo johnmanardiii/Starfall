@@ -7,22 +7,20 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 	// mult by flash speed to be seconds
 	if (collision->IsCollected()) {
 		//start self-destruct.
-		BeginFlash();
-		flashAmount += flashSpeed * frameTime;
-		renderer->SetFlashAmt(sin(flashAmount));
+		BeginCollect();
+		timeElapsed += animSpeed * frameTime;
 		//start taking over the other components.
 		particle->IsActive = true;
-		auto t = transform->GetPos();
 		collision->IsActive = false; // now it doesn't collide with anything.
 		transform->ApplyRotation(frameTime * 16, vec3(0, 0, 1));
 	}
 	
 	//delete after 6s
-	if (flashAmount > 6 * flashSpeed) {
+	if (timeElapsed > 6 * animSpeed) {
 		compMan->RemoveGameObject(Name);
 	}
-	//shoot off into the sky after 3s
-	else if (flashAmount > 3 * flashSpeed)
+	//disable particle effects after 3s
+	else if (timeElapsed > 3 * animSpeed)
 	{   
 		particle->IsActive = false;
 	} 

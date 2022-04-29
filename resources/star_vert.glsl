@@ -20,10 +20,8 @@ void main()
 	vec4 tpos =  M * vec4(vertPos, 1.0);
 	vertex_pos = tpos.xyz;
 
-    vec3 distFromCenterToEdge = tpos.xyz - centerPos;
+    vec3 distFromCenterToEdge = vertex_pos - centerPos;
 
-    gl_Position = M * vec4(vertPos - 2 * (distFromCenterToEdge), 1.0f);
-
-    gl_Position = P * V * gl_Position;
+    gl_Position = P * V * M * vec4(vertPos, 1.0f);
 	vertex_tex = vertTex * vec2(1, -1);
 }

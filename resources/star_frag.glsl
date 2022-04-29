@@ -5,7 +5,7 @@ in vec3 vertex_pos;
 in vec2 vertex_tex;
 
 uniform sampler2D starTexture;
-
+uniform vec3 centerPos;
 
 void main()
 {
@@ -17,5 +17,5 @@ void main()
 
 
     color = vec4(tcol * diffuse,1);
-
+    //color = vec4(centerPos, 1);
 }
