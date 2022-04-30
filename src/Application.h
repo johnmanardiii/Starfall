@@ -5,6 +5,7 @@
 #include "Event.h"
 #include "EventManager.h"
 #include "Audio.h"
+#include "PostProcessing.h"
 
 #include "Program.h"
 #include "Shape.h"
@@ -27,6 +28,7 @@ public:
 	ShaderManager& shaderManager = ShaderManager::GetInstance();
 	WindowManager* windowManager = nullptr;
 	AudioEngine audioEngine;
+	shared_ptr<PostProcessing> postProcessing;
 	
 	//callbacks
 	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

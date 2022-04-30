@@ -58,10 +58,34 @@ vec4 UpsampleLuminancePS(vec2 texCoord)
     return 0.0625f * (c0 + 2 * c1 + c2 + 2 * c3 + 4 * c4 + 2 * c5 + c6 + 2 * c7 + c8); // * Strength + vec4(0, 0, 0, 0); //+ 0.5f * ScreenTexture.Sample(c_texture, texCoord);
 }
 
+// 9-tap bilinear upsampler (tent filter) https://github.com/Unity-Technologies/Graphics/blob/master/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl
+vec4 UpsampleTent()
+{
+    float sampleScale = 1;  // TODO: figure out what this value should be
+    vec2 texelSize = 1.0 / textureSize(lowRes, 0);
+    vec4 d = texelSize.xyxy * vec4(1.0, 1.0, -1.0, 0.0) * sampleScale;
+
+    vec4 s;
+    s =  texture(lowRes, TexCoord - d.xy);
+    s += texture(lowRes, TexCoord - d.wy) * 2.0;
+    s += texture(lowRes, TexCoord - d.zy);
+
+    s += texture(lowRes, TexCoord + d.zw) * 2.0;
+    s += texture(lowRes, TexCoord       ) * 4.0;
+    s += texture(lowRes, TexCoord + d.xw) * 2.0;
+
+    s += texture(lowRes, TexCoord + d.zy);
+    s += texture(lowRes, TexCoord + d.wy) * 2.0;
+    s += texture(lowRes, TexCoord + d.xy);
+
+    return s * (1.0 / 16.0);
+}
+
 void main()
 { 
-    vec4 upsample_color = UpsamplePS(TexCoord);
+   //  vec4 upsample_color = UpsamplePS(TexCoord);
+    vec4 upsample_color = UpsampleTent();
     //vec4 upsample_color = texture(lowRes, TexCoord);
     vec4 currentRes_color = texture(currentRes, TexCoord);
-    color = upsample_color + currentRes_color;
+    color = upsample_color * .3 + currentRes_color;
 }

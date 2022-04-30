@@ -275,6 +275,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 void Application::Init(std::string resourceDirectory)
 {
+	postProcessing = make_shared<PostProcessing>(windowManager);
 	GLSL::checkVersion();
 	// lock the mouse cursor
 	glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -309,8 +310,11 @@ void Application::render(float frameTime)
 	// Clear framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+	// clear all framebuffers
+	postProcessing->ClearFramebuffers();
 	componentManager.UpdateComponents(frameTime, width, height);
 
-	// Draw mesh using GLSL.
-	//drawGround(shaderManager.GetShader("Texture"), width, height);
+	// render post-processing
+	postProcessing->RenderPostProcessing();
 }

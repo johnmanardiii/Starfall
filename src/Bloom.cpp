@@ -44,7 +44,7 @@ void Bloom::InitializeShaders()
 
 void Bloom::InitializeFramebuffers(int width, int height)
 {
-	int scaleDownFactor = 2;
+	int scaleDownFactor = 1;
 	glGenFramebuffers(1, &bloomFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
 	// Create offscreen color texture and bind it to framebuffer
@@ -97,11 +97,10 @@ void Bloom::InitializeFramebuffers(int width, int height)
 	glGenTextures(num_downsamples, upsampledTex);
 	for (int i = 0; i < num_downsamples; i++)
 	{
-		scaleDownFactor *= 2;
 		glBindFramebuffer(GL_FRAMEBUFFER, upsampledFBOs[i]);	// threshold
 		glBindTexture(GL_TEXTURE_2D, upsampledTex[i]);
 		// make the texture a floating point texture for HDR
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width / ((i + 1) * scaleDownFactor), height / ((i + 1) * scaleDownFactor), 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width / scaleDownFactor, height / scaleDownFactor, 0, GL_RGBA, GL_FLOAT, NULL);
 		// NOTE THAT TOOK ME WAY TO LONG TO FIX, DON'T USE MIPMAP FILTERS IF NO MIPMAP DUHHHHH
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -113,6 +112,7 @@ void Bloom::InitializeFramebuffers(int width, int height)
 		{
 			std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
 		}
+		scaleDownFactor *= 2;
 	}
 	glViewport(0, 0, width, height);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -136,9 +136,9 @@ Bloom::~Bloom()
 void Bloom::DownSample(GLuint quad_vao, int width, int height)
 {
 	bool first = true;
-	int scaleDownFactor = 2;
+	int scaleDownFactor = 1;
 	// start off by rendering a single downsample into FBO2
-	for (int i = 0; i < num_downsamples + 1; i++)
+	for (int i = 0; i < num_downsamples; i++)
 	{
 		scaleDownFactor *= 2;
 		glBindFramebuffer(GL_FRAMEBUFFER, downsampleFBOs[i]);
@@ -167,7 +167,7 @@ TODO: LOOK AT THIS CODE WHEN I AM NOT TIRED AND WALK THROUGH ALL PASSES OF DOWNS
 void Bloom::Upsample(GLuint quad_vao, int width, int height)
 {
 	bool first = true;
-	int scaleDownFactor = pow(2, num_downsamples + 1);
+	int scaleDownFactor = pow(2, num_downsamples);
 	// start off by rendering a single downsample into FBO2
 	for (int i = 0; i < num_downsamples ; i++)
 	{
@@ -175,7 +175,7 @@ void Bloom::Upsample(GLuint quad_vao, int width, int height)
 		int j = num_downsamples - i - 1;	// index into lower res upsamples first
 		glBindFramebuffer(GL_FRAMEBUFFER, upsampledFBOs[j]);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glViewport(0, 0, width / scaleDownFactor, height / scaleDownFactor);	// set viewport to texture size (hopefully)
+		glViewport(0, 0, width /  (scaleDownFactor), height / (scaleDownFactor));	// set viewport to texture size (hopefully)
 		bloomUpsample->bind();
 		glBindVertexArray(quad_vao);
 		glActiveTexture(GL_TEXTURE0);
@@ -198,7 +198,7 @@ void Bloom::Upsample(GLuint quad_vao, int width, int height)
 		else
 		{
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, upsampledTex[j - 1]);	// bind lowres	[AFTER THE FIRST, THIS NEEDS TO BE THE UPSAMPLED TEX!!!]
+			glBindTexture(GL_TEXTURE_2D, upsampledTex[j + 1]);	// bind lowres	[AFTER THE FIRST, THIS NEEDS TO BE THE UPSAMPLED TEX!!!]
 
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, downsampledTex[j - 1]);	// bind currentRes
@@ -219,7 +219,7 @@ void Bloom::RenderBloom(GLuint quad_vao, GLuint screenTexture, int width, int he
 	// glClear(GL_DEPTH_BUFFER_BIT);
 
 	glClear(GL_COLOR_BUFFER_BIT);
-	glViewport(0, 0, width / 2, height / 2);
+	glViewport(0, 0, width, height);
 	// extract out threshold values into bloomTex (bloomFBO)
 	bloomThresholdProg->bind();
 	glBindVertexArray(quad_vao);
@@ -229,7 +229,9 @@ void Bloom::RenderBloom(GLuint quad_vao, GLuint screenTexture, int width, int he
 	bloomThresholdProg->unbind();
 	// downsample image 5 times:
 	DownSample(quad_vao, width, height);
-
 	// upscale image into bloomTex (bloomFBO)
 	Upsample(quad_vao, width, height);
+
+	// TODO: blur the upsample result (Idk i don't think im supposed to need this tho):
+
 }
