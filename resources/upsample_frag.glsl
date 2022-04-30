@@ -56,7 +56,6 @@ vec4 UpsampleLuminancePS(vec2 texCoord)
 	vec4 c8 = texture(lowRes, texCoord + vec2(1, 1) * offset + halfPixel);
  
     return 0.0625f * (c0 + 2 * c1 + c2 + 2 * c3 + 4 * c4 + 2 * c5 + c6 + 2 * c7 + c8); // * Strength + vec4(0, 0, 0, 0); //+ 0.5f * ScreenTexture.Sample(c_texture, texCoord);
-
 }
 
 void main()
