@@ -61,7 +61,8 @@ vec4 UpsampleLuminancePS(vec2 texCoord)
 
 void main()
 { 
-    vec4 upsample_color = UpsampleLuminancePS(TexCoord);
+    vec4 upsample_color = UpsamplePS(TexCoord);
+    //vec4 upsample_color = texture(lowRes, TexCoord);
     vec4 currentRes_color = texture(currentRes, TexCoord);
     color = upsample_color + currentRes_color;
 }

@@ -5,7 +5,7 @@
 class Bloom
 {
 private:
-	const static int num_downsamples = 8;
+	const static int num_downsamples = 5;
 	GLuint bloomTex;
 	GLuint downsampleFBOs[num_downsamples];
 	GLuint downsampledTex[num_downsamples];

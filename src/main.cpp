@@ -417,7 +417,7 @@ public:
 		// lock the mouse cursor
 		glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		// Set background color.
-		glClearColor(.12f, .34f, .56f, 1.0f);
+		// glClearColor(.12f, .34f, .56f, 1.0f);
 		// Enable z-buffer test.
 		
 		CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));

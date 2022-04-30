@@ -30,8 +30,9 @@ void AudioEngine::Init(string resourceDir)
 
 void AudioEngine::Play(string soundFileName)
 {
-    ma_result result = ma_sound_start(sounds[soundFileName].get());
-    check(result);
+    // commented out music for sanity purposes
+    //ma_result result = ma_sound_start(sounds[soundFileName].get());
+    //check(result);
 }
 
 void AudioEngine::Cleanup()
