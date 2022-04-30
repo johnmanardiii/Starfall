@@ -2,6 +2,7 @@
 
 void StarRenderer::Update(float frameTime, ComponentManager* compMan) {
 	totalTime += frameTime;
+	
 	Draw(frameTime);
 }
 

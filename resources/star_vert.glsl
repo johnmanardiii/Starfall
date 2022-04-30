@@ -194,7 +194,7 @@ float pnoise(vec3 P, vec3 rep)
 
 
 float turbulence( vec3 p ) {
-    float w = 100.0;
+    float w = 10.0;
     float t = -.5;
     for (float f = 1.0; f <= 10.0; f++){
         float power = pow(2.0, f);
@@ -203,24 +203,24 @@ float turbulence( vec3 p ) {
     return t;
 }
 
+
+
 void main()
 {
-    vertex_tex = vertTex * vec2(1, -1);
+    float noise = 10.0 * -0.1f * turbulence(0.5 * vertNor + totalTime);
 
-    float noise = 10.0 * -0.1f * turbulence(0.5f * vertNor);
+    float b = 5.0 * pnoise(0.05 * vertPos + vec3(2.0 * totalTime), vec3(100.0f));
 
-    float b = 5.0 * pnoise(0.05 * vertPos, vec3(100.0f));
-
-    float displacement = -10 * noise + b;
+    float displacement = -200 * noise + b;
 
     vec3 newPosition;
-    if(false)
+    if(true)
     newPosition = vertPos + vertNor * displacement;
     else
     newPosition = vertPos;
 
-
     vertex_normal_n = normalize(vec4(M * vec4(vertNor,0.0)).xyz);
+    vertex_tex = vertTex * vec2(noise * 4, -noise * 4);
     gl_Position = P * V * M * vec4(newPosition, 1.0f);
 
 	//vertex_normal_n = normalize(vec4(M * vec4(vertNor,0.0)).xyz);

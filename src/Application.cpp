@@ -172,7 +172,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/grass.jpg", "Grass");
 	loadTexture("/alpha.bmp", "Alpha");
 	loadTexture("/noiseTex.png", "noiseTex");
-	loadTexture("/metal.jpg", "Metal");
+	loadTexture("/rainbow.jpg", "Rainbow");
 
 	// used on Luna
 	auto prog = make_shared<Program>();
@@ -272,7 +272,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	shaderManager.SetShader("Height", heightProg);
 
 	//the obj files you want to load. Add more to read them all.
-	vector<string> filenames = { "sphere", "icoSphere", "LUNA/luna_arm",
+	vector<string> filenames = { "sphere", "sphere", "LUNA/luna_arm",
 		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head" };
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());

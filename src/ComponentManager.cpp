@@ -108,9 +108,9 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         RandomGenerator randTrans(-40, 40);
         RandomGenerator randScale(0.2, 2);
 
-        string sphereName = "icoSphere" + to_string(state.TotalObjectsEverMade);
-        string sphereShapeFileName = "icoSphere";
-        shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Metal", sphereName);
+        string sphereName = "sphere" + to_string(state.TotalObjectsEverMade);
+        string sphereShapeFileName = "sphere";
+        shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", sphereName);
         shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
@@ -119,10 +119,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         float x = randTrans.GetFloat();
         float z = randTrans.GetFloat();
         transform->ApplyTranslation(vec3(x, heightCalc(x, z), z));
-
-        float scale = randScale.GetFloat();
-        transform->ApplyScale(vec3(scale, 1, scale));
-
+        transform->ApplyScale(vec3(0.01f));
         vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collision, collect };
         AddGameObject(sphereName, sphereComps);
         state.TotalObjectsEverMade++;
