@@ -22,6 +22,6 @@ void main()
 
     vec3 distFromCenterToEdge = vertex_pos - centerPos;
 
-    gl_Position = P * V * M * vec4(vertPos, 1.0f);
+    gl_Position = P * V * M * vec4(vertPos - 0.5 * (sin(totalTime * 8) * vertex_normal_n), 1.0f);
 	vertex_tex = vertTex * vec2(1, -1);
 }
