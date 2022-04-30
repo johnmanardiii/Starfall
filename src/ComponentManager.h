@@ -12,6 +12,7 @@
 #include "ParticleStaticSplash.h"
 #include "RandomGenerator.h"
 #include "GameState.h"
+#include "HeightCalc.h"
 
 #include <glm/gtx/quaternion.hpp>
 #include <string>
