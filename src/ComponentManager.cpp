@@ -108,8 +108,8 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         RandomGenerator randTrans(-40, 40);
         RandomGenerator randScale(0.2, 2);
 
-        string sphereName = "sphere" + to_string(state.TotalObjectsEverMade);
-        string sphereShapeFileName = "sphere";
+        string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
+        string sphereShapeFileName = "Star Bit";
         shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", sphereName);
         shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());

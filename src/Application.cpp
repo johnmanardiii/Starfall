@@ -272,7 +272,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	shaderManager.SetShader("Height", heightProg);
 
 	//the obj files you want to load. Add more to read them all.
-	vector<string> filenames = { "sphere", "sphere", "LUNA/luna_arm",
+	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/luna_arm",
 		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head" };
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
@@ -290,6 +290,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 			shared_ptr<Shape> shape = make_shared<Shape>();
 			shape->createShape(TOshapes[i][0]); //the first (0'th) shape read in of the i'th file.
 			shape->measure();
+			shape->computeNormals();
 			shape->Init();
 
 			shaderManager.SetModel(filenames[i], shape);

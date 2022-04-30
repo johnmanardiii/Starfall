@@ -15,6 +15,10 @@ class Shape
 public:
 	Shape();
 	virtual ~Shape();
+	void reverseNormals();
+	void populateNorBuf(size_t i, glm::vec3 normal);
+	void normalizeNorBuf();
+	void computeNormals();
 	void createShape(tinyobj::shape_t & shape);
 	void Init();
 	void measure();
