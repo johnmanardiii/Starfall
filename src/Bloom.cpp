@@ -1,4 +1,5 @@
 #include "Bloom.h"
+#include <cmath>
 #include <iostream>
 using namespace std; 
 
@@ -120,6 +121,9 @@ void Bloom::InitializeFramebuffers(int width, int height)
 
 Bloom::Bloom(int width, int height)
 {
+	// TODO: make sure we aren't dividing by 0 using log2() from cmath
+	// num_downsamples = 
+
 	// initialize framebuffers + textures
 	InitializeFramebuffers(width, height);
 	// intialize shaders

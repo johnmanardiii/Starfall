@@ -87,5 +87,5 @@ void main()
     vec4 upsample_color = UpsampleTent();
     //vec4 upsample_color = texture(lowRes, TexCoord);
     vec4 currentRes_color = texture(currentRes, TexCoord);
-    color = upsample_color * .3 + currentRes_color;
+    color = upsample_color * .32 + currentRes_color;
 }
