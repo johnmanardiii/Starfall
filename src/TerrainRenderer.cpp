@@ -26,6 +26,7 @@ void TerrainRenderer::Draw(float frameTime)
 	glUniform3fv(prog->getUniform("camoff"), 1, &offset[0]);
 	glUniform3fv(prog->getUniform("campos"), 1, &pos[0]);
 	glUniform3fv(prog->getUniform("lightDir"), 1, &lightDir[0]);
+	glUniform1f(prog->getUniform("time"), glfwGetTime());
 	glBindVertexArray(terrain.VAOId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain.IndexBuff);
 	glActiveTexture(GL_TEXTURE0);
@@ -34,6 +35,11 @@ void TerrainRenderer::Draw(float frameTime)
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, noiseTexture);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, shallowTexture);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, steepTexture);
+
 	glDrawElements(GL_TRIANGLES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
 	prog->unbind();
 }

@@ -20,6 +20,9 @@ public:
 		texture = shaderMan.GetTexture(tex);
 		heightTexture = shaderMan.GetTexture(heightTex);
 		noiseTexture = shaderMan.GetTexture("noiseTex");
+		shallowTexture = shaderMan.GetTexture("sandShallow");
+		steepTexture = shaderMan.GetTexture("sandSteep");
+
 		terrain = shaderMan.Terrain;
 	}
 	void Update(float frameTime, ComponentManager& compMan) { Draw(frameTime); }
@@ -31,4 +34,6 @@ private:
 	GLuint texture;
 	GLuint heightTexture;
 	GLuint noiseTexture;
+	GLuint shallowTexture;
+	GLuint steepTexture;
 };

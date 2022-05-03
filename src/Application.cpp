@@ -168,6 +168,9 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/grass.jpg", "Grass");
 	loadTexture("/alpha.png", "Alpha");
 	loadTexture("/noiseTex.png", "noiseTex");
+	loadTexture("/sandShallow.jpg", "sandShallow");
+	loadTexture("/sandSteep.jpg", "sandSteep");
+
 	loadTexture("/rainbow.jpg", "Rainbow");
 
 	// used on Luna
@@ -284,6 +287,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	heightProg->addUniform("camoff");
 	heightProg->addUniform("campos");
 	heightProg->addUniform("lightDir");
+	heightProg->addUniform("time");
 	heightProg->addAttribute("vertPos");
 	heightProg->addAttribute("vertTex");
 	assert(glGetError() == GL_NO_ERROR);
@@ -291,10 +295,15 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	TexLocation = glGetUniformLocation(heightProg->pid, "tex");
 	GLuint TexLocation2 = glGetUniformLocation(heightProg->pid, "tex2");
 	GLuint TexLocation3 = glGetUniformLocation(heightProg->pid, "noiseTex");
+	GLuint TexLocation4 = glGetUniformLocation(heightProg->pid, "sandShallow");
+	GLuint TexLocation5 = glGetUniformLocation(heightProg->pid, "sandSteep");
+
 	glUseProgram(heightProg->pid);
 	glUniform1i(TexLocation, 0);
 	glUniform1i(TexLocation2, 1);
 	glUniform1i(TexLocation3, 2);
+	glUniform1i(TexLocation4, 3);
+	glUniform1i(TexLocation5, 4);
 
 	assert(glGetError() == GL_NO_ERROR);
 
