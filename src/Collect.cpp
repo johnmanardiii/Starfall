@@ -13,6 +13,7 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 		particle->IsActive = true;
 		collision->IsActive = false; // now it doesn't collide with anything.
 		transform->ApplyRotation(frameTime * 16, vec3(0, 0, 1));
+
 	}
 	
 	//delete after 6s
@@ -22,6 +23,7 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 	//disable particle effects after 3s
 	else if (timeElapsed > 3 * animSpeed)
 	{   
+		rendererExplosion->IsActive = false;
 		particle->IsActive = false;
 	} 
 

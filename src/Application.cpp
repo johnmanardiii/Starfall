@@ -237,6 +237,31 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	shaderManager.SetShader("Star", starProg);
 
+	
+	//used for explosion
+	auto explosionProg = make_shared<Program>();
+	explosionProg->setVerbose(true);
+	explosionProg->setShaderNames(
+		resourceDirectory + "/explosion_vert.glsl",
+		resourceDirectory + "/explosion_frag.glsl");
+	explosionProg->Init();
+	explosionProg->addUniform("P");
+	explosionProg->addUniform("M");
+	explosionProg->addUniform("V");
+	explosionProg->addUniform("starTexture");
+	explosionProg->addUniform("totalTime");
+	explosionProg->addUniform("centerPos");
+	explosionProg->addAttribute("vertPos");
+	explosionProg->addAttribute("vertNor");
+	explosionProg->addAttribute("vertTex");
+
+	GLuint ExplosionLocation = glGetUniformLocation(explosionProg->pid, "Explosion");
+	glUseProgram(explosionProg->pid);
+	glUniform1i(ExplosionLocation, 0);
+
+	shaderManager.SetShader("Explosion", explosionProg);
+	
+
 
 	// Terrain Shader
 	auto heightProg = make_shared<Program>();
@@ -274,6 +299,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	//the obj files you want to load. Add more to read them all.
 	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/luna_arm",
 		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head" };
+	vec3 explosionScaleFactor = vec3(100.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
 	vector<tinyobj::material_t> objMaterials; //not using for now.
@@ -290,6 +316,9 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 			shared_ptr<Shape> shape = make_shared<Shape>();
 			shape->createShape(TOshapes[i][0]); //the first (0'th) shape read in of the i'th file.
 			shape->measure();
+			if (filenames[i] == "icoSphere") {
+				shape->scale(explosionScaleFactor);
+			}
 			shape->computeNormals();
 			shape->Init();
 

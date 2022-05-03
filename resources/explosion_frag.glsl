@@ -208,7 +208,7 @@ void main()
     //diffuse = clamp(diffuse, 0.2f, 1.0f);
 
     vec3 tcol = texture(starTexture, vertex_tex).rgb;
-
+    
     color = vec4(tcol,1);
     //color = vec4(centerPos, 1);
 }

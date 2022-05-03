@@ -13,10 +13,10 @@ class ComponentManager;
 class StarRenderer : public Renderer
 {
 public:
-    StarRenderer(string mod, string tex, string gameObject) : Renderer(gameObject)
+    StarRenderer(string mod, string tex, string shader, string gameObject) : Renderer(gameObject)
     {
         ShaderManager shaderMan = ShaderManager::GetInstance();
-        prog = shaderMan.GetShader("Star");
+        prog = shaderMan.GetShader(shader);
         texture = shaderMan.GetTexture(tex);
         model = shaderMan.GetModel(mod);
     }

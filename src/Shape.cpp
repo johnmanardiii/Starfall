@@ -99,6 +99,21 @@ void Shape::createShape(tinyobj::shape_t & shape)
 		eleBuf = shape.mesh.indices;
 }
 
+//precompute a scale. THIS MODIFIES ALL OF A SHAPE'S VERTEX POSITION DATA,
+//FOR EVERYTHING THAT USES THE SHAPE!
+void Shape::scale(glm::vec3 scaleFactor) {
+	measure();
+	for (size_t v = 0; v < posBuf.size() / 3; v++) {
+		//x
+		posBuf[3 * v + 0] *= scaleFactor.x;
+		//y
+		posBuf[3 * v + 1] *= scaleFactor.y;
+		//z
+		posBuf[3 * v + 2] *= scaleFactor.z;
+	}
+	
+}
+
 void Shape::measure() {
   float minX, minY, minZ;
    float maxX, maxY, maxZ;

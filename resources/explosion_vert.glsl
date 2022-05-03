@@ -8,7 +8,7 @@ uniform mat4 V;
 uniform mat4 M;
 
 uniform float totalTime;
-uniform float centerPos;
+uniform vec3 centerPos;
 
 out vec3 vertex_pos;
 out vec3 vertex_normal_n;
@@ -203,7 +203,9 @@ float turbulence( vec3 p ) {
     return t;
 }
 
-
+float rand(vec2 co){
+    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+}
 
 void main()
 {
@@ -211,7 +213,7 @@ void main()
 
     float b = 5.0 * pnoise(0.05 * vertPos + vec3(2.0 * totalTime), vec3(100.0f));
 
-    float displacement = -200 * noise + b;
+    float displacement = -140 * noise + b;
 
     vec3 newPosition;
     if(true)
@@ -220,7 +222,12 @@ void main()
     newPosition = vertPos;
 
     vertex_normal_n = normalize(vec4(M * vec4(vertNor,0.0)).xyz);
-    vertex_tex = vertTex * vec2(noise * 4, -noise * 4);
+    //vertex_tex = vertTex * vec2(noise / 4, -noise / 4);
+
+    float samplePosition = clamp(rand(vec2(centerPos.xy)), 0.0, 1.0);
+
+    vertex_tex = vec2(samplePosition) * vec2(2, -2);
+
     gl_Position = P * V * M * vec4(newPosition, 1.0f);
 
 	//vertex_normal_n = normalize(vec4(M * vec4(vertNor,0.0)).xyz);
@@ -229,8 +236,8 @@ void main()
 
     //vec3 distFromCenterToEdge = vertex_pos - centerPos;
 
-    //gl_Position =  M * vec4(vertPos - 2 * (sin(totalTime * 4) * vec3(P * V * vec4(vertex_normal_n, 0.0f)).xyz), 1.0f);
+    gl_Position =  M * vec4(vertPos - 2 * (sin(totalTime * 4) * vec3(P * V * vec4(vertex_normal_n, 0.0f)).xyz), 1.0f);
     //vertex_pos = gl_Position.xyz;
-    //gl_Position = P * V * gl_Position;
+    gl_Position = P * V * gl_Position;
 	
 }
