@@ -24,7 +24,7 @@ void Movement::Move(float frameTime)
 void Movement::Init(ComponentManager* compMan)
 {
 	GameObject obj = compMan->GetGameObject(Name);
-	int index = obj.GetComponentLocation("Transform");
+	int index = obj.GetComponentLocation("Transform").at(0);
 	trans = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
 }
 

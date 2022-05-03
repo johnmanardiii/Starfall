@@ -30,16 +30,18 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 void Collect::Init(ComponentManager* compMan)
 {
 	GameObject obj = compMan->GetGameObject(Name);
-	int index = obj.GetComponentLocation("Renderer");
-	renderer = static_pointer_cast<TextureRenderer>(compMan->GetComponent("Renderer", index));
+	vector<size_t> renderIndices = obj.GetComponentLocation("Renderer");
+	rendererObject = static_pointer_cast<StarRenderer>(compMan->GetComponent("Renderer", renderIndices.at(0)));
+	rendererExplosion = static_pointer_cast<StarRenderer>(compMan->GetComponent("Renderer", renderIndices.at(1)));
 
-	index = obj.GetComponentLocation("Collision");
+
+	int index = obj.GetComponentLocation("Collision").at(0);
 	collision = static_pointer_cast<Collision>(compMan->GetComponent("Collision", index));
 
-	index = obj.GetComponentLocation("Transform");
+	index = obj.GetComponentLocation("Transform").at(0);
 	transform = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
 
-	index = obj.GetComponentLocation("Particle");
+	index = obj.GetComponentLocation("Particle").at(0);
 	particle = static_pointer_cast<ParticleStaticSplashRenderer>(compMan->GetComponent("Particle", index));
 	particle->IsActive = false;
 }

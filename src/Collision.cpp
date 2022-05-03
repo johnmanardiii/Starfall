@@ -45,7 +45,7 @@ void Collision::collideWithPlayer(float frameTime, ComponentManager* compMan) {
 
 void Collision::Init(ComponentManager* compMan) {
     GameObject obj = compMan->GetGameObject(Name);
-    size_t transformIndex = obj.GetComponentLocation("Transform");
+    size_t transformIndex = obj.GetComponentLocation("Transform").at(0);
     
     transform = static_pointer_cast<Transform>(compMan->GetComponent("Transform", transformIndex));
 }

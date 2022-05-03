@@ -18,7 +18,7 @@ void ParticleStaticSplashRenderer::Init(ComponentManager* compMan)
 {
     //link transform component
     GameObject obj = compMan->GetGameObject(Name);
-    int index = obj.GetComponentLocation("Transform");
+    int index = obj.GetComponentLocation("Transform").at(0);
     trans = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
 
     //might be useful. Get the time at which this init happened.

@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Collision.h"
-#include "TextureRenderer.h"
+#include "StarRenderer.h"
 #include <memory>
 #include <string>
 
@@ -18,7 +18,8 @@ public:
 private:
 	float timeElapsed = 0;
 	float animSpeed = 0;
-	shared_ptr<TextureRenderer> renderer;
+	shared_ptr<StarRenderer> rendererObject;
+	shared_ptr<StarRenderer> rendererExplosion;
 	shared_ptr<Collision> collision;
 	shared_ptr<Transform> transform;
 	shared_ptr<ParticleStaticSplashRenderer> particle;
