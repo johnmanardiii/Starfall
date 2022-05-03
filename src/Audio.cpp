@@ -3,6 +3,13 @@
 #include "miniaudio.h"
 using namespace std;
 
+#define DEBUG_MA
+#define CHECK_MA(result) result
+#ifdef DEBUG_MA
+#define CHECK_MA(result) check(result)
+#endif
+
+
 void AudioEngine::check(ma_result result)
 {
     if (result != MA_SUCCESS) {
@@ -14,24 +21,22 @@ void AudioEngine::check(ma_result result)
 void AudioEngine::InitSoundFromFile(string filename)
 {
     sounds[filename] = make_unique<ma_sound>();
-    ma_result result = ma_sound_init_from_file(engine.get(), (resourceDir + filename).c_str(), 0, NULL, NULL, sounds[filename].get());
-    check(result);
+    CHECK_MA(ma_sound_init_from_file(engine.get(), (resourceDir + filename).c_str(), 0, NULL, NULL, sounds[filename].get()));
 }
 
 void AudioEngine::Init(string resourceDir)
 {
     this->resourceDir = resourceDir + "/";
     engine = make_unique<ma_engine>();
-    ma_result result = ma_engine_init(NULL, engine.get());
-    check(result);
+    CHECK_MA(ma_engine_init(NULL, engine.get()));
 
     InitSoundFromFile("tomorrow.mp3");
 }
 
 void AudioEngine::Play(string soundFileName)
 {
-    ma_result result = ma_sound_start(sounds[soundFileName].get());
-    check(result);
+    CHECK_MA(ma_sound_start(sounds[soundFileName].get()));
+    
 }
 
 void AudioEngine::Cleanup()
