@@ -7,6 +7,13 @@ T exponential_growth(T actual, T goal, float factor, float frametime)
     return actual + (goal - actual) * factor * frametime;
 }
 
+// returns a value between 0 and 1 mapping value between start range and end_range
+template<typename T>
+T InverseLerp(T start_range, T end_range, T value)
+{
+    return clamp<float>((value - start_range) / (end_range - start_range), 0.0, 1.0);
+}
+
 void Camera::Update(float frameTime, ComponentManager* compMan)
 {
     //TODO update based on input from mouse+keyboard
@@ -59,8 +66,12 @@ void Camera::Update(double posX, double posY)
     u = cross(w, vec3(0, 1, 0)); //right is forward cross up.
 }
 
-void Camera::CalcPerspective(int width, int height)
+void Camera::CalcPerspective(float frametime, int width, int height, ComponentManager* compMan)
 {
-    perspective = glm::perspective((float)(glm::radians(70.0f)), static_cast<float>(width) / height, 0.1f, 1000.0f);
+    // TODO: make this a lerp of some terminal speed made by mitchell when its time
+    // change the 15 magic number.
+    float goalFov = glm::mix<float>(lowFov, highFov, InverseLerp<float>(0.0f, 15.0f, fabs(compMan->GetPlayer().GetCurrentSpeed())));
+    currentFov = exponential_growth(currentFov, goalFov, .07f * 60.0f, frametime);
+    //currentFov
+    perspective = glm::perspective((float)(glm::radians(currentFov)), static_cast<float>(width) / height, 0.1f, 1000.0f);
 }
-

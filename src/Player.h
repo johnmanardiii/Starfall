@@ -51,6 +51,7 @@ public:
 	bool inputBuffer[4] = { false, false, false, false };
 	void ProcessWASDInput();
 	vec3 GetForward();
+	float GetCurrentSpeed() { return currentSpeed; }
 	void Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
 		shared_ptr<Transform> head, shared_ptr<Transform> arm1,
 		shared_ptr<Transform> arm2);

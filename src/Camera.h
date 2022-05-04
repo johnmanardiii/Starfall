@@ -23,9 +23,9 @@ private:
     vec3 w = vec3(0), u = vec3(0); //the camera basis vectors TODO move into move component
     mat4 view = mat4(1.0f);
     mat4 perspective = mat4(1.0f);
-    const float lowFov = 70.0f;
-    const float highFov = 100.0f;
-    const float currentFov = 70.0f;
+    const float lowFov = 80.0f;
+    const float highFov = 90.0f;
+    float currentFov = 70.0f;
     const float camDistLateral = 12.0f;
     const float camDistHeight = 4.0f;
     vec3 get_wanted_pos(ComponentManager* compMan);
@@ -52,6 +52,6 @@ public:
     const float GetRadius() const { return 1.0f; }
     // must call CalcPerspective before using GetPerspective
     const mat4 GetPerspective() const { return perspective; }
-    void CalcPerspective(int width, int height);
+    void CalcPerspective(float frametime, int width, int height, ComponentManager* compMan);
 };
 

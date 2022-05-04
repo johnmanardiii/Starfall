@@ -60,7 +60,7 @@ PostProcessing::PostProcessing(WindowManager* wm)
 	// Get current frame buffer size.
 	glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(1.0, 0.0, 0.0, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glViewport(0, 0, width, height);
 	// Clear default framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -114,6 +114,7 @@ void PostProcessing::ClearFramebuffers()
 
 	// clear the base framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, base_fbo);
+	glClearColor(0.0, 0.0, 0.0, 1.0);	// clear color for background of scene
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	// clear the default framebuffer
