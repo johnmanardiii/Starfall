@@ -119,13 +119,14 @@ void Bloom::InitializeFramebuffers(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-Bloom::Bloom(int width, int height)
+Bloom::Bloom(PostProcessing* pp)
 {
 	// TODO: make sure we aren't dividing by 0 using log2() from cmath
 	// num_downsamples = 
+	this->postProcessing = pp;
 
 	// initialize framebuffers + textures
-	InitializeFramebuffers(width, height);
+	InitializeFramebuffers(postProcessing->get_width(), postProcessing->get_height());
 	// intialize shaders
 	InitializeShaders();
 }
@@ -137,7 +138,7 @@ Bloom::~Bloom()
 	// TODO: delete used textures.
 }
 
-void Bloom::DownSample(GLuint quad_vao, int width, int height)
+void Bloom::DownSample()
 {
 	bool first = true;
 	int scaleDownFactor = 1;
@@ -147,9 +148,9 @@ void Bloom::DownSample(GLuint quad_vao, int width, int height)
 		scaleDownFactor *= 2;
 		glBindFramebuffer(GL_FRAMEBUFFER, downsampleFBOs[i]);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glViewport(0, 0, width / scaleDownFactor, height / scaleDownFactor);	// set viewport to texture size (hopefully)
+		glViewport(0, 0, postProcessing->get_width() / scaleDownFactor, postProcessing->get_height() / scaleDownFactor);	// set viewport to texture size (hopefully)
 		bloomDownsample->bind();
-		glBindVertexArray(quad_vao);
+		glBindVertexArray(postProcessing->get_quad_vao());
 		glActiveTexture(GL_TEXTURE0);
 		if (first)
 		{
@@ -168,7 +169,7 @@ void Bloom::DownSample(GLuint quad_vao, int width, int height)
 /*
 TODO: LOOK AT THIS CODE WHEN I AM NOT TIRED AND WALK THROUGH ALL PASSES OF DOWNSCALE AND UPSCALE ON PAPER
 */
-void Bloom::Upsample(GLuint quad_vao, int width, int height)
+void Bloom::Upsample()
 {
 	bool first = true;
 	int scaleDownFactor = pow(2, num_downsamples);
@@ -179,9 +180,9 @@ void Bloom::Upsample(GLuint quad_vao, int width, int height)
 		int j = num_downsamples - i - 1;	// index into lower res upsamples first
 		glBindFramebuffer(GL_FRAMEBUFFER, upsampledFBOs[j]);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glViewport(0, 0, width /  (scaleDownFactor), height / (scaleDownFactor));	// set viewport to texture size (hopefully)
+		glViewport(0, 0, postProcessing->get_width() /  (scaleDownFactor), postProcessing->get_height() / (scaleDownFactor));	// set viewport to texture size (hopefully)
 		bloomUpsample->bind();
-		glBindVertexArray(quad_vao);
+		glBindVertexArray(postProcessing->get_quad_vao());
 		glActiveTexture(GL_TEXTURE0);
 		if (j == 0)
 		{
@@ -213,7 +214,7 @@ void Bloom::Upsample(GLuint quad_vao, int width, int height)
 	}
 }
 
-void Bloom::RenderBloom(GLuint quad_vao, GLuint screenTexture, int width, int height)
+void Bloom::RenderBloom()
 {
 	// clear all framebuffers of color data
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
@@ -223,18 +224,18 @@ void Bloom::RenderBloom(GLuint quad_vao, GLuint screenTexture, int width, int he
 	// glClear(GL_DEPTH_BUFFER_BIT);
 
 	glClear(GL_COLOR_BUFFER_BIT);
-	glViewport(0, 0, width, height);
+	glViewport(0, 0, postProcessing->get_width(), postProcessing->get_height());
 	// extract out threshold values into bloomTex (bloomFBO)
 	bloomThresholdProg->bind();
-	glBindVertexArray(quad_vao);
+	glBindVertexArray(postProcessing->get_quad_vao());
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, screenTexture);
+	glBindTexture(GL_TEXTURE_2D, postProcessing->get_base_texture());
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	bloomThresholdProg->unbind();
 	// downsample image 5 times:
-	DownSample(quad_vao, width, height);
+	DownSample();
 	// upscale image into bloomTex (bloomFBO)
-	Upsample(quad_vao, width, height);
+	Upsample();
 
 	// TODO: blur the upsample result (Idk i don't think im supposed to need this tho):
 

@@ -27,6 +27,8 @@ void Camera::Update(float frameTime, ComponentManager* compMan)
     pos = exponential_growth(pos, goal_pos, .05f * 60.0f, frameTime);
     vec3 up = vec3(0, 1, 0);
     mat4 lookAt = glm::lookAt(pos, target, up); //first person camera. "looks at" the direction of target from the starting point of pos.
+    // update last view for motion blur
+    lastView = view;
     view = lookAt; //something can watch view and do something based on that value.
 }
 
@@ -72,6 +74,8 @@ void Camera::CalcPerspective(float frametime, int width, int height, ComponentMa
     // change the 15 magic number.
     float goalFov = glm::mix<float>(lowFov, highFov, InverseLerp<float>(0.0f, 15.0f, fabs(compMan->GetPlayer().GetCurrentSpeed())));
     currentFov = exponential_growth(currentFov, goalFov, .07f * 60.0f, frametime);
+    // set last perspective for rendering motion blur
+    lastPerspective = perspective;
     //currentFov
     perspective = glm::perspective((float)(glm::radians(currentFov)), static_cast<float>(width) / height, 0.1f, 1000.0f);
 }

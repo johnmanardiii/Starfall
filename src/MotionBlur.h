@@ -3,13 +3,10 @@
 #include "PostProcessing.h"
 #include <memory>
 
-class PostProcessing;
-
-class Bloom
+class MotionBlur
 {
 private:
 	const static int num_downsamples = 9;
-	PostProcessing* postProcessing;
 	GLuint bloomTex;
 	GLuint downsampleFBOs[num_downsamples];
 	GLuint downsampledTex[num_downsamples];
@@ -21,11 +18,9 @@ private:
 	std::shared_ptr<Program> bloomUpsample;
 	void InitializeShaders();
 	void InitializeFramebuffers(int width, int height);
-	void DownSample();
-	void Upsample();
 public:
 	GLuint GetBloomTex() const { return upsampledTex[0]; }
-	Bloom(PostProcessing* _pp);
-	~Bloom();
-	void RenderBloom();
+	MotionBlur(PostProcessing* postprocessing);
+	~MotionBlur();
+	void RenderMotionBlur(GLuint quad_vao, GLuint screenTexture, int width, int height);
 };

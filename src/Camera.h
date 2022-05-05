@@ -22,7 +22,9 @@ private:
     double xRot = 0.0, yRot = 0.0; //rotation in radians from start. TODO move into move component, this or the basis vectors, or something else to describe rotate orientation.
     vec3 w = vec3(0), u = vec3(0); //the camera basis vectors TODO move into move component
     mat4 view = mat4(1.0f);
+    mat4 lastView = mat4(1.0f);
     mat4 perspective = mat4(1.0f);
+    mat4 lastPerspective = mat4(1.0f);
     const float lowFov = 80.0f;
     const float highFov = 90.0f;
     float currentFov = 70.0f;

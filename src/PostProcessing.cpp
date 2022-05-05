@@ -80,11 +80,16 @@ PostProcessing::PostProcessing(WindowManager* wm)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, base_color, 0);
 
-	glGenRenderbuffers(1, &base_depth_stencil);
-	glBindRenderbuffer(GL_RENDERBUFFER, base_depth_stencil);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, base_depth_stencil);
+
+	// make a texture for the depth buffer for rendering motion blur and other effects.
+	glGenTextures(1, &base_depth);
+	glBindTexture(GL_TEXTURE_2D, base_depth);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, base_depth, 0);
 
 	// check if framebuffer is set up properly:
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -98,7 +103,7 @@ PostProcessing::PostProcessing(WindowManager* wm)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// initialize Bloom rendering object
-	bloom = make_shared<Bloom>(width, height);
+	bloom = make_shared<Bloom>(this);
 }
 
 PostProcessing::~PostProcessing()
@@ -134,7 +139,7 @@ void PostProcessing::RenderPostProcessing()
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// generate bloom
-	bloom->RenderBloom(quad_vao, base_color, width, height);
+	bloom->RenderBloom();
 	glViewport(0, 0, width, height);
 
 	// bind default framebuffer

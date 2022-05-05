@@ -4,6 +4,8 @@
 #include "Bloom.h"
 #include <memory>
 
+class Bloom;
+
 class PostProcessing
 {
 private:
@@ -13,12 +15,14 @@ private:
 	void InitializeShaders();
 	GLuint base_fbo;
 	GLuint quad_vao, quad_vbo;
-	GLuint base_color, base_depth_stencil;
+	GLuint base_color, base_depth;
 	std::shared_ptr<Program> simple_prog;
 	std::shared_ptr<Bloom> bloom;
 public:
 	const int get_width() const { return width; }	// getters for framebuffer data
 	const int get_height() const { return height; }
+	const GLuint get_quad_vao() const { return quad_vao; }
+	const GLuint get_base_texture() const { return base_color; }
 	PostProcessing(WindowManager* wm);
 	~PostProcessing();
 	void ClearFramebuffers();

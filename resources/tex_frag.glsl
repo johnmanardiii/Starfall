@@ -16,7 +16,6 @@ void main()
 	vec3 tcol= texture(tex, vertex_tex).rgb;
 	color.rgb = (1- flashAmt) * tcol + flashAmt * flashCol;
 	diffuse = clamp(diffuse, 0.1f, 1.0f);
-	diffuse *= 2;
 	color *= diffuse;
 	color.a = 1;
 }
