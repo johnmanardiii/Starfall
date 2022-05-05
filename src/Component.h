@@ -7,6 +7,9 @@ class Movement;
 class Transform;
 class Collect;
 class TextureRenderer;
+class Movement;
+class PlayerMovement;
+class Player;
 #include <string>
 
 //"interface" (no interface in c++) to reinforce that components should have an update

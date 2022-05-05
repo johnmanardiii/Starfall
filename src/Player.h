@@ -8,7 +8,7 @@
 #include "TextureRenderer.h"
 #include "GameObject.h"
 #include "EulerTransform.h"
-
+#include "PlayerMovement.h"
 
 #include <vector>
 #include <memory>
@@ -18,38 +18,38 @@ using glm::vec3;
 using glm::mat4;
 using glm::normalize;
 
+#define MAX_SLOPE_MULT 20.0f
+#define GRAVITY_MULT 10.0f
+#define STRONG_GRAVITY_MULT 20.0f
 
 class Player
 {
 private:
 	Player(vec3 pos);
 	vec3 pos = vec3(0);
-	float speed = 15.0f;	// speed in units/second
 	float playerYOffset = -1.5f;	// target move pos
 	float currentFloatOffset = 0;
-	float rotationSpeed = 90.0f;	// degrees per second
 	float idleTime = 0.0f;
 	const float idleHeight = .4f;
-	float currentSpeed = 0.0f;
 	float currentRotationChange = 0.0f;
 	float currentZRotation = 0.0f;
 	float currentXRotation = 0.0f;
 	void AnimatePlayerModel(float frameTime);
-	shared_ptr<Transform> trans = NULL;
-	void SetPosToGround();
 	void AddIdleOffset(float frameTime);
+	shared_ptr<Transform> trans = NULL;
 	shared_ptr<EulerTransform> pTransform;
 	shared_ptr<Transform> headTrans;
 	shared_ptr<Transform> arm1Trans;
 	shared_ptr<Transform> arm2Trans;
+	shared_ptr<PlayerMovement> movement = NULL;
 public:
 	const std::string pName = "player";
 	const std::string pArm1Name = "arm1";
 	const std::string pArm2Name = "arm2";
 	const std::string pHeadName = "head";
 	void Update(float frameTime, ComponentManager* compMan);
-	bool inputBuffer[4] = { false, false, false, false };
 	void ProcessWASDInput();
+	void SetInput(int index, bool val);
 	vec3 GetForward();
 	void Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
 		shared_ptr<Transform> head, shared_ptr<Transform> arm1,

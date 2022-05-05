@@ -1,3 +1,4 @@
+#pragma once
 #include <math.h>
 
 // hardcoded value from sin function that generates the terrain.

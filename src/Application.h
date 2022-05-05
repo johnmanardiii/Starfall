@@ -10,6 +10,8 @@
 #include "Program.h"
 #include "Shape.h"
 #include "MatrixStack.h"
+// For Input enum
+#include "PlayerMovement.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
