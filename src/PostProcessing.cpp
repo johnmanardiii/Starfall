@@ -50,9 +50,10 @@ void PostProcessing::InitializeShaders()
 	glUniform1i(TexLocation, 1);
 }
 
-PostProcessing::PostProcessing(WindowManager* wm)
+PostProcessing::PostProcessing(WindowManager* wm, Camera* cam)
 {
 	windowManager = wm;
+	camera = cam;
 	InitializeQuad();
 	InitializeShaders();
 
@@ -104,6 +105,7 @@ PostProcessing::PostProcessing(WindowManager* wm)
 
 	// initialize Bloom rendering object
 	bloom = make_shared<Bloom>(this);
+	mb = make_shared<MotionBlur>(this);
 }
 
 PostProcessing::~PostProcessing()
@@ -138,6 +140,9 @@ void PostProcessing::RenderPostProcessing()
 	glBindTexture(GL_TEXTURE_2D, base_color);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
+	mb->RenderMotionBlur(camera);
+
+	/*
 	// generate bloom
 	bloom->RenderBloom();
 	glViewport(0, 0, width, height);
@@ -153,4 +158,5 @@ void PostProcessing::RenderPostProcessing()
 	glBindTexture(GL_TEXTURE_2D, bloom->GetBloomTex());
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	simple_prog->unbind();
+	*/
 }

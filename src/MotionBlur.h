@@ -1,26 +1,23 @@
 #pragma once
 #include "Program.h"
-#include "PostProcessing.h"
+#include "Camera.h"
 #include <memory>
+
+class PostProcessing;
 
 class MotionBlur
 {
 private:
 	const static int num_downsamples = 9;
-	GLuint bloomTex;
-	GLuint downsampleFBOs[num_downsamples];
-	GLuint downsampledTex[num_downsamples];
-	GLuint upsampledFBOs[num_downsamples];
-	GLuint upsampledTex[num_downsamples];
-	GLuint bloomFBO;	// if I remember correctly, you can't write to the FBO you are reading from, and multiple passes.
-	std::shared_ptr<Program> bloomThresholdProg;
-	std::shared_ptr<Program> bloomDownsample;
-	std::shared_ptr<Program> bloomUpsample;
+	PostProcessing* postProcessing;
+	GLuint blurTex;
+	GLuint blurFBO;
+	std::shared_ptr<Program> motionBlurProg;
 	void InitializeShaders();
 	void InitializeFramebuffers(int width, int height);
 public:
-	GLuint GetBloomTex() const { return upsampledTex[0]; }
-	MotionBlur(PostProcessing* postprocessing);
+	const GLuint GetMotionBlurTex() const { return blurTex; }
+	MotionBlur(PostProcessing* _pp);
 	~MotionBlur();
-	void RenderMotionBlur(GLuint quad_vao, GLuint screenTexture, int width, int height);
+	void RenderMotionBlur(Camera* cam);
 };

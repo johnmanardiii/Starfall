@@ -275,7 +275,6 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 void Application::Init(std::string resourceDirectory)
 {
-	postProcessing = make_shared<PostProcessing>(windowManager);
 	GLSL::checkVersion();
 	// lock the mouse cursor
 	glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -292,6 +291,8 @@ void Application::Init(std::string resourceDirectory)
 	componentManager.Init(resourceDirectory);
 	audioEngine.Init(resourceDirectory);
 	audioEngine.Play("tomorrow.mp3");
+
+	postProcessing = make_shared<PostProcessing>(windowManager, &componentManager.GetCamera());
 }
 
 void Application::render(float frameTime)

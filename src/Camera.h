@@ -49,11 +49,13 @@ public:
         static Camera instance(pos);
         return instance;
     }
-    mat4 GetView() { return view; }
     const vec3 GetPos() const { return pos; }
     const float GetRadius() const { return 1.0f; }
     // must call CalcPerspective before using GetPerspective
+    const mat4 const GetView() { return view; }
     const mat4 GetPerspective() const { return perspective; }
+    const mat4 const GetPrevView() { return lastView; } // lol sounds like preview
+    const mat4 const GetPrevProj() { return lastPerspective; }
     void CalcPerspective(float frametime, int width, int height, ComponentManager* compMan);
 };
 
