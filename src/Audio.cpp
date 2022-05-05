@@ -3,7 +3,7 @@
 #include "miniaudio.h"
 using namespace std;
 
-#define DEBUG_MA
+//#define DEBUG_MA
 #define CHECK_MA(result) result
 #ifdef DEBUG_MA
 #define CHECK_MA(result) check(result)

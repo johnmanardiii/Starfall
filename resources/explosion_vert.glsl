@@ -237,7 +237,7 @@ void main()
     //vec3 distFromCenterToEdge = vertex_pos - centerPos;
 
     gl_Position =  M * vec4(vertPos - 2 * (sin(totalTime * 4) * vec3(P * V * vec4(vertex_normal_n, 0.0f)).xyz), 1.0f);
-    //vertex_pos = gl_Position.xyz;
+    vertex_pos = gl_Position.xyz;
     gl_Position = P * V * gl_Position;
 	
 }

@@ -216,18 +216,15 @@ void main()
     float displacement = 0 * noise + b;
     vec3 newPosition;
     if(true)
-    newPosition = vertPos + vertNor * displacement;
+        newPosition = vertPos + vertNor * displacement;
     else
-    newPosition = vertPos;
+        newPosition = vertPos;
 
     vertex_normal_n = normalize(vec4(M * vec4(vertNor,0.0)).xyz);
 
     //sample a small amount of a rainbow texture to determine what color it should be
-    float samplePosition = clamp(rand(vec2(centerPos.xy)), 0.0, 1.0);
-
-    vertex_tex = vec2(samplePosition) * vec2(2, -2);
+    float samplePosition = clamp(rand(vec2(centerPos.xy)), -1.0, 1.0);
+    vertex_pos = (M * vec4(vertPos, 1.0)).xyz;
+    vertex_tex = vec2(samplePosition + displacement / 8, samplePosition - displacement / 8);
     gl_Position = P * V * M * vec4(newPosition, 1.0f);
-
-
-	
 }

@@ -97,7 +97,7 @@ void Player::Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
     shared_ptr<Transform> arm2)
 {
     GameObject obj = compMan->GetGameObject(pName);
-    size_t index = obj.GetComponentLocation("Transform").at(0);
+    size_t index = obj.GetComponentLocation("Transform");
     trans = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
 
     pTransform = pTrans;

@@ -112,7 +112,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         string sphereShapeFileName = "Star Bit";
         string explosionShapeFileName = "icoSphere";
         shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", "Star", sphereName);
-        shared_ptr<Renderer> explosionRenderer = make_shared<StarRenderer>(explosionShapeFileName, "Rainbow", "Explosion", sphereName);
+        
         shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
@@ -122,7 +122,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         float z = randTrans.GetFloat();
         transform->ApplyTranslation(vec3(x, heightCalc(x, z), z));
         transform->ApplyScale(vec3(0.01f));
-        vector<shared_ptr<Component>> sphereComps = { renderer, explosionRenderer, particles, transform, collision, collect };
+        vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collision, collect };
         AddGameObject(sphereName, sphereComps);
         state.TotalObjectsEverMade++;
         cout << "\nAdded one more monkey!\n";
@@ -183,22 +183,20 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
     unordered_map<type_info*, size_t> componentList;
     //don't care what container is used to pass in components,
     //Pad unused components with null.
-    unordered_map<string, vector<size_t>> objComps;
+    unordered_map<string, size_t> objComps;
     for (const auto& comp : comps) {
         if (!comp) continue; //null check
         //if not null
         auto p = addToComponentList(comp);
-        objComps[p.first].push_back(p.second);
+        objComps[p.first] = p.second;
         objComps.insert(p);
     }
     objects[name] = GameObject(name, objComps);
     //call Init on all of a GameObject's components, now that they are initialized.
     for (auto& comp : objects[name].GetComponentLocations()) {
         string name = comp.first;
-        vector<size_t> indices = comp.second;
-        for (size_t index : indices) { //if a component has multiple of a single type, call init on them all
-            GetComponent(name, index)->Init(this);
-        }
+        size_t index = comp.second;
+        GetComponent(name, index)->Init(this);
     }//end processing component vector freeing
 }
 
@@ -275,17 +273,17 @@ void ComponentManager::RemoveGameObject(string name)
     //make a copy, don't actually remove from map until its components are all gone
     GameObject obj = GetGameObject(name);
     assert(name == obj.Name); //DEBUG quick sanity check
-    unordered_map<string, vector<size_t>> comps = obj.GetComponentLocations();
+    unordered_map<string, size_t> comps = obj.GetComponentLocations();
     for (auto& comp : comps) {
         string name = comp.first;
-        vector<size_t> indices = comp.second;
+        size_t index = comp.second;
 
         //free up for insertion. Do this by supplying the component's
         //indices for use by a new component, and marking the component as not in use.
-        for (size_t index : indices) {
-            GetComponent(name, index)->IsActive = false;
-            componentOpenSlots[name].push(index);
-        }
+        
+        GetComponent(name, index)->IsActive = false;
+        componentOpenSlots[name].push(index);
+        
     }//end processing component vector freeing
 
     //no longer referenced anywhere, delete from map.

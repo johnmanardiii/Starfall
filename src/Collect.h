@@ -19,8 +19,7 @@ private:
 	float timeElapsed = 0;
 	float animSpeed = 0;
 	shared_ptr<StarRenderer> rendererObject;
-	shared_ptr<StarRenderer> rendererExplosion;
-	shared_ptr<Collision> collision;
+    shared_ptr<Collision> collision;
 	shared_ptr<Transform> transform;
 	shared_ptr<ParticleStaticSplashRenderer> particle;
 };

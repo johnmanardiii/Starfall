@@ -299,7 +299,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	//the obj files you want to load. Add more to read them all.
 	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/luna_arm",
 		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head" };
-	vec3 explosionScaleFactor = vec3(100.0f);
+	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
 	vector<tinyobj::material_t> objMaterials; //not using for now.
@@ -340,7 +340,6 @@ void Application::Init(std::string resourceDirectory)
 
 	CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
 	CHECKED_GL_CALL(glEnable(GL_BLEND));
-	CHECKED_GL_CALL(glEnable(GL_DEBUG_OUTPUT));
 	CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 	glPointSize(20.0f);
 	InitShaderManager(resourceDirectory);

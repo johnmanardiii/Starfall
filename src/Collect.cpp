@@ -4,6 +4,7 @@
 #include <iostream>
 void Collect::Update(float frameTime, ComponentManager* compMan)
 {
+    
 	// mult by flash speed to be seconds
 	if (collision->IsCollected()) {
 		//start self-destruct.
@@ -13,17 +14,18 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 		particle->IsActive = true;
 		collision->IsActive = false; // now it doesn't collide with anything.
 		transform->ApplyRotation(frameTime * 16, vec3(0, 0, 1));
+        transform->ApplyScale(vec3(0.96f));
 
 	}
 	
 	//delete after 6s
-	if (timeElapsed > 6 * animSpeed) {
+	if (timeElapsed > 0.4 * animSpeed) {
 		compMan->RemoveGameObject(Name);
 	}
 	//disable particle effects after 3s
-	else if (timeElapsed > 3 * animSpeed)
+	else if (timeElapsed > 0.2 * animSpeed)
 	{   
-		rendererExplosion->IsActive = false;
+        transform->ApplyScale(vec3(1.1f));
 		particle->IsActive = false;
 	} 
 
@@ -32,18 +34,16 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 void Collect::Init(ComponentManager* compMan)
 {
 	GameObject obj = compMan->GetGameObject(Name);
-	vector<size_t> renderIndices = obj.GetComponentLocation("Renderer");
-	rendererObject = static_pointer_cast<StarRenderer>(compMan->GetComponent("Renderer", renderIndices.at(0)));
-	rendererExplosion = static_pointer_cast<StarRenderer>(compMan->GetComponent("Renderer", renderIndices.at(1)));
-
-
-	int index = obj.GetComponentLocation("Collision").at(0);
+	int renderIndex = obj.GetComponentLocation("Renderer");
+	rendererObject = static_pointer_cast<StarRenderer>(compMan->GetComponent("Renderer", renderIndex));
+	
+    int index = obj.GetComponentLocation("Collision");
 	collision = static_pointer_cast<Collision>(compMan->GetComponent("Collision", index));
 
-	index = obj.GetComponentLocation("Transform").at(0);
+    index = obj.GetComponentLocation("Transform");
 	transform = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
 
-	index = obj.GetComponentLocation("Particle").at(0);
+	index = obj.GetComponentLocation("Particle");
 	particle = static_pointer_cast<ParticleStaticSplashRenderer>(compMan->GetComponent("Particle", index));
 	particle->IsActive = false;
 }

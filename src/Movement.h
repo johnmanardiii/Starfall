@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "Transform.h"
-#include "ComponentManager.h"
+class ComponentManager;
 
 #include <memory>
 using namespace glm;
