@@ -3,6 +3,7 @@
 #include "PlayerTransform.h"
 #include "EulerTransform.h"
 #include "MonkeyMovement.h"
+#include "SkyboxRenderer.h"
 
 ComponentManager::ComponentManager()
 {
@@ -95,6 +96,15 @@ void ComponentManager::Init(std::string resourceDirectory)
     transform->SetPos(vec3(50, 1, -50));
     vector<shared_ptr<Component>> floorComps = { renderer, transform };
     AddGameObject(floorName, floorComps);
+
+    // initialize skybox
+    string skyboxName = "Skybox";
+    renderer = make_shared<SkyboxRenderer>(skyboxName, "cube");
+    transform = make_shared<Transform>(skyboxName);
+    transform->SetPos(vec3(50, 1, -50));
+    vector<shared_ptr<Component>> skyboxComps = { renderer, transform };
+    AddGameObject(skyboxName, skyboxComps);
+
 }
 
 void ComponentManager::AddLineOfStars()

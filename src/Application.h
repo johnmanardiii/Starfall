@@ -41,6 +41,7 @@ public:
 #define MESHSIZE 100
 	//initialization
 	void InitTerrain();
+	void InitSkybox();
 	void InitShaderManager(const std::string& resourceDirectory);
 	void Init(std::string resourceDirectory);
 	

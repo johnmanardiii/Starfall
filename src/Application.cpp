@@ -136,6 +136,11 @@ void Application::InitTerrain() {
 	shaderManager.Terrain = terrain;
 }
 
+void Application::InitSkybox()
+{
+
+}
+
 void Application::InitShaderManager(const std::string& resourceDirectory)
 {
 	shaderManager = ShaderManager::GetInstance();
@@ -309,9 +314,28 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	shaderManager.SetShader("Height", heightProg);
 
+	// Skybox Shader
+	auto skyboxProg = make_shared<Program>();
+	skyboxProg->setVerbose(true);
+	skyboxProg->setShaderNames(resourceDirectory + "/skybox_vert.glsl", resourceDirectory + "/skybox_frag.glsl");
+	if (!skyboxProg->Init())
+
+	{
+		std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+		exit(1);
+	}
+
+	skyboxProg->addUniform("P");
+	skyboxProg->addUniform("V");
+	skyboxProg->addUniform("M");
+
+	assert(glGetError() == GL_NO_ERROR);
+	shaderManager.SetShader("Skybox", skyboxProg);
+
+
 	//the obj files you want to load. Add more to read them all.
 	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/luna_arm",
-		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head" };
+		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head", "cube"};
 	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
