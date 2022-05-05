@@ -1,5 +1,5 @@
 #include "PlayerMovement.h"
-#include "Movement.h"
+#include "ComponentManager.h"
 
 PlayerMovement::PlayerMovement(std::string name) : Movement(name) {}
 PlayerMovement::PlayerMovement(std::string name, vec3 vel) : Movement(name, vel) {}

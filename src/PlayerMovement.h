@@ -1,6 +1,5 @@
 #pragma once
-class Movement; //#include "Movement.h"
-#include "ComponentManager.h"
+#include "Movement.h"
 enum Input {W = 0, A = 1, S = 2, D = 3, LSHIFT = 4};
 
 class PlayerMovement : public Movement
@@ -16,7 +15,7 @@ public:
 	float GetSpeed();
 	float GetAngularSpeed();
 private:
-	float speed = 15.0f;	// speed in units/second
+	float speed = 1.0f;	// speed in units/second
 	float rotationSpeed = 90.0f; // 90 degrees per second
 	float currentAngularSpeed = 0.0f;
 	float currentSpeed = 0.0f;

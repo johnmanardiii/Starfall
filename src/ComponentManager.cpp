@@ -44,7 +44,8 @@ void ComponentManager::Init(std::string resourceDirectory)
     shared_ptr<Transform> transform = pTransform;
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
     shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer };
+    shared_ptr<Movement> playerMovement = make_shared<PlayerMovement>(player.pName);
+    std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer, playerMovement};
     transform->SetPos(vec3(0, 1, 2));
     transform->SetScale(vec3(.5));
     AddGameObject(player.pName, playerComps);

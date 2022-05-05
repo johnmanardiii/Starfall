@@ -1,5 +1,5 @@
 #include "Movement.h"
-
+#include "ComponentManager.h"
 vec3 Movement::GetVel()
 {
 	return velocity;
