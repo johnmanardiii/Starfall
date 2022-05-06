@@ -19,11 +19,11 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 	}
 	
 	//delete after 6s
-	if (timeElapsed > 0.4 * animSpeed) {
+	if (timeElapsed > 2.4 * animSpeed) {
 		compMan->RemoveGameObject(Name);
 	}
 	//disable particle effects after 3s
-	else if (timeElapsed > 0.2 * animSpeed)
+	else if (timeElapsed > 2 * animSpeed)
 	{   
         transform->ApplyScale(vec3(1.1f));
 		particle->IsActive = false;

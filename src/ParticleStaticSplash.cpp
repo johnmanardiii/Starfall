@@ -25,7 +25,7 @@ void ParticleStaticSplashRenderer::Init(ComponentManager* compMan)
     startTime = compMan->GetGameState()->GetTotalFrameTime();
 
     //set the particles' starting position to the linked transfor component
-    particles = make_unique<particleSys>(100, trans->GetPos());
+    particles = make_unique<particleSys>(10000, trans->GetPos());
     //set up gpu data
     particles->gpuSetup();
 }
