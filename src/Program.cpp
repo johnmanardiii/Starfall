@@ -110,6 +110,14 @@ bool Program::Init()
 	CHECKED_GL_CALL(glAttachShader(pid, FS));
 	if (GS >= 2)
 		CHECKED_GL_CALL(glAttachShader(pid, GS));
+
+	//set this before the linking stage.
+	if (usingTransformFeedback) {
+		const GLchar* feedbackVaryings[] = { "outPos" };
+		glTransformFeedbackVaryings(pid, 1, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
+		//use GL_SEPARATE_ATTRIBS if you want to write to multiple buffer objects, or at different offsets into a buffer.
+	}
+
 	CHECKED_GL_CALL(glLinkProgram(pid));
 	CHECKED_GL_CALL(glGetProgramiv(pid, GL_LINK_STATUS, &rc));
 	if (!rc)

@@ -15,8 +15,13 @@ class Shape
 public:
 	Shape();
 	virtual ~Shape();
+	void reverseNormals();
+	void populateNorBuf(size_t i, glm::vec3 normal);
+	void normalizeNorBuf();
+	void computeNormals();
 	void createShape(tinyobj::shape_t & shape);
 	void Init();
+	void scale(glm::vec3 scaleFactor);
 	void measure();
 	void draw(const std::shared_ptr<Program> prog) const;
 	glm::vec3 min;

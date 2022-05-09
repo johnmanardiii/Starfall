@@ -22,6 +22,7 @@ public:
 
 	void setShaderNames(const std::string &v, const std::string &f);
 	void setShaderNames(const std::string& v, const std::string& f, const std::string& g);
+	void setTransformFeedback(bool val) { usingTransformFeedback = val; }
 	virtual bool Init();
 	virtual void bind();
 	virtual void unbind();
@@ -31,7 +32,7 @@ public:
 	GLint getAttribute(const std::string &name) const;
 	GLint getUniform(const std::string &name) const;
 	GLuint pid = 0;
-
+	
 protected:
 
 	std::string vShaderName;
@@ -43,7 +44,7 @@ private:
 	std::map<std::string, GLint> attributes;
 	std::map<std::string, GLint> uniforms;
 	bool verbose = true;
-
+	bool usingTransformFeedback = false;
 };
 
 #endif // LAB471_PROGRAM_H_INCLUDED

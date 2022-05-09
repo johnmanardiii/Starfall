@@ -1,19 +1,11 @@
 #version 330 core
+out vec4 color;
+in vec3 vertex_normal_n;
+in vec3 vertex_pos;
+in vec2 vertex_tex;
 
-
-layout(location = 0) in vec3 pColor;
-layout(location = 1) in vec3 pNormal;
-layout(location = 2) in vec3 pRotation;
-
-uniform mat4 P;
-uniform mat4 M;
-uniform mat4 V;
-
-
+uniform sampler2D starTexture;
 uniform vec3 centerPos;
-uniform float totalTime;
-
-out vec3 partCol;
 
 //
 // GLSL textureless classic 3D noise "cnoise",
@@ -195,7 +187,7 @@ float pnoise(vec3 P, vec3 rep)
 
 
 float turbulence( vec3 p ) {
-    float w = 10.0;
+    float w = 100.0;
     float t = -.5;
     for (float f = 1.0; f <= 10.0; f++){
         float power = pow(2.0, f);
@@ -210,29 +202,13 @@ float rand(vec2 co){
 
 void main()
 {
+    vec3 lightPos = vec3(50,30,50);
+    vec3 lightDir = normalize(lightPos - vertex_pos);
+    //float diffuse = dot(vertex_normal_n, lightDir);
+    //diffuse = clamp(diffuse, 0.2f, 1.0f);
 
-	float noise = 10.0 * -0.1f * turbulence(0.5 * pNormal + 5);
-
-    float b = 5.0 * pnoise(0.05 * centerPos + vec3(2.0 * 5), vec3(100.0f));
-
-    float displacement = -5 * noise + b;
-
-    vec3 newPosition;
-
-    newPosition = centerPos + pNormal * (0.1 - 16 * (totalTime * totalTime * totalTime * totalTime) * displacement);
-	  //newPosition += pRotation;
-
-
-
-
-	// Billboarding: set the upper 3x3 to be the identity matrix
-	mat4 M0 = M;
-
-	M0[0] = vec4(1.0, 0.0, 0.0, 0.0);
-	M0[1] = vec4(0.0, 1.0, 0.0, 0.0);
-	M0[2] = vec4(0.0, 0.0, 1.0, 0.0);
-
-	gl_Position = P * V * vec4(newPosition, 1.0);
-
-	partCol = pColor;
+    vec3 tcol = texture(starTexture, vertex_tex).rgb;
+    
+    color = vec4(tcol,1);
+    //color = vec4(centerPos, 1);
 }
