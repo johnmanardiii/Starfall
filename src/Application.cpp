@@ -136,9 +136,41 @@ void Application::InitTerrain() {
 	shaderManager.Terrain = terrain;
 }
 
-void Application::InitSkybox()
+void Application::InitSkybox(const std::string& resourceDirectory)
 {
+	unsigned int textureID;
 
+	vector<std::string> faces{
+		"sky_06.png",
+		"sky_05.png",
+		"sky_03.png",
+		"sky_04.png",
+		"sky_01.png",
+		"sky_02.png"
+	};
+
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(false);
+	for (GLuint i = 0; i < faces.size(); i++) {
+		unsigned char *data =
+			stbi_load((resourceDirectory + "/Skybox/" + faces[i]).c_str(), &width, &height, &nrChannels, 0);
+		if (data) {
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+				0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		}
+		else {
+			cout << "failed to load: " << (resourceDirectory + "/" + faces[i]).c_str() << endl;
+		}
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	cout << " creating cube map any errors : " << glGetError() << endl;
+	shaderManager.skyboxTexId = textureID;
 }
 
 void Application::InitShaderManager(const std::string& resourceDirectory)
@@ -328,6 +360,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	skyboxProg->addUniform("P");
 	skyboxProg->addUniform("V");
 	skyboxProg->addUniform("M");
+	skyboxProg->addAttribute("vertPos");
 
 	assert(glGetError() == GL_NO_ERROR);
 	shaderManager.SetShader("Skybox", skyboxProg);
@@ -364,6 +397,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	}
 
 	InitTerrain();
+	InitSkybox(resourceDirectory);
 }
 
 void Application::Init(std::string resourceDirectory)

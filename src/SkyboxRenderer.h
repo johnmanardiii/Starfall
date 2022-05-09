@@ -12,7 +12,7 @@ public:
 	SkyboxRenderer(string gameObject, string mod) : Renderer(gameObject)
 	{
 		ShaderManager shaderMan = ShaderManager::GetInstance();
-		prog = shaderMan.GetShader("Texture");
+		prog = shaderMan.GetShader("Skybox");
 		model = shaderMan.GetModel(mod);
 	}
 	void Update(float frameTime, ComponentManager& compMan) { Draw(frameTime); }

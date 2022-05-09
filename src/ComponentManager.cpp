@@ -99,12 +99,12 @@ void ComponentManager::Init(std::string resourceDirectory)
 
     // initialize skybox
     string skyboxName = "Skybox";
-    renderer = make_shared<SkyboxRenderer>(skyboxName, "cube");
+	shared_ptr<SkyboxRenderer> skyboxRenderer = make_shared<SkyboxRenderer>(skyboxName, "cube");
     transform = make_shared<Transform>(skyboxName);
-    transform->SetPos(vec3(50, 1, -50));
-    vector<shared_ptr<Component>> skyboxComps = { renderer, transform };
+    transform->SetPos(vec3(0, 1, 2));
+	transform->SetScale(vec3(100, 100, 100));
+    vector<shared_ptr<Component>> skyboxComps = { skyboxRenderer, transform };
     AddGameObject(skyboxName, skyboxComps);
-
 }
 
 void ComponentManager::AddLineOfStars()
