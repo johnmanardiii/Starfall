@@ -207,6 +207,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	partProg->addUniform("totalTime");
 	partProg->addUniform("centerPos");
 	partProg->addUniform("alphaTexture");
+	partProg->addUniform("alphaMult");
 	partProg->addUniform("rainbowTexture");
 	partProg->addAttribute("pColor");
 	partProg->addAttribute("pNormal");

@@ -112,6 +112,7 @@ void particleSys::drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> tr
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(Model));
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
 	glUniform3f(prog->getUniform("centerPos"), trans->GetPos().x, trans->GetPos().y, trans->GetPos().z);
+	glUniform1f(prog->getUniform("alphaMult"), clamp(1-totalTime, 0.0f, 1.0f));
 	// Draw the points
 	glDrawArraysInstanced(GL_POINTS, 0, 1, numP);
 	
