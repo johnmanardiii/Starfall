@@ -110,7 +110,6 @@ void particleSys::drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> tr
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(View));
 	mat4 Model = glm::translate(mat4(1.0f),trans->GetPos());
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(Model));
-	cout << totalTime << endl;
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
 	glUniform3f(prog->getUniform("centerPos"), trans->GetPos().x, trans->GetPos().y, trans->GetPos().z);
 	// Draw the points

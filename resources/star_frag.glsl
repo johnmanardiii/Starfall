@@ -6,7 +6,7 @@ in vec2 vertex_tex;
 
 uniform sampler2D starTexture;
 uniform vec3 centerPos;
-
+uniform vec3 campos;
 //
 // GLSL textureless classic 3D noise "cnoise",
 // with an RSL-style periodic variant "pnoise".
@@ -209,6 +209,13 @@ void main()
 
     vec3 tcol = texture(starTexture, vertex_tex).rgb;
 
-    color = vec4(tcol * diffuse,1);
+    //alpha fadeout with distance - this should match the implementation in height_frag.glsl
+    float len = length(vertex_pos.xz - campos.xz);
+    len -= 41;
+    len /= 8.0f;
+    len = clamp(len, 0, 1);
+    float a = 1 - len;
+
+    color = vec4(tcol * diffuse,a);
     //color = vec4(centerPos, 1);
 }

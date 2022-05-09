@@ -26,6 +26,9 @@ void StarRenderer::Draw(float frameTime)
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
 	vec3 pos = trans->GetPos();
 	glUniform3f(prog->getUniform("centerPos"), pos.x, pos.y, pos.z);
+	vec3 campos = cam.GetPos();
+	glUniform3f(prog->getUniform("campos"), campos.x, campos.y, campos.z);
+
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
