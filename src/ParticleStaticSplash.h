@@ -20,10 +20,10 @@ public:
     void Draw(float frameTime);
     void Update(float frameTime, ComponentManager* compMan);
     void Init(ComponentManager* compMan);
-
     std::unique_ptr<particleSys> particles;
+    float totalTime = 0;
 private:
-    float startTime = 0;
+    
     GLuint texture;
     
 };

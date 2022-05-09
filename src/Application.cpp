@@ -170,7 +170,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/cat.jpg", "Cat");
 	loadTexture("/LUNA/LUNA_test_tex.png", "Luna");
 	loadTexture("/grass.jpg", "Grass");
-	loadTexture("/alpha.bmp", "Alpha");
+	loadTexture("/alpha.png", "Alpha");
 	loadTexture("/noiseTex.png", "noiseTex");
 	loadTexture("/rainbow.jpg", "Rainbow");
 
@@ -204,13 +204,19 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	partProg->addUniform("P");
 	partProg->addUniform("M");
 	partProg->addUniform("V");
+	partProg->addUniform("totalTime");
+	partProg->addUniform("centerPos");
 	partProg->addUniform("alphaTexture");
-	partProg->addAttribute("vertPos");
+	partProg->addUniform("rainbowTexture");
 	partProg->addAttribute("pColor");
+	partProg->addAttribute("pNormal");
+	partProg->addAttribute("pRotation");
 
-	GLuint PartLocation = glGetUniformLocation(partProg->pid, "particle");
+	GLuint PartLocation0 = glGetUniformLocation(partProg->pid, "particle");
+	GLuint PartLocation1 = glGetUniformLocation(partProg->pid, "particle");
 	glUseProgram(partProg->pid);
-	glUniform1i(PartLocation, 0);
+	glUniform1i(PartLocation0, 0);
+	glUniform1i(PartLocation1, 0);
 
 	shaderManager.SetShader("particle", partProg);
 
@@ -341,7 +347,7 @@ void Application::Init(std::string resourceDirectory)
 	CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
 	CHECKED_GL_CALL(glEnable(GL_BLEND));
 	CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-	glPointSize(20.0f);
+	glPointSize(5.0f);
 	InitShaderManager(resourceDirectory);
 	// do ComponentManager's init here
 	componentManager.Init(resourceDirectory);

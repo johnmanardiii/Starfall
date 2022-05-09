@@ -213,13 +213,11 @@ void main()
 
     float b = 5.0 * pnoise(0.05 * vertPos + vec3(2.0 * totalTime), vec3(100.0f));
 
-    float displacement = 0 * noise + b;
+    float displacement = -1 * noise + b;
     vec3 newPosition;
-    if(true)
-        newPosition = vertPos + vertNor * displacement;
-    else
-        newPosition = vertPos;
-
+    
+    newPosition = vertPos + vertNor * displacement;
+    
     vertex_normal_n = normalize(vec4(M * vec4(vertNor,0.0)).xyz);
 
     //sample a small amount of a rainbow texture to determine what color it should be

@@ -70,6 +70,9 @@ void ComponentManager::Init(std::string resourceDirectory)
 
     player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans);
 
+    //initialize random starting attributes for particles. Generate a few batches of 100k particles.
+    particleSys::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 100000);
+
     // Initialize the GLSL program, just for the ground plane.
     auto prog = make_shared<Program>();
     prog->setVerbose(true);
@@ -107,12 +110,9 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         RandomGenerator randMove(-10, 10);
         RandomGenerator randTrans(-40, 40);
         RandomGenerator randScale(0.2, 2);
-
         string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
         string sphereShapeFileName = "Star Bit";
-        string explosionShapeFileName = "icoSphere";
         shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", "Star", sphereName);
-        
         shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);

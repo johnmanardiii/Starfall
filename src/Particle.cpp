@@ -11,11 +11,7 @@
 #include "Texture.h"
 #include "RandomGenerator.h"
 
-float randFloat(float l, float h)
-{
-	float r = rand() / (float) RAND_MAX;
-	return (1.0f - r) * l + r * h;
-}
+
 
 Particle::Particle(vec3 start, vec4 color) :
 	position(start),
@@ -33,7 +29,7 @@ Particle::~Particle()
 
 
 
-/* all particles born at the origin */
+/* all particles born at the origin 
 void Particle::rebirth(float currentTotalTime, vec3 start)
 {
 	float vMult = 7.0f;
@@ -59,4 +55,4 @@ void Particle::update(float totalTime, float frameTime, const vec3 &g, const vec
 	if (totalTime > tEnd) {
 		rebirth(totalTime, source);
 	}
-}
+}*/
