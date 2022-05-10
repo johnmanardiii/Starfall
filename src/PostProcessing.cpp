@@ -140,7 +140,7 @@ void PostProcessing::SetUpFrameBuffers()
 		// tell bloom and motion blur that resolution has changed
 		// and the framebuffers and viewports need to be
 		// re-initialized.
-		//TODO: add code to bloom and motion blur to handle window resize.
+		bloom->OnResizeWindow();
 	}
 
 	// clear the base framebuffer

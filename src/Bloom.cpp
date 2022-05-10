@@ -3,6 +3,8 @@
 #include <iostream>
 using namespace std; 
 
+// Intitializes all shaders from the files. Only needs to be called once at
+// the beginning.
 void Bloom::InitializeShaders()
 {
 	std::string resourceDir = "../resources";
@@ -39,12 +41,21 @@ void Bloom::InitializeShaders()
 	glUseProgram(bloomUpsample->pid);
 	glUniform1i(TexLocation, 0);
 	TexLocation = glGetUniformLocation(bloomUpsample->pid, "currentRes");
-	glUseProgram(bloomUpsample->pid);
 	glUniform1i(TexLocation, 1);
 }
 
+// sets up all framebuffers required for rendering bloom.
 void Bloom::InitializeFramebuffers(int width, int height)
 {
+	// calculate number of downsamples needed and allocate that much memory for
+	// FBO and Tex arrays
+	//num_downsamples = int(min(log2(width), log2(height))) - 1;
+
+	//downsampleFBOs = new GLuint[num_downsamples];
+	//downsampledTex = new GLuint[num_downsamples];
+	//upsampledFBOs = new GLuint[num_downsamples];
+	//upsampledTex = new GLuint[num_downsamples];
+
 	int scaleDownFactor = 1;
 	glGenFramebuffers(1, &bloomFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
@@ -119,10 +130,14 @@ void Bloom::InitializeFramebuffers(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void Bloom::OnResizeWindow()
+{
+	DeleteFBOTex();
+	InitializeFramebuffers(postProcessing->GetWidth(), postProcessing->GetHeight());
+}
+
 Bloom::Bloom(PostProcessing* pp)
 {
-	// TODO: make sure we aren't dividing by 0 using log2() from cmath
-	// num_downsamples = 
 	this->postProcessing = pp;
 
 	// initialize framebuffers + textures
@@ -131,13 +146,29 @@ Bloom::Bloom(PostProcessing* pp)
 	InitializeShaders();
 }
 
-Bloom::~Bloom()
+void Bloom::DeleteFBOTex()
 {
-	// delete framebuffers + textures
 	glDeleteFramebuffers(1, &bloomFBO);
-	// TODO: delete used textures.
+	glDeleteFramebuffers(num_downsamples, downsampleFBOs);
+	glDeleteFramebuffers(num_downsamples, upsampledFBOs);
+
+	glDeleteTextures(1, &bloomTex);
+	glDeleteTextures(num_downsamples, downsampledTex);
+	glDeleteTextures(num_downsamples, upsampledTex);
+
+	//delete[] downsampleFBOs;
+	//delete[] downsampledTex;
+	//delete[] upsampledFBOs;
+	//delete[] upsampledTex;
 }
 
+Bloom::~Bloom()
+{
+	DeleteFBOTex();
+}
+
+// Renders the threshold scene into lower and lower resolutions, using 13-box downsample to average out the pixels
+// as the resolution is halved each pass.
 void Bloom::DownSample()
 {
 	bool first = true;
@@ -166,13 +197,14 @@ void Bloom::DownSample()
 	}
 }
 
-/*
-TODO: LOOK AT THIS CODE WHEN I AM NOT TIRED AND WALK THROUGH ALL PASSES OF DOWNSCALE AND UPSCALE ON PAPER
-*/
+// Combines the last-lowest resolution with the next-highest resolution by upsampling the lower resolution image
+// and adding it to the higher resolution image. This is where exponential falloff occurs and I am not sure
+// if it should because the upsample uses a tent filter but it doesn't seem to do enough.
 void Bloom::Upsample()
 {
 	bool first = true;
 	int scaleDownFactor = pow(2, num_downsamples);
+	bloomUpsample->bind();
 	// start off by rendering a single downsample into FBO2
 	for (int i = 0; i < num_downsamples ; i++)
 	{
@@ -181,39 +213,40 @@ void Bloom::Upsample()
 		glBindFramebuffer(GL_FRAMEBUFFER, upsampledFBOs[j]);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glViewport(0, 0, postProcessing->GetWidth() /  (scaleDownFactor), postProcessing->GetHeight() / (scaleDownFactor));	// set viewport to texture size (hopefully)
-		bloomUpsample->bind();
 		glBindVertexArray(postProcessing->GetQuadVAO());
 		glActiveTexture(GL_TEXTURE0);
 		if (j == 0)
 		{
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, upsampledTex[1]);	// bind lowres
+			glBindTexture(GL_TEXTURE_2D, upsampledTex[1]);	// bind lowres (highest res upsample (width/2, height/2))
 
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, bloomTex);	// bind currentRes
+			glBindTexture(GL_TEXTURE_2D, bloomTex);	// bind (full-res threshold image)
 		}
 		if (first)
 		{
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, downsampledTex[j]);	// bind lowres	[AFTER THE FIRST, THIS NEEDS TO BE THE UPSAMPLED TEX!!!
+			glBindTexture(GL_TEXTURE_2D, downsampledTex[j]);	// bind lowest res downsample
 
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, downsampledTex[j - 1]);	// bind currentRes
+			glBindTexture(GL_TEXTURE_2D, downsampledTex[j - 1]);	// bind next lowest res downsample
+			first = false;
 		}
 		else
 		{
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, upsampledTex[j + 1]);	// bind lowres	[AFTER THE FIRST, THIS NEEDS TO BE THE UPSAMPLED TEX!!!]
+			glBindTexture(GL_TEXTURE_2D, upsampledTex[j + 1]);	// bind lowres upsample [AFTER THE FIRST, THIS NEEDS TO BE THE UPSAMPLED TEX!!!]
 
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, downsampledTex[j - 1]);	// bind currentRes
+			glBindTexture(GL_TEXTURE_2D, downsampledTex[j - 1]);	// bind currentRes downsampled image
 		}
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		bloomUpsample->unbind();
-		first = false;
 	}
+	bloomUpsample->unbind();
 }
 
+// Renders all bloom using the PostProcessing BaseTex.
+// Result of sampling threshold values found in upsampledTex[0]
 void Bloom::RenderBloom()
 {
 	// clear all framebuffers of color data
@@ -232,5 +265,4 @@ void Bloom::RenderBloom()
 	DownSample();
 	// upscale image into bloomTex (bloomFBO)
 	Upsample();
-
 }
