@@ -1,7 +1,7 @@
 #pragma once
 #include "Program.h"
 #include <memory>
-
+#include <math.h>
 class Bloom
 {
 private:

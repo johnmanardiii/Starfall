@@ -1,7 +1,7 @@
 #include "Bloom.h"
 #include <iostream>
 using namespace std; 
-
+    
 void Bloom::InitializeShaders()
 {
 	std::string resourceDir = "../resources";
