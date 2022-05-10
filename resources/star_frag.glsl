@@ -216,6 +216,11 @@ void main()
     len = clamp(len, 0, 1);
     float a = 1 - len;
     
-    color = vec4(0.55 + (tcol * diffuse),a);
+
+    vec3 randCol = vec3(
+      abs(0.55f * rand(centerPos.xy)),
+      abs(0.55f * rand(centerPos.yz)),
+      abs(0.55f * rand(centerPos.xz)));
+    color = vec4(randCol + (tcol * diffuse),a);
     //color = vec4(centerPos, 1);
 }
