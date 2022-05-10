@@ -18,7 +18,7 @@ vec3 ACESFilm(vec3 x)
 }
 
 void main()
-{ 
+{
     vec3 fb_color = texture(screenTexture, TexCoord).rgb;
     vec3 bloom_color = texture(bloomTexture, TexCoord).rgb;
     fb_color += bloom_color.rgb * .005;

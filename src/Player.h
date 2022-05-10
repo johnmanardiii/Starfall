@@ -34,6 +34,7 @@ private:
 	float currentRotationChange = 0.0f;
 	float currentZRotation = 0.0f;
 	float currentXRotation = 0.0f;
+	float radius = 1.0f;
 	void AnimatePlayerModel(float frameTime);
 	shared_ptr<Transform> trans = NULL;
 	void SetPosToGround();
@@ -57,6 +58,7 @@ public:
 		shared_ptr<Transform> head, shared_ptr<Transform> arm1,
 		shared_ptr<Transform> arm2);
 	const vec3 GetPosition() { return pos; }
+	float GetRadius() { return radius; }
 	static Player& GetInstance(vec3 pos) {
 		static Player instance(pos);
 		return instance;

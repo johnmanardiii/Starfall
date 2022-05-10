@@ -37,7 +37,11 @@ vec2 GetVelocity()
     return velocity;
 }
 
-
+// THINGS TO TRY:
+// 1. SIMPLE RADIAL BLUR
+// 2. ONLY TRANSLATIONAL CAMERA MOTION BLUR
+// Q FOR PROFESSOR WOOD: Can I switch to adding Deferred Shading as one of my topics since I am not sure if 
+//                       Instead of camera movement (I don't feel like mine has been enough work to be a tech)?
 void main()
 {
     vec2 velocity = GetVelocity() /  2.0f; // reduce velocity to lower motion blur effect here since
@@ -63,6 +67,8 @@ void main()
 
     // John Code: Lerp between the original image and the motion blurred image for 
     //            less motion blur around the center of the screen
+
+    // QUESTION: DOES BLOOM HAPPEN ON THE MOTION BLURRED IMAGE OR LIKE THE UNBLURRED ONE?
 
     // calculate the percentage distance away from the center of the screen (0.5, 0.5)
     // and then divide that by a set amount of distance. (.7071 is max)

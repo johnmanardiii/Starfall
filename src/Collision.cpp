@@ -35,9 +35,9 @@ void Collision::collideWithPlayer(float frameTime, ComponentManager* compMan) {
     vec3 center = transform->GetPos();
     vec3 playerPos = compMan->GetPlayer().GetPosition();
     float radius = getRadius();
-    float camRadius = compMan->GetCamera().GetRadius();
+    float pRadius = compMan->GetPlayer().GetRadius();
     
-    if (glm::distance(center, playerPos) <= radius + camRadius) {
+    if (glm::distance(center, playerPos) <= radius + pRadius) {
         hasBeenTouchedByPlayer = true;
         compMan->GetGameState()->Collect();
     }

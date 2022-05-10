@@ -158,10 +158,9 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 
     // update the player
     player.Update(frameTime, this);
-
-    //update camera position.
-    camera.CalcPerspective(frameTime, width, height, this);
-    camera.Update(frameTime, this);
+    
+    // update the camera
+    camera.Update(frameTime, width, height, this);
 
     //finally update renderers/draw.
 

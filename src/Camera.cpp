@@ -14,8 +14,9 @@ T InverseLerp(T start_range, T end_range, T value)
     return clamp<float>((value - start_range) / (end_range - start_range), 0.0, 1.0);
 }
 
-void Camera::Update(float frameTime, ComponentManager* compMan)
+void Camera::Update(float frameTime, int width, int height, ComponentManager* compMan)
 {
+    CalcPerspective(frameTime, width, height, compMan);
     // look at the player
     vec3 target = compMan->GetPlayer().GetPosition();
     float currentPlayerSpeed = compMan->GetPlayer().GetCurrentSpeed();
@@ -53,34 +54,6 @@ glm::vec3 Camera::get_wanted_pos(ComponentManager* compMan)
     vec3 target_pos = compMan->GetPlayer().GetPosition() + currentCamDistZ * -compMan->GetPlayer().GetForward() +
         vec3(0, 1, 0) * camDistHeight;
     return target_pos;
-}
-
-//not sure how to handle update based on outside parameters yet. Might refactor with event manager.
-void Camera::Update(double posX, double posY)
-{
-    if (firstMouseMovement) { //avoids first-frame jerky camera movement
-        mousePrevX = posX;
-        mousePrevY = posY;
-        firstMouseMovement = false;
-    }
-    deltaMouseX = posX - mousePrevX;
-    deltaMouseY = mousePrevY - posY; //y is inverted
-    //adjust movement based on sensitivity
-    xRot += sensitivityX * deltaMouseX;
-    yRot += sensitivityY * deltaMouseY;
-    //cap yRot to avoid gimbal lock.
-    constexpr float cap = glm::radians<float>(80.0f); //in degrees
-    if (yRot > cap) yRot = cap;
-    if (yRot < -cap) yRot = -cap;
-    //set the previous values
-    mousePrevX = posX;
-    mousePrevY = posY;
-    //update gaze and cameraRight vector w and u using xRot and yRot.
-    w = -normalize(vec3(
-        cos(xRot) * cos(yRot),
-        sin(yRot),
-        sin(xRot) * cos(yRot)));
-    u = cross(w, vec3(0, 1, 0)); //right is forward cross up.
 }
 
 void Camera::CalcPerspective(float frametime, int width, int height, ComponentManager* compMan)

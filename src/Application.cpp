@@ -13,32 +13,20 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
-	if (key == GLFW_KEY_MINUS && action == GLFW_PRESS)
-	{
-		componentManager.GetCamera().AdjustMovementSpeed(0.5);
-	}
-	if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS)
-	{
-		componentManager.GetCamera().AdjustMovementSpeed(2);
-	}
-	//camera movement
+	// player movement
 	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
 		componentManager.GetPlayer().inputBuffer[0] = true;
-		//eyePos -= movementSensitivity * w;
 	}
 
 	if (key == GLFW_KEY_A && action == GLFW_PRESS) {
 		componentManager.GetPlayer().inputBuffer[1] = true;
-		//eyePos += movementSensitivity * u;
 	}
 	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
 		componentManager.GetPlayer().inputBuffer[2] = true;
-		//eyePos += movementSensitivity * w;
 	}
 
 	if (key == GLFW_KEY_D && action == GLFW_PRESS) {
 		componentManager.GetPlayer().inputBuffer[3] = true;
-		//eyePos -= movementSensitivity * u;
 	}
 
 	if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
@@ -70,8 +58,7 @@ void Application::mouseCallback(GLFWwindow* window, int button, int action, int 
 
 void Application::mouseMovementCallback(GLFWwindow* window, double posX, double posY)
 {
-	Camera& cam = componentManager.GetCamera();
-	cam.Update(posX, posY);
+	
 }
 
 void Application::InitTerrain() {
