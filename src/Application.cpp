@@ -141,12 +141,12 @@ void Application::InitSkybox(const std::string& resourceDirectory)
 	unsigned int textureID;
 
 	vector<std::string> faces{
-		"sky_06.png",
-		"sky_05.png",
-		"sky_03.png",
-		"sky_04.png",
-		"sky_01.png",
-		"sky_02.png"
+		"StarSkybox041.png",
+		"StarSkybox042.png",
+		"StarSkybox043.png",
+		"StarSkybox044.png",
+		"StarSkybox045.png",
+		"StarSkybox046.png"
 	};
 
 	glGenTextures(1, &textureID);
@@ -155,7 +155,7 @@ void Application::InitSkybox(const std::string& resourceDirectory)
 	stbi_set_flip_vertically_on_load(false);
 	for (GLuint i = 0; i < faces.size(); i++) {
 		unsigned char *data =
-			stbi_load((resourceDirectory + "/Skybox/" + faces[i]).c_str(), &width, &height, &nrChannels, 0);
+			stbi_load((resourceDirectory + "/StarSkybox/" + faces[i]).c_str(), &width, &height, &nrChannels, 0);
 		if (data) {
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 				0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -360,7 +360,24 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	skyboxProg->addUniform("P");
 	skyboxProg->addUniform("V");
 	skyboxProg->addUniform("M");
+	skyboxProg->addUniform("time");
+	skyboxProg->addUniform("dayBottomColor");
+	skyboxProg->addUniform("dayTopColor");
+	skyboxProg->addUniform("nightBottomColor");
+	skyboxProg->addUniform("nightTopColor");
+	skyboxProg->addUniform("horizonColor");
+	skyboxProg->addUniform("sunDir");
+	skyboxProg->addUniform("moonOffset");
 	skyboxProg->addAttribute("vertPos");
+
+	TexLocation = glGetUniformLocation(skyboxProg->pid, "tex");
+	TexLocation2 = glGetUniformLocation(skyboxProg->pid, "tex2");
+	TexLocation3 = glGetUniformLocation(skyboxProg->pid, "noiseTex");
+
+	glUseProgram(skyboxProg->pid);
+	glUniform1i(TexLocation, 0);
+	glUniform1i(TexLocation2, 1);
+	glUniform1i(TexLocation3, 2);
 
 	assert(glGetError() == GL_NO_ERROR);
 	shaderManager.SetShader("Skybox", skyboxProg);
@@ -368,7 +385,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	//the obj files you want to load. Add more to read them all.
 	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/luna_arm",
-		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head", "cube"};
+		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head", "unit_cube"};
 	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
@@ -407,7 +424,7 @@ void Application::InitImGui()
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	ImGui::StyleColorsDark();
 	ImGui_ImplGlfw_InitForOpenGL(windowManager->getHandle(), true);
-	ImGui_ImplOpenGL3_Init("version 330");
+	ImGui_ImplOpenGL3_Init("#version 330");
 }
 
 
@@ -415,11 +432,10 @@ void Application::Init(std::string resourceDirectory)
 {
 	GLSL::checkVersion();
 	// lock the mouse cursor
-	glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	// Set background color.
 	// glClearColor(.12f, .34f, .56f, 1.0f);
 	// Enable z-buffer test.
-
 	CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
 	CHECKED_GL_CALL(glEnable(GL_BLEND));
 	CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));

@@ -1,4 +1,4 @@
-#include "TerrainRenderer.h"
+ #include "TerrainRenderer.h"
 #include <iostream>
 
 void TerrainRenderer::Init(ComponentManager* compMan)
