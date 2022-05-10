@@ -151,7 +151,7 @@ void PostProcessing::RenderPostProcessing()
 	simple_prog->bind();
 	glBindVertexArray(quad_vao);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, base_color);
+	glBindTexture(GL_TEXTURE_2D, get_motion_blur_texture());
 	// bind in bloom texture and additive blend
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, bloom->GetBloomTex());

@@ -74,7 +74,6 @@ void MotionBlur::RenderMotionBlur(Camera* cam)
 {
 	// clear all framebuffers of color data
 	glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, postProcessing->get_width(), postProcessing->get_height());

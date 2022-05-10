@@ -29,8 +29,9 @@ private:
     const float highFov = 120.0f;
     float currentFov = 70.0f;
     float currentCamDistZ = 12.0f;
-    const float loweestCamDistZ = 4.0f;
+    const float lowestCamDistZ = 4.0f;
     const float highestCamDistZ = 12.0f;
+    const float backwardsCamDistZ = 8.0f;
     const float camDistHeight = 3.0f;
     vec3 get_wanted_pos(ComponentManager* compMan);
     

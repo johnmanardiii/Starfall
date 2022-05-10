@@ -29,18 +29,18 @@ vec2 GetVelocity()
     // Use the world position, and transform by the previous view-    
     // projection matrix.    
     vec4 previousPos = prevPV * worldPos;
-    // Convert to nonhomogeneous points [-1,1] by dividing by w. 
+    // Convert to nonhomogeneous points [-1,1] by dividing by w. (manually do the perspective divide)
     previousPos /= previousPos.w; 
     // Use this frame's position and last frame's to compute the pixel    
-    // velocity.    
+    // velocity (this is in clip space coordinates)
     vec2 velocity = ((currentPos - previousPos)/2.0f).xy;
-    return velocity / 3.0f;
+    return velocity;
 }
 
 
 void main()
 {
-    vec2 velocity = GetVelocity();
+    vec2 velocity = GetVelocity() /  3.0f; // reduce velocity to lower motion blur effect here since
     // Get the initial color at this pixel.    
     vec4 blurred_color = texture(screenTexture, TexCoord);
     vec4 original_color = blurred_color;
@@ -68,5 +68,5 @@ void main()
     // and then divide that by a set amount of distance. (.7071 is max)
     float pctBlurred = distance(TexCoord, vec2(.5, .5)) / .7071;
     color = mix(original_color, blurred_color, pctBlurred);
-    // color = blurred_color;
+    // color = blurred_color; // enable this to make you sick enough to beleive that I put in motion blur.
 }

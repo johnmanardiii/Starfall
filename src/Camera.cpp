@@ -18,8 +18,19 @@ void Camera::Update(float frameTime, ComponentManager* compMan)
 {
     // look at the player
     vec3 target = compMan->GetPlayer().GetPosition();
-    float goalCamDist = glm::mix<float>(highestCamDistZ, loweestCamDistZ,
-        fabs(compMan->GetPlayer().GetCurrentSpeed()) / compMan->GetPlayer().GetMaxSpeed());
+    float currentPlayerSpeed = compMan->GetPlayer().GetCurrentSpeed();
+    float goalCamDist;
+    if (currentPlayerSpeed >= 0)
+    {
+        goalCamDist = glm::mix<float>(highestCamDistZ, lowestCamDistZ,
+            currentPlayerSpeed / compMan->GetPlayer().GetMaxSpeed());
+    }
+    else
+    {
+        // don't have the camera try to go so far back 
+        // because it looks really bad when it lags behind the player like this
+        goalCamDist = backwardsCamDistZ;
+    }
     currentCamDistZ = exponential_growth(currentCamDistZ, goalCamDist, .035f * 60.0f, frameTime);
     vec3 goal_pos = get_wanted_pos(compMan);
     pos = exponential_growth(pos, goal_pos, .07f * 60.0f, frameTime);

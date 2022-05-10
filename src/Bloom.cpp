@@ -219,10 +219,6 @@ void Bloom::RenderBloom()
 	// clear all framebuffers of color data
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-
-	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	// glClear(GL_DEPTH_BUFFER_BIT);
-
 	glClear(GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, postProcessing->get_width(), postProcessing->get_height());
 	// extract out threshold values into bloomTex (bloomFBO)
@@ -236,7 +232,5 @@ void Bloom::RenderBloom()
 	DownSample();
 	// upscale image into bloomTex (bloomFBO)
 	Upsample();
-
-	// TODO: blur the upsample result (Idk i don't think im supposed to need this tho):
 
 }
