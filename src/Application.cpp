@@ -400,6 +400,17 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	InitSkybox(resourceDirectory);
 }
 
+void Application::InitImGui()
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(windowManager->getHandle(), true);
+	ImGui_ImplOpenGL3_Init("version 330");
+}
+
+
 void Application::Init(std::string resourceDirectory)
 {
 	GLSL::checkVersion();
@@ -413,6 +424,7 @@ void Application::Init(std::string resourceDirectory)
 	CHECKED_GL_CALL(glEnable(GL_BLEND));
 	CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 	glPointSize(5.0f);
+	InitImGui();
 	InitShaderManager(resourceDirectory);
 	// do ComponentManager's init here
 	componentManager.Init(resourceDirectory);
@@ -422,10 +434,15 @@ void Application::Init(std::string resourceDirectory)
 	postProcessing = make_shared<PostProcessing>(windowManager, &componentManager.GetCamera());
 }
 
+
 void Application::render(float frameTime)
 {
-	// local modelview matrix use this for later labs
+	// imgui
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
 
+	// local modelview matrix use this for later labs
 	auto M = make_shared<MatrixStack>();
 	auto V = make_shared<MatrixStack>();
 	auto P = make_shared<MatrixStack>();
@@ -445,4 +462,10 @@ void Application::render(float frameTime)
 
 	// render post-processing
 	postProcessing->RenderPostProcessing();
+	ImGui::Begin("Helo there");
+	ImGui::Text("AHH");
+	ImGui::End();
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

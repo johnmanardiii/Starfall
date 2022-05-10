@@ -1,5 +1,9 @@
 #pragma once
 
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_glfw.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
+
 #include "GLSL.h"
 #include "ComponentManager.h"
 #include "Event.h"
@@ -40,6 +44,7 @@ public:
 
 #define MESHSIZE 100
 	//initialization
+	void InitImGui();
 	void InitTerrain();
 	void InitSkybox(const std::string& resourceDirectory);
 	void InitShaderManager(const std::string& resourceDirectory);
