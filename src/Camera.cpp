@@ -16,15 +16,20 @@ T InverseLerp(T start_range, T end_range, T value)
 
 void Camera::Update(float frameTime, ComponentManager* compMan)
 {
-    //TODO update based on input from mouse+keyboard
     // look at the player
     vec3 target = compMan->GetPlayer().GetPosition();
-    /*vec3 target = normalize(vec3(
-        cos(xRot) * cos(yRot),
-        sin(yRot),
-        sin(xRot) * cos(yRot)));*/
+    float goalCamDist = glm::mix<float>(highestCamDistZ, loweestCamDistZ,
+        fabs(compMan->GetPlayer().GetCurrentSpeed()) / compMan->GetPlayer().GetMaxSpeed());
+    currentCamDistZ = exponential_growth(currentCamDistZ, goalCamDist, .035f * 60.0f, frameTime);
     vec3 goal_pos = get_wanted_pos(compMan);
-    pos = exponential_growth(pos, goal_pos, .05f * 60.0f, frameTime);
+    pos = exponential_growth(pos, goal_pos, .07f * 60.0f, frameTime);
+    // check to ensure that the camera keeps up with the player at least 3 units away
+    // from its intended position
+    if (distance(pos, goal_pos) > max_lerp_distance)
+    {
+        // move pos in the direction of goal_pos just within range
+        pos = goal_pos + normalize(pos - goal_pos) * max_lerp_distance;
+    }
     vec3 up = vec3(0, 1, 0);
     mat4 lookAt = glm::lookAt(pos, target, up); //first person camera. "looks at" the direction of target from the starting point of pos.
     // update last view for motion blur
@@ -34,9 +39,8 @@ void Camera::Update(float frameTime, ComponentManager* compMan)
 
 glm::vec3 Camera::get_wanted_pos(ComponentManager* compMan)
 {
-    const float charSpeedInfluence = .3f;
-    vec3 target_pos = compMan->GetPlayer().GetPosition() + camDistLateral * -compMan->GetPlayer().GetForward() +
-        vec3(0, 1, 0) *  camDistHeight;
+    vec3 target_pos = compMan->GetPlayer().GetPosition() + currentCamDistZ * -compMan->GetPlayer().GetForward() +
+        vec3(0, 1, 0) * camDistHeight;
     return target_pos;
 }
 
@@ -72,8 +76,9 @@ void Camera::CalcPerspective(float frametime, int width, int height, ComponentMa
 {
     // TODO: make this a lerp of some terminal speed made by mitchell when its time
     // change the 15 magic number.
-    float goalFov = glm::mix<float>(lowFov, highFov, InverseLerp<float>(0.0f, 15.0f, fabs(compMan->GetPlayer().GetCurrentSpeed())));
-    currentFov = exponential_growth(currentFov, goalFov, .07f * 60.0f, frametime);
+    float goalFov = glm::mix<float>(lowFov, highFov, InverseLerp<float>(0.0f,
+        compMan->GetPlayer().GetMaxSpeed(), fabs(compMan->GetPlayer().GetCurrentSpeed())));
+    currentFov = exponential_growth(currentFov, goalFov, .035f * 60.0f, frametime);
     // set last perspective for rendering motion blur
     lastPerspective = perspective;
     //currentFov

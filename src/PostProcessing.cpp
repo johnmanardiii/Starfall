@@ -142,7 +142,6 @@ void PostProcessing::RenderPostProcessing()
 
 	mb->RenderMotionBlur(camera);
 
-	/*
 	// generate bloom
 	bloom->RenderBloom();
 	glViewport(0, 0, width, height);
@@ -158,5 +157,4 @@ void PostProcessing::RenderPostProcessing()
 	glBindTexture(GL_TEXTURE_2D, bloom->GetBloomTex());
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	simple_prog->unbind();
-	*/
 }

@@ -26,10 +26,12 @@ private:
     mat4 perspective = mat4(1.0f);
     mat4 lastPerspective = mat4(1.0f);
     const float lowFov = 80.0f;
-    const float highFov = 90.0f;
+    const float highFov = 120.0f;
     float currentFov = 70.0f;
-    const float camDistLateral = 12.0f;
-    const float camDistHeight = 4.0f;
+    float currentCamDistZ = 12.0f;
+    const float loweestCamDistZ = 4.0f;
+    const float highestCamDistZ = 12.0f;
+    const float camDistHeight = 3.0f;
     vec3 get_wanted_pos(ComponentManager* compMan);
     
     float movementSensitivity = 0.05f;
@@ -37,6 +39,8 @@ private:
     double mousePrevX = 0.0, mousePrevY = 0.0; //previous mouse position
     double deltaMouseX = 0.0, deltaMouseY = 0.0; //change in mouse position from previous callback, not necessarily previous frame.
     double sensitivityX = 0.01, sensitivityY = 0.01; //can be static for now, in the past i've used +/- keys to adjust.
+
+    const float max_lerp_distance = 3.0f;
 
 public:
     //Camera(Camera const&) = delete; //to explicitly delete the copy constructor

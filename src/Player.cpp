@@ -107,8 +107,8 @@ void Player::Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
     arm2Trans = arm2;
 
     // set initial positions of each body part
-    arm1Trans->SetPos(vec3(-1.2, 0, 0));
+    arm1Trans->SetPos(vec3(-1.2, -.4, 0));
     
-    arm2Trans->SetPos(vec3(1.2, 0, 0));
+    arm2Trans->SetPos(vec3(1.2, -.4, 0));
     headTrans->SetPos(vec3(0, -2.0, 0));
 }
