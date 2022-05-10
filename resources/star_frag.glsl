@@ -215,7 +215,7 @@ void main()
     len /= 8.0f;
     len = clamp(len, 0, 1);
     float a = 1 - len;
-
-    color = vec4(tcol * diffuse,a);
+    
+    color = vec4(0.55 + (tcol * diffuse),a);
     //color = vec4(centerPos, 1);
 }
