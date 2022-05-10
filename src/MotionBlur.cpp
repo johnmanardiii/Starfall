@@ -56,7 +56,7 @@ MotionBlur::MotionBlur(PostProcessing* pp)
 	this->postProcessing = pp;
 
 	// initialize framebuffers + textures
-	InitializeFramebuffers(postProcessing->get_width(), postProcessing->get_height());
+	InitializeFramebuffers(postProcessing->GetWidth(), postProcessing->GetHeight());
 	// intialize shaders
 	InitializeShaders();
 }
@@ -76,17 +76,17 @@ void MotionBlur::RenderMotionBlur(Camera* cam)
 	glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glViewport(0, 0, postProcessing->get_width(), postProcessing->get_height());
+	glViewport(0, 0, postProcessing->GetWidth(), postProcessing->GetHeight());
 	// extract out threshold values into bloomTex (bloomFBO)
 	mat4 inverseCurr = glm::inverse(cam->GetPerspective() * cam->GetView());
 	mat4 prevPV = cam->GetPrevProj() * cam->GetPrevView();
 	motionBlurProg->bind();
-	glBindVertexArray(postProcessing->get_quad_vao());
+	glBindVertexArray(postProcessing->GetQuadVAO());
 	// upload inverse of the PV matrix to the program to recreate the world space positions.
 	glUniformMatrix4fv(motionBlurProg->getUniform("currPVInverse"), 1, GL_FALSE, &inverseCurr[0][0]);
 	glUniformMatrix4fv(motionBlurProg->getUniform("prevPV"), 1, GL_FALSE, &prevPV[0][0]);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, postProcessing->get_base_texture());
+	glBindTexture(GL_TEXTURE_2D, postProcessing->GetBaseTex());
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, postProcessing->GetDepthTexture());
 	glDrawArrays(GL_TRIANGLES, 0, 6);

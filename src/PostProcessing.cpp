@@ -114,7 +114,8 @@ PostProcessing::~PostProcessing()
 	//TODO: delete textures
 }
 
-void PostProcessing::ClearFramebuffers()
+// Clears the Main frame buffer and binds it as an active framebuffer for component manager.
+void PostProcessing::SetUpFrameBuffers()
 {
 	//TODO: check for width/height change and adjust the textures.
 	glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
@@ -133,6 +134,7 @@ void PostProcessing::ClearFramebuffers()
 	glEnable(GL_DEPTH_TEST);
 }
 
+// Renders all effects to the screen using the main framebuffer.
 void PostProcessing::RenderPostProcessing()
 {
 	glDisable(GL_DEPTH_TEST);
@@ -151,7 +153,7 @@ void PostProcessing::RenderPostProcessing()
 	simple_prog->bind();
 	glBindVertexArray(quad_vao);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, get_motion_blur_texture());
+	glBindTexture(GL_TEXTURE_2D, GetMotionBlurTex());
 	// bind in bloom texture and additive blend
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, bloom->GetBloomTex());

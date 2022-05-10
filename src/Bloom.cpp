@@ -126,7 +126,7 @@ Bloom::Bloom(PostProcessing* pp)
 	this->postProcessing = pp;
 
 	// initialize framebuffers + textures
-	InitializeFramebuffers(postProcessing->get_width(), postProcessing->get_height());
+	InitializeFramebuffers(postProcessing->GetWidth(), postProcessing->GetHeight());
 	// intialize shaders
 	InitializeShaders();
 }
@@ -148,9 +148,9 @@ void Bloom::DownSample()
 		scaleDownFactor *= 2;
 		glBindFramebuffer(GL_FRAMEBUFFER, downsampleFBOs[i]);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glViewport(0, 0, postProcessing->get_width() / scaleDownFactor, postProcessing->get_height() / scaleDownFactor);	// set viewport to texture size (hopefully)
+		glViewport(0, 0, postProcessing->GetWidth() / scaleDownFactor, postProcessing->GetHeight() / scaleDownFactor);	// set viewport to texture size (hopefully)
 		bloomDownsample->bind();
-		glBindVertexArray(postProcessing->get_quad_vao());
+		glBindVertexArray(postProcessing->GetQuadVAO());
 		glActiveTexture(GL_TEXTURE0);
 		if (first)
 		{
@@ -180,9 +180,9 @@ void Bloom::Upsample()
 		int j = num_downsamples - i - 1;	// index into lower res upsamples first
 		glBindFramebuffer(GL_FRAMEBUFFER, upsampledFBOs[j]);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glViewport(0, 0, postProcessing->get_width() /  (scaleDownFactor), postProcessing->get_height() / (scaleDownFactor));	// set viewport to texture size (hopefully)
+		glViewport(0, 0, postProcessing->GetWidth() /  (scaleDownFactor), postProcessing->GetHeight() / (scaleDownFactor));	// set viewport to texture size (hopefully)
 		bloomUpsample->bind();
-		glBindVertexArray(postProcessing->get_quad_vao());
+		glBindVertexArray(postProcessing->GetQuadVAO());
 		glActiveTexture(GL_TEXTURE0);
 		if (j == 0)
 		{
@@ -220,12 +220,12 @@ void Bloom::RenderBloom()
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glViewport(0, 0, postProcessing->get_width(), postProcessing->get_height());
+	glViewport(0, 0, postProcessing->GetWidth(), postProcessing->GetHeight());
 	// extract out threshold values into bloomTex (bloomFBO)
 	bloomThresholdProg->bind();
-	glBindVertexArray(postProcessing->get_quad_vao());
+	glBindVertexArray(postProcessing->GetQuadVAO());
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, postProcessing->get_base_texture());
+	glBindTexture(GL_TEXTURE_2D, postProcessing->GetBaseTex());
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	bloomThresholdProg->unbind();
 	// downsample image 5 times:
