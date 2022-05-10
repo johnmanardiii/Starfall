@@ -70,6 +70,9 @@ void ComponentManager::Init(std::string resourceDirectory)
 
     player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans);
 
+    //initialize random starting attributes for particles. Generate a few batches of 100k particles.
+    particleSys::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 100000);
+
     // Initialize the GLSL program, just for the ground plane.
     auto prog = make_shared<Program>();
     prog->setVerbose(true);
@@ -107,10 +110,9 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         RandomGenerator randMove(-10, 10);
         RandomGenerator randTrans(-40, 40);
         RandomGenerator randScale(0.2, 2);
-
-        string sphereName = "icoSphere" + to_string(state.TotalObjectsEverMade);
-        string sphereShapeFileName = "icoSphere";
-        shared_ptr<Renderer> renderer = make_shared<TextureRenderer>(sphereShapeFileName, "Alpha", sphereName);
+        string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
+        string sphereShapeFileName = "Star Bit";
+        shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", "Star", sphereName);
         shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
         vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
@@ -119,10 +121,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         float x = randTrans.GetFloat();
         float z = randTrans.GetFloat();
         transform->ApplyTranslation(vec3(x, heightCalc(x, z), z));
-
-        float scale = randScale.GetFloat();
-        transform->ApplyScale(vec3(scale, 1, scale));
-
+        transform->ApplyScale(vec3(0.02f));
         vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collision, collect };
         AddGameObject(sphereName, sphereComps);
         state.TotalObjectsEverMade++;
@@ -188,6 +187,7 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
         if (!comp) continue; //null check
         //if not null
         auto p = addToComponentList(comp);
+        objComps[p.first] = p.second;
         objComps.insert(p);
     }
     objects[name] = GameObject(name, objComps);
@@ -195,7 +195,6 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
     for (auto& comp : objects[name].GetComponentLocations()) {
         string name = comp.first;
         size_t index = comp.second;
-
         GetComponent(name, index)->Init(this);
     }//end processing component vector freeing
 }
@@ -280,8 +279,10 @@ void ComponentManager::RemoveGameObject(string name)
 
         //free up for insertion. Do this by supplying the component's
         //indices for use by a new component, and marking the component as not in use.
+        
         GetComponent(name, index)->IsActive = false;
         componentOpenSlots[name].push(index);
+        
     }//end processing component vector freeing
 
     //no longer referenced anywhere, delete from map.

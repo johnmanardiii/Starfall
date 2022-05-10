@@ -157,10 +157,11 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/cat.jpg", "Cat");
 	loadTexture("/LUNA/LUNA_test_tex.png", "Luna");
 	loadTexture("/grass.jpg", "Grass");
-	loadTexture("/alpha.bmp", "Alpha");
+	loadTexture("/alpha.png", "Alpha");
 	loadTexture("/noiseTex.png", "noiseTex");
+	loadTexture("/rainbow.jpg", "Rainbow");
 
-
+	// used on Luna
 	auto prog = make_shared<Program>();
 	prog->setVerbose(true);
 	prog->setShaderNames(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag.glsl");
@@ -180,6 +181,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	shaderManager.SetShader("Texture", prog);
 
+	//used for particle effects on star fragments
 	auto partProg = make_shared<Program>();
 	partProg->setVerbose(true);
 	partProg->setShaderNames(
@@ -189,15 +191,72 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	partProg->addUniform("P");
 	partProg->addUniform("M");
 	partProg->addUniform("V");
+	partProg->addUniform("totalTime");
+	partProg->addUniform("centerPos");
 	partProg->addUniform("alphaTexture");
-	partProg->addAttribute("vertPos");
+	partProg->addUniform("alphaMult");
+	partProg->addUniform("rainbowTexture");
 	partProg->addAttribute("pColor");
+	partProg->addAttribute("pNormal");
+	partProg->addAttribute("pRotation");
 
-	GLuint PartLocation = glGetUniformLocation(partProg->pid, "particle");
+	GLuint PartLocation0 = glGetUniformLocation(partProg->pid, "particle");
+	GLuint PartLocation1 = glGetUniformLocation(partProg->pid, "particle");
 	glUseProgram(partProg->pid);
-	glUniform1i(PartLocation, 0);
+	glUniform1i(PartLocation0, 0);
+	glUniform1i(PartLocation1, 0);
 
 	shaderManager.SetShader("particle", partProg);
+
+	//used for star fragments
+	auto starProg = make_shared<Program>();
+	starProg->setVerbose(true);
+	starProg->setShaderNames(
+		resourceDirectory + "/star_vert.glsl",
+		resourceDirectory + "/star_frag.glsl");
+	starProg->Init();
+	starProg->addUniform("P");
+	starProg->addUniform("M");
+	starProg->addUniform("V");
+	starProg->addUniform("starTexture");
+	starProg->addUniform("totalTime");
+	starProg->addUniform("centerPos");
+	starProg->addUniform("campos");
+	starProg->addAttribute("vertPos");
+	starProg->addAttribute("vertNor");
+	starProg->addAttribute("vertTex");
+
+	GLuint StarLocation = glGetUniformLocation(starProg->pid, "Star");
+	glUseProgram(starProg->pid);
+	glUniform1i(StarLocation, 0);
+
+	shaderManager.SetShader("Star", starProg);
+
+	
+	//used for explosion
+	auto explosionProg = make_shared<Program>();
+	explosionProg->setVerbose(true);
+	explosionProg->setShaderNames(
+		resourceDirectory + "/explosion_vert.glsl",
+		resourceDirectory + "/explosion_frag.glsl");
+	explosionProg->Init();
+	explosionProg->addUniform("P");
+	explosionProg->addUniform("M");
+	explosionProg->addUniform("V");
+	explosionProg->addUniform("starTexture");
+	explosionProg->addUniform("totalTime");
+	explosionProg->addUniform("centerPos");
+	explosionProg->addAttribute("vertPos");
+	explosionProg->addAttribute("vertNor");
+	explosionProg->addAttribute("vertTex");
+
+	GLuint ExplosionLocation = glGetUniformLocation(explosionProg->pid, "Explosion");
+	glUseProgram(explosionProg->pid);
+	glUniform1i(ExplosionLocation, 0);
+
+	shaderManager.SetShader("Explosion", explosionProg);
+	
+
 
 	// Terrain Shader
 	auto heightProg = make_shared<Program>();
@@ -233,8 +292,9 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	shaderManager.SetShader("Height", heightProg);
 
 	//the obj files you want to load. Add more to read them all.
-	vector<string> filenames = { "sphere", "icoSphere", "LUNA/luna_arm",
+	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/luna_arm",
 		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head" };
+	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
 	vector<tinyobj::material_t> objMaterials; //not using for now.
@@ -251,6 +311,10 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 			shared_ptr<Shape> shape = make_shared<Shape>();
 			shape->createShape(TOshapes[i][0]); //the first (0'th) shape read in of the i'th file.
 			shape->measure();
+			if (filenames[i] == "icoSphere") {
+				shape->scale(explosionScaleFactor);
+			}
+			shape->computeNormals();
 			shape->Init();
 
 			shaderManager.SetModel(filenames[i], shape);
@@ -272,7 +336,7 @@ void Application::Init(std::string resourceDirectory)
 	CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
 	CHECKED_GL_CALL(glEnable(GL_BLEND));
 	CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-	glPointSize(10.0f);
+	glPointSize(5.0f);
 	InitShaderManager(resourceDirectory);
 	// do ComponentManager's init here
 	componentManager.Init(resourceDirectory);

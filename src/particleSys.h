@@ -1,6 +1,4 @@
 #pragma once
-#ifndef __particleS__
-#define __particleS__
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -29,32 +27,31 @@ public:
 class particleSys {
 private:
 	vector<shared_ptr<Particle>> particles;
-	float totalTime;
-	vec3 g; //gravity
+	
 	int numP;
 	vec3 start;
-	ParticleSorter sorter;
 
-	vector<GLfloat> points;
-	vector<float> pointColors;
+	int bufObjIndex;
 	
 	mat4 View;
 	mat4 Projection;
-	unsigned vertArrObj;
-	unsigned vertBuffObj;
-	unsigned colArrObj;
-	unsigned colBuffObj;
-	
 public:
 	particleSys(int numParticles, vec3 source);
 	
-	float randFloat(float l, float h);
-	void drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> trans);
-	void gpuSetup();
+	constexpr static int numUniqueBufObjs = 7;
+	static int currBufObjs;
+	static vector<vector<float>> pointColors;
+	static vector<vector<float>> pointNormals;
+	static vector<vector<float>> pointRotations;
+
+	static vector<unsigned> vertArrObj;
+	static vector<unsigned> colBufObj;
+	static vector<unsigned> norBufObj;
+	static vector<unsigned> rotBufObj;
+
+	void drawMe(std::shared_ptr<Program> prog, shared_ptr<Transform> trans, float startTime);
+	static void gpuSetup(std::shared_ptr<Program> prog, int numP);
 	void update(float frameTime, shared_ptr<Transform> trans);
 	void setCamera(mat4 inC) {View = inC;}
 	void setProjection(mat4 inP) { Projection = inP; }
 };
-
-
-#endif

@@ -44,7 +44,13 @@ bool WindowManager::Init(int const width, int const height)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+#else
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+#endif
+	
+	
 
 	// Create a windowed mode window and its OpenGL context.
 	windowHandle = glfwCreateWindow(width, height, "hello 3D", nullptr, nullptr);

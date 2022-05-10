@@ -35,7 +35,11 @@ void PostProcessing::InitializeQuad()
 
 void PostProcessing::InitializeShaders()
 {
+#ifdef __APPLE__
+    std::string resourceDir = "../../resources";
+#else
 	std::string resourceDir = "../resources";
+#endif
 	simple_prog = make_shared<Program>();
 	simple_prog->setVerbose(true);
 	simple_prog->setShaderNames(resourceDir + "/post_vert.glsl", resourceDir + "/post_simple_frag.glsl");
