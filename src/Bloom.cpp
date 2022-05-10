@@ -4,7 +4,11 @@ using namespace std;
     
 void Bloom::InitializeShaders()
 {
-	std::string resourceDir = "../resources";
+#ifdef __APPLE__
+    std::string resourceDir = "../../resources";
+#else
+    std::string resourceDir = "../resources";
+#endif
 	bloomThresholdProg = make_shared<Program>();
 	bloomThresholdProg->setVerbose(true);
 	bloomThresholdProg->setShaderNames(resourceDir + "/post_vert.glsl", resourceDir + "/thresh_frag.glsl");
