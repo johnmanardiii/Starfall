@@ -121,7 +121,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         float x = randTrans.GetFloat();
         float z = randTrans.GetFloat();
         transform->ApplyTranslation(vec3(x, heightCalc(x, z), z));
-        transform->ApplyScale(vec3(0.01f));
+        transform->ApplyScale(vec3(0.02f));
         vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collision, collect };
         AddGameObject(sphereName, sphereComps);
         state.TotalObjectsEverMade++;
