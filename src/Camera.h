@@ -41,16 +41,14 @@ private:
 
 public:
     void Update(float frameTime, int width, int height, ComponentManager* compMan);
-    void Init(ComponentManager* compMan) {} //does nothing, also not required to be called.
     static Camera& GetInstance(vec3 pos) {
         static Camera instance(pos);
         return instance;
     }
     const vec3 GetPos() const { return pos; }
-    // must call CalcPerspective before using GetPerspective
     const mat4 const GetView() { return view; }
     const mat4 GetPerspective() const { return perspective; }
-    const mat4 const GetPrevView() { return lastView; } // lol sounds like preview
+    const mat4 const GetPrevView() { return lastView; }
     const mat4 const GetPrevProj() { return lastPerspective; }
 };
 

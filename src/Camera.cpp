@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "ComponentManager.h"
 
+// interpolates between two values using an exponential falloff
 template<typename T>
 T exponential_growth(T actual, T goal, float factor, float frametime)
 {
@@ -14,6 +15,8 @@ T InverseLerp(T start_range, T end_range, T value)
     return clamp<float>((value - start_range) / (end_range - start_range), 0.0, 1.0);
 }
 
+// Interpolates camera position towards goal position and updates perspective and view matrices,
+// as well as previous perspective and view matrices.
 void Camera::Update(float frameTime, int width, int height, ComponentManager* compMan)
 {
     CalcPerspective(frameTime, width, height, compMan);
@@ -49,6 +52,7 @@ void Camera::Update(float frameTime, int width, int height, ComponentManager* co
     view = lookAt; //something can watch view and do something based on that value.
 }
 
+// Returns a point to interpolate to. Currently returns a point behind the player and above the player.
 glm::vec3 Camera::get_wanted_pos(ComponentManager* compMan)
 {
     vec3 target_pos = compMan->GetPlayer().GetPosition() + currentCamDistZ * -compMan->GetPlayer().GetForward() +
@@ -58,8 +62,7 @@ glm::vec3 Camera::get_wanted_pos(ComponentManager* compMan)
 
 void Camera::CalcPerspective(float frametime, int width, int height, ComponentManager* compMan)
 {
-    // TODO: make this a lerp of some terminal speed made by mitchell when its time
-    // change the 15 magic number.
+    // TODO: make this a lerp of some terminal speed made by mitchell he is done with his work
     float goalFov = glm::mix<float>(lowFov, highFov, InverseLerp<float>(0.0f,
         compMan->GetPlayer().GetMaxSpeed(), fabs(compMan->GetPlayer().GetCurrentSpeed())));
     currentFov = exponential_growth(currentFov, goalFov, .035f * 60.0f, frametime);
