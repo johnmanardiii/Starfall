@@ -5,6 +5,8 @@
 #include <iostream>
 using namespace std;
 
+// This only needs to be called once on initialize and is a helper function for the constructor for
+// setting up the motion blur shader.
 void MotionBlur::InitializeShaders()
 {
 	std::string resourceDir = "../resources";
@@ -24,6 +26,8 @@ void MotionBlur::InitializeShaders()
 	glUniform1i(TexLocation, 1);
 }
 
+// This function sets up the framebuffer and texture necessary for running motion blur
+// as a single post-processing pass.
 void MotionBlur::InitializeFramebuffers(int width, int height)
 {
 	int scaleDownFactor = 1;
@@ -49,6 +53,7 @@ void MotionBlur::InitializeFramebuffers(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+// Constructor initializes framebuffers and shaders.
 MotionBlur::MotionBlur(PostProcessing* pp)
 {
 	// TODO: make sure we aren't dividing by 0 using log2() from cmath
@@ -61,15 +66,25 @@ MotionBlur::MotionBlur(PostProcessing* pp)
 	InitializeShaders();
 }
 
+void MotionBlur::OnResizeWindow()
+{
+	// delete framebuffers + textures
+	glDeleteFramebuffers(1, &blurFBO);
+	glDeleteTextures(1, &blurTex);
+
+	InitializeFramebuffers(postProcessing->GetWidth(), postProcessing->GetHeight());
+}
+
 MotionBlur::~MotionBlur()
 {
 	// delete framebuffers + textures
 	glDeleteFramebuffers(1, &blurFBO);
-	// TODO: delete used textures.
+	glDeleteTextures(1, &blurTex);
 }
 
 
-
+// Renders motion blur using the base color and depth texture in PostProcessing into
+// blurTex on blurFBO.
 void MotionBlur::RenderMotionBlur(Camera* cam)
 {
 	// clear all framebuffers of color data

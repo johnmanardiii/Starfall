@@ -17,5 +17,6 @@ void main()
 	color.rgb = (1- flashAmt) * tcol + flashAmt * flashCol;
 	diffuse = clamp(diffuse, 0.1f, 1.0f);
 	color *= diffuse;
+	// color *= 4;
 	color.a = 1;
 }

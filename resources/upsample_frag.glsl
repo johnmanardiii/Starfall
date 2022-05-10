@@ -34,10 +34,13 @@ void main()
     vec4 upsample_color = UpsampleTent();
     vec4 currentRes_color = texture(currentRes, TexCoord);
 
-    // QUESTION THAT I AM NOT SURE IF IT CAN BE ANSWERED
+    // QUESTION
     // TO PROFESSOR: The upsample, as used here, does not fade
     // away the color nearly enough on its own. I implemented my own
     // exponential falloff of the colors, but it doesn't seem to
     // be the right way of doing this and is really touchy.
+
+    // additionally, the brightness is unfortunately dependent on the number
+    // of upsamples as well because of this.
     color = upsample_color * .34 + currentRes_color;
 }

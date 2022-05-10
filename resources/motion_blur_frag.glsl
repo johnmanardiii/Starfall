@@ -40,7 +40,7 @@ vec2 GetVelocity()
 
 void main()
 {
-    vec2 velocity = GetVelocity() /  3.0f; // reduce velocity to lower motion blur effect here since
+    vec2 velocity = GetVelocity() /  2.0f; // reduce velocity to lower motion blur effect here since
     // Get the initial color at this pixel.    
     vec4 blurred_color = texture(screenTexture, TexCoord);
     vec4 original_color = blurred_color;

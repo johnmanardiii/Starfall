@@ -5,6 +5,9 @@
 
 class PostProcessing;
 
+// Motion Blur renders camera only motion blur to the its texture using the baseTex
+// texture found in PostProcessing. I am choosing not to develop this effect any further
+// than camera motion blur, as I think other effects would fit better in our game.
 class MotionBlur
 {
 private:
@@ -16,8 +19,9 @@ private:
 	void InitializeShaders();
 	void InitializeFramebuffers(int width, int height);
 public:
-	const GLuint GetMotionBlurTex() const { return blurTex; }
 	MotionBlur(PostProcessing* _pp);
 	~MotionBlur();
+	const GLuint GetMotionBlurTex() const { return blurTex; }
 	void RenderMotionBlur(Camera* cam);
+	void OnResizeWindow();
 };

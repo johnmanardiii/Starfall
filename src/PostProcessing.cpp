@@ -141,6 +141,7 @@ void PostProcessing::SetUpFrameBuffers()
 		// and the framebuffers and viewports need to be
 		// re-initialized.
 		bloom->OnResizeWindow();
+		mb->OnResizeWindow();
 	}
 
 	// clear the base framebuffer
