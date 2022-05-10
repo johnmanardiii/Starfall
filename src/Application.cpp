@@ -313,7 +313,7 @@ void Application::render(float frameTime)
 
 
 	// clear all framebuffers
-	postProcessing->ClearFramebuffers();
+	postProcessing->SetUpFrameBuffers();
 	componentManager.UpdateComponents(frameTime, width, height);
 
 	// render post-processing

@@ -50,13 +50,8 @@ void PostProcessing::InitializeShaders()
 	glUniform1i(TexLocation, 1);
 }
 
-PostProcessing::PostProcessing(WindowManager* wm, Camera* cam)
+void PostProcessing::InitializeFramebuffers()
 {
-	windowManager = wm;
-	camera = cam;
-	InitializeQuad();
-	InitializeShaders();
-
 	// initialize default size of framebuffer textures
 	// Get current frame buffer size.
 	glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
@@ -97,28 +92,56 @@ PostProcessing::PostProcessing(WindowManager* wm, Camera* cam)
 	{
 		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
 	}
-	glViewport(0, 0, width, height);
 	// Clear default framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+PostProcessing::PostProcessing(WindowManager* wm, Camera* cam)
+{
+	windowManager = wm;
+	camera = cam;
+	InitializeQuad();
+	InitializeShaders();
+	InitializeFramebuffers();
 
 	// initialize Bloom rendering object
 	bloom = make_shared<Bloom>(this);
 	mb = make_shared<MotionBlur>(this);
 }
 
-PostProcessing::~PostProcessing()
+void PostProcessing::DeleteTexturesFramebuffers()
 {
 	glDeleteFramebuffers(1, &base_fbo);
-	//TODO: delete textures
+	glDeleteTextures(1, &base_color);
+	glDeleteTextures(1, &base_depth);
+}
+
+PostProcessing::~PostProcessing()
+{
+	glDeleteBuffers(1, &quad_vbo);
+	glDeleteVertexArrays(1, &quad_vao);
 }
 
 // Clears the Main frame buffer and binds it as an active framebuffer for component manager.
+// This method should be called before every frame.
 void PostProcessing::SetUpFrameBuffers()
 {
-	//TODO: check for width/height change and adjust the textures.
-	glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+	// check if width/height has changed
+	int currWidth, currHeight;
+	glfwGetFramebufferSize(windowManager->getHandle(), &currWidth, &currHeight);
+	if (currWidth != width || currHeight != height)
+	{
+		width = currWidth;
+		height = currHeight;
+		DeleteTexturesFramebuffers();
+		InitializeFramebuffers();
+		// tell bloom and motion blur that resolution has changed
+		// and the framebuffers and viewports need to be
+		// re-initialized.
+		//TODO: add code to bloom and motion blur to handle window resize.
+	}
 
 	// clear the base framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, base_fbo);

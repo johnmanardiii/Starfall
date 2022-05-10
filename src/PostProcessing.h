@@ -29,7 +29,9 @@ private:
 	std::shared_ptr<MotionBlur> mb;
 
 	void InitializeQuad();
+	void InitializeFramebuffers();
 	void InitializeShaders();
+	void DeleteTexturesFramebuffers();
 public:
 	PostProcessing(WindowManager* wm, Camera* cam);
 	~PostProcessing();
@@ -40,6 +42,6 @@ public:
 	const GLuint GetBaseTex() const { return base_color; }
 	const GLuint GetMotionBlurTex() const { return mb->GetMotionBlurTex(); }
 	const GLuint GetDepthTexture() const { return base_depth; }
-	void ClearFramebuffers();
+	void SetUpFrameBuffers();
 	void RenderPostProcessing();
 };
