@@ -113,6 +113,7 @@ PostProcessing::PostProcessing(WindowManager* wm, Camera* cam)
 	// initialize Bloom rendering object
 	bloom = make_shared<Bloom>(this);
 	mb = make_shared<MotionBlur>(this);
+	rb = make_shared<RadialBlur>(this);
 }
 
 void PostProcessing::DeleteTexturesFramebuffers()
@@ -146,6 +147,7 @@ void PostProcessing::SetUpFrameBuffers()
 		// re-initialized.
 		bloom->OnResizeWindow();
 		mb->OnResizeWindow();
+		rb->OnResizeWindow();
 	}
 
 	// clear the base framebuffer
@@ -170,7 +172,8 @@ void PostProcessing::RenderPostProcessing()
 	glBindTexture(GL_TEXTURE_2D, base_color);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	mb->RenderMotionBlur(camera);
+	// mb->RenderMotionBlur(camera);
+	// rb->RenderRadialBlur();	// uncomment this if you want radial blur for speed.
 
 	// generate bloom
 	bloom->RenderBloom();
@@ -181,7 +184,7 @@ void PostProcessing::RenderPostProcessing()
 	simple_prog->bind();
 	glBindVertexArray(quad_vao);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GetMotionBlurTex());
+	glBindTexture(GL_TEXTURE_2D, GetBaseTex());
 	// bind in bloom texture and additive blend
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, bloom->GetBloomTex());

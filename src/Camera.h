@@ -27,7 +27,7 @@ private:
     mat4 perspective = mat4(1.0f);
     mat4 lastPerspective = mat4(1.0f);
     const float lowFov = 80.0f; // FOV used when still
-    const float highFov = 120.0f;   // FOV used at max speed
+    const float highFov = 100.0f;   // FOV used at max speed
     float currentFov = 70.0f;   // FOV used in camera
     float currentCamDistZ = 12.0f;  // current Camera distance on Z that gets interpolated w/ speed
     const float lowestCamDistZ = 7.0f;  // camera is closer when moving at max speed.

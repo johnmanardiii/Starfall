@@ -3,6 +3,7 @@
 #include "Program.h"
 #include "Bloom.h"
 #include "MotionBlur.h"
+#include "RadialBlur.h"
 #include "Camera.h"
 #include <memory>
 
@@ -27,6 +28,7 @@ private:
 	std::shared_ptr<Program> simple_prog;
 	std::shared_ptr<Bloom> bloom;
 	std::shared_ptr<MotionBlur> mb;
+	std::shared_ptr<RadialBlur> rb;
 
 	void InitializeQuad();
 	void InitializeFramebuffers();
