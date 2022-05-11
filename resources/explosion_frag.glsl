@@ -210,5 +210,6 @@ void main()
     vec3 tcol = texture(starTexture, vertex_tex).rgb;
     
     color = vec4(tcol,1);
+    // color.rgb = color.rgb * 60;
     //color = vec4(centerPos, 1);
 }

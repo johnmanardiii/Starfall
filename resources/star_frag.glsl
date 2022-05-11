@@ -222,5 +222,6 @@ void main()
       abs(0.55f * rand(centerPos.yz)),
       abs(0.55f * rand(centerPos.xz)));
     color = vec4(randCol + (tcol * diffuse),a);
+    color.rgb = color.rgb * 2;
     //color = vec4(centerPos, 1);
 }
