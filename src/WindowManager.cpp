@@ -47,7 +47,7 @@ bool WindowManager::Init(int const width, int const height)
 #ifdef __APPLE__
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 #else
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 #endif
 	
 	

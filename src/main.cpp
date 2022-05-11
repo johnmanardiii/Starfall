@@ -33,7 +33,12 @@ int main(int argc, char *argv[])
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
-	windowManager->Init(SCREEN_WIDTH, SCREEN_HEIGHT);
+	bool glContextInitialized = windowManager->Init(SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (!glContextInitialized)
+	{
+		cerr << "GL Context Failed to Initialized !" << endl;
+		exit(-1);
+	}
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
 

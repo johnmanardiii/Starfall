@@ -17,21 +17,32 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 	//player movement
 	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
 		componentManager.GetPlayer().SetInput(W, true);
-		//eyePos -= movementSensitivity * w;
 	}
 
 	if (key == GLFW_KEY_A && action == GLFW_PRESS) {
 		componentManager.GetPlayer().SetInput(A, true);
-		//eyePos += movementSensitivity * u;
 	}
 	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
 		componentManager.GetPlayer().SetInput(S, true);
-		//eyePos += movementSensitivity * w;
 	}
 
 	if (key == GLFW_KEY_D && action == GLFW_PRESS) {
 		componentManager.GetPlayer().SetInput(D, true);
-		//eyePos -= movementSensitivity * u;
+	}
+
+	if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
+		componentManager.GetPlayer().SetInput(W, false);
+	}
+
+	if (key == GLFW_KEY_A && action == GLFW_RELEASE) {
+		componentManager.GetPlayer().SetInput(A, false);
+	}
+	if (key == GLFW_KEY_S && action == GLFW_RELEASE) {
+		componentManager.GetPlayer().SetInput(S, false);
+	}
+
+	if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
+		componentManager.GetPlayer().SetInput(D, false);
 	}
 
 	// Falling toggle
