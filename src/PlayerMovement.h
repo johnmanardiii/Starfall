@@ -20,6 +20,7 @@ public:
 	void GroundCollision(float frameTime);
 	float GetSlopeDiff(float frameTime);
 	float GetSpeed();
+	float GetMaxSpeed();
 	float GetAngularSpeed();
 private:
 	void ApplyGravity(float frameTime);

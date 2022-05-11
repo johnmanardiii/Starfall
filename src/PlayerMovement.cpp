@@ -94,3 +94,8 @@ float PlayerMovement::GetSpeed()
 {
     return currentSpeed;
 }
+
+float PlayerMovement::GetMaxSpeed()
+{
+    return speed;
+}

@@ -45,11 +45,10 @@ public:
 	const std::string pArm2Name = "arm2";
 	const std::string pHeadName = "head";
 	void Update(float frameTime, ComponentManager* compMan);
-	void ProcessWASDInput();
 	void SetInput(int index, bool val);
 	vec3 GetForward();
-	float GetCurrentSpeed() { return currentSpeed; }
-	float GetMaxSpeed() { return speed; }
+	float GetCurrentSpeed() { return movement->GetSpeed(); }
+	float GetMaxSpeed() { return movement->GetMaxSpeed(); }
 	void Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
 		shared_ptr<Transform> head, shared_ptr<Transform> arm1,
 		shared_ptr<Transform> arm2);
