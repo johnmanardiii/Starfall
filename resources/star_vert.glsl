@@ -209,9 +209,9 @@ float rand(vec2 co){
 
 void main()
 {
-    float noise = 10.0 * -0.1f * turbulence(0.5 * vertNor + totalTime);
+    float noise = 10.0 * -0.1f * turbulence(0.5 * vertNor + totalTime / 6.0);
 
-    float b = 5.0 * pnoise(0.05 * vertPos + vec3(2.0 * totalTime), vec3(100.0f));
+    float b = 5.0 * pnoise(0.05 * vertPos + vec3(2.0 * totalTime / 6.0), vec3(100.0f));
 
     float displacement = -2 * noise + b;
     vec3 newPosition;

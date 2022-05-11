@@ -216,12 +216,13 @@ void main()
     len = clamp(len, 0, 1);
     float a = 1 - len;
     
-
-    vec3 randCol = vec3(
-      abs(0.55f * rand(centerPos.xy)),
-      abs(0.55f * rand(centerPos.yz)),
-      abs(0.55f * rand(centerPos.xz)));
-    color = vec4(randCol + (tcol * diffuse),a);
-    color.rgb = color.rgb * 2;
+    //use this to make into specific colors.
+    //vec3 randCol = vec3(
+    //  abs(0.55f * rand(centerPos.xy)),
+    //  abs(0.55f * rand(centerPos.yz)),
+    //  abs(0.55f * rand(centerPos.xz)));
+    color = vec4(0.50 + (tcol * diffuse),a);
+    // feel free to turn this down Bob
+    // color.rgb = color.rgb * 2;
     //color = vec4(centerPos, 1);
 }
