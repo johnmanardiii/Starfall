@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "Collision.h"
 #include "TextureRenderer.h"
+#include "StarRenderer.h"
 #include "ParticleStaticSplash.h"
 #include "RandomGenerator.h"
 #include "GameState.h"
@@ -39,6 +40,8 @@ public:
     //anything the component manager needs to do BEFORE frame-by-frame operations
     void Init(std::string resourceDirectory);
     
+    void AddLineOfStars();
+
     //update components. Done once every render pass.
     void UpdateComponents(float frameTime, int width, int height);
     //Make components, throw them in a vector<shared_ptr>> in any order, give it a name, and componentManager will manage it.

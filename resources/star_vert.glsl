@@ -1,19 +1,18 @@
 #version 330 core
-
-
-layout(location = 0) in vec3 pColor;
-layout(location = 1) in vec3 pNormal;
-layout(location = 2) in vec3 pRotation;
+layout(location = 0) in vec3 vertPos;
+layout(location = 1) in vec3 vertNor;
+layout(location = 2) in vec2 vertTex;
 
 uniform mat4 P;
-uniform mat4 M;
 uniform mat4 V;
+uniform mat4 M;
 
-
-uniform vec3 centerPos;
 uniform float totalTime;
+uniform vec3 centerPos;
 
-out vec3 partCol;
+out vec3 vertex_pos;
+out vec3 vertex_normal_n;
+out vec2 vertex_tex;
 
 //
 // GLSL textureless classic 3D noise "cnoise",
@@ -210,29 +209,20 @@ float rand(vec2 co){
 
 void main()
 {
+    float noise = 10.0 * -0.1f * turbulence(0.5 * vertNor + totalTime / 6.0);
 
-	float noise = 10.0 * -0.1f * turbulence(0.5 * pNormal + 5);
+    float b = 5.0 * pnoise(0.05 * vertPos + vec3(2.0 * totalTime / 6.0), vec3(100.0f));
 
-    float b = 5.0 * pnoise(0.05 * centerPos + vec3(2.0 * 5), vec3(100.0f));
-
-    float displacement = -5 * noise + b;
-
+    float displacement = -2 * noise + b;
     vec3 newPosition;
+    
+    newPosition = vertPos + vertNor * displacement;
+    
+    vertex_normal_n = normalize(vec4(M * vec4(vertNor,0.0)).xyz);
 
-    newPosition = centerPos + pNormal * (0.1 - 16 * (totalTime * totalTime * totalTime * totalTime) * displacement);
-	  //newPosition += pRotation;
-
-
-
-
-	// Billboarding: set the upper 3x3 to be the identity matrix
-	mat4 M0 = M;
-
-	M0[0] = vec4(1.0, 0.0, 0.0, 0.0);
-	M0[1] = vec4(0.0, 1.0, 0.0, 0.0);
-	M0[2] = vec4(0.0, 0.0, 1.0, 0.0);
-
-	gl_Position = P * V * vec4(newPosition, 1.0);
-
-	partCol = pColor;
+    //sample a small amount of a rainbow texture to determine what color it should be
+    float samplePosition = clamp(rand(vec2(centerPos.xy)), -1.0, 1.0);
+    vertex_pos = (M * vec4(vertPos, 1.0)).xyz;
+    vertex_tex = vec2(samplePosition + displacement / 2, samplePosition - displacement / 2);
+    gl_Position = P * V * M * vec4(newPosition, 1.0f);
 }

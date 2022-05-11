@@ -13,45 +13,42 @@ using glm::vec3;
 using glm::mat4;
 using glm::normalize;
 
-class Camera : public Component
+// The Camera class is a specific type of camera that follows the player and looks at the player.
+// It has springing (smoothing towards desired position), different FOV's based on speed,
+// and a different following distance based on speed. The following distance is interpolated
+// with the FOV to give a feeling of speed.
+class Camera
 {
 private:
-    Camera(vec3 pos) : Component("Camera"), pos(pos) {}
-    vec3 pos = vec3(0); //starts at 0,0,0 for now. TODO move into move component
-    vec3 dPos = vec3(0);
-    double xRot = 0.0, yRot = 0.0; //rotation in radians from start. TODO move into move component, this or the basis vectors, or something else to describe rotate orientation.
-    vec3 w = vec3(0), u = vec3(0); //the camera basis vectors TODO move into move component
+    Camera(vec3 pos) { pos = pos; }
+    vec3 pos = vec3(0);
     mat4 view = mat4(1.0f);
+    mat4 lastView = mat4(1.0f);
     mat4 perspective = mat4(1.0f);
-    const float lowFov = 70.0f;
-    const float highFov = 100.0f;
-    const float currentFov = 70.0f;
-    const float camDistLateral = 12.0f;
-    const float camDistHeight = 4.0f;
-    vec3 get_wanted_pos(ComponentManager* compMan);
-    
-    float movementSensitivity = 0.05f;
-    bool firstMouseMovement = true; //used to avoid the sudden camera movement the first time the application receives mouse movement.
-    double mousePrevX = 0.0, mousePrevY = 0.0; //previous mouse position
-    double deltaMouseX = 0.0, deltaMouseY = 0.0; //change in mouse position from previous callback, not necessarily previous frame.
-    double sensitivityX = 0.01, sensitivityY = 0.01; //can be static for now, in the past i've used +/- keys to adjust.
+    mat4 lastPerspective = mat4(1.0f);
+    const float lowFov = 80.0f; // FOV used when still
+    const float highFov = 100.0f;   // FOV used at max speed
+    float currentFov = 70.0f;   // FOV used in camera
+    float currentCamDistZ = 12.0f;  // current Camera distance on Z that gets interpolated w/ speed
+    const float lowestCamDistZ = 7.0f;  // camera is closer when moving at max speed.
+    const float highestCamDistZ = 12.0f;    // camera is farther back when still. Lerped between so camera doesn't lag too much with FOV change
+    const float backwardsCamDistZ = 8.0f;   // amount camera is behind player when travelling backwards
+    const float camDistHeight = 3.0f;   // desired height of camera position above player
+    const float max_lerp_distance = 3.0f;   // max distance before setting camera position manually (to prevent too much cam lag)
+
+    vec3 get_wanted_pos(ComponentManager* compMan);     // gets the desired point behind the player
+    void CalcPerspective(float frametime, int width, int height, ComponentManager* compMan);
 
 public:
-    //Camera(Camera const&) = delete; //to explicitly delete the copy constructor
-    //write something to the application's view matrix directly. TODO change this access with an event manager class.
-    void Update(float frameTime, ComponentManager* compMan);
-    void Update(double posX, double posY);
-    void Init(ComponentManager* compMan) {} //does nothing, also not required to be called.
-    void AdjustMovementSpeed(float multFactor) { movementSensitivity *= multFactor; }
+    void Update(float frameTime, int width, int height, ComponentManager* compMan);
     static Camera& GetInstance(vec3 pos) {
         static Camera instance(pos);
         return instance;
     }
-    mat4 GetView() { return view; }
     const vec3 GetPos() const { return pos; }
-    const float GetRadius() const { return 1.0f; }
-    // must call CalcPerspective before using GetPerspective
+    const mat4 const GetView() { return view; }
     const mat4 GetPerspective() const { return perspective; }
-    void CalcPerspective(int width, int height);
+    const mat4 const GetPrevView() { return lastView; }
+    const mat4 const GetPrevProj() { return lastPerspective; }
 };
 

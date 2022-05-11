@@ -35,11 +35,16 @@ void Collision::collideWithPlayer(float frameTime, ComponentManager* compMan) {
     vec3 center = transform->GetPos();
     vec3 playerPos = compMan->GetPlayer().GetPosition();
     float radius = getRadius();
-    float camRadius = compMan->GetCamera().GetRadius();
-    
-    if (glm::distance(center, playerPos) <= radius + camRadius) {
+    float pRadius = compMan->GetPlayer().GetRadius();
+    float distanceFromObjectToPlayer = glm::distance(center, playerPos);
+    if (distanceFromObjectToPlayer <= radius + pRadius) {
         hasBeenTouchedByPlayer = true;
         compMan->GetGameState()->Collect();
+    }
+    else if (distanceFromObjectToPlayer > maxDistance) {
+        //sometimes the trash takes itself out.
+        compMan->RemoveGameObject(this->Name);
+        //cout << "garbage-collected " << Name << endl;
     }
 }
 

@@ -84,7 +84,7 @@ void main()
 	vec3 rim = RimLighting(frag_norm, view);
 	vec3 oceanSpecColor = OceanSpecular(frag_norm, lightDir, -view);
 
-	vec3 spec = clamp(max(rim, oceanSpecColor), vec3(0), vec3(1));
+	vec3 spec = clamp(max(rim, oceanSpecColor), vec3(0), vec3(1));	// TODO for whoever does this later, handle values above 1.
 
 	vec3 diffuseColor = DiffuseColor(sandNormal, lightDir);
 	color.rgb = spec + diffuseColor * 0.7;

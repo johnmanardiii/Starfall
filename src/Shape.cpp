@@ -22,6 +22,74 @@ Shape::~Shape()
 {
 }
 
+
+void Shape::reverseNormals() {
+	for (int i = 0; i < norBuf.size(); i++) {
+		norBuf.at(i) = -norBuf.at(i);
+	}
+}
+
+//places 
+void Shape::populateNorBuf(size_t i, glm::vec3 normal) {
+	//the first point
+	norBuf.at(3 * eleBuf.at(i)) += normal.x;
+	norBuf.at(3 * eleBuf.at(i) + 1) += normal.y;
+	norBuf.at(3 * eleBuf.at(i) + 2) += normal.z;
+	//the second point
+	norBuf.at(3 * eleBuf.at(i + 1)) += normal.x;
+	norBuf.at(3 * eleBuf.at(i + 1) + 1) += normal.y;
+	norBuf.at(3 * eleBuf.at(i + 1) + 2) += normal.z;
+	//the third point
+	norBuf.at(3 * eleBuf.at(i + 2)) += normal.x;
+	norBuf.at(3 * eleBuf.at(i + 2) + 1) += normal.y;
+	norBuf.at(3 * eleBuf.at(i + 2) + 2) += normal.z;
+}
+
+void Shape::normalizeNorBuf() {
+	//vertex by vertex
+
+	for (size_t i = 0; i < norBuf.size(); i = i + 3) {//work with 3 coordinates at a time
+		glm::vec3 vn = glm::vec3(norBuf.at(i), norBuf.at(i + 1), norBuf.at(i + 2));
+		vn = glm::normalize(vn);
+		//put the normalized components back
+		norBuf.at(i) = vn.x;
+		norBuf.at(i + 1) = vn.y;
+		norBuf.at(i + 2) = vn.z;
+
+	}
+
+}
+
+void Shape::computeNormals() {
+
+	//if there were normals there, return and don't change them.
+	if (!norBuf.empty()) return;
+	norBuf.clear();
+	norBuf.resize(posBuf.size());
+	for (size_t i = 0; i < norBuf.size(); i++) {
+		norBuf.at(i) = 0.0f;
+	}
+	//for every triangle
+	for (size_t i = 0; i < eleBuf.size(); i = i + 3) {//do 3 elements of ele buf at a time
+		//        2
+		//       / \
+		//      v   \
+		//    0/__u__\1
+		//grab a total of 9 floats from posBuf. eleBuf contains the location of the x-coord of each triangle, add 1 to get y,z.
+		glm::vec3 p0 = glm::vec3(posBuf.at(3 * eleBuf.at(i)), posBuf.at(3 * eleBuf.at(i) + 1), posBuf.at(3 * eleBuf.at(i) + 2));
+		glm::vec3 p1 = glm::vec3(posBuf.at(3 * eleBuf.at(i + 1)), posBuf.at(3 * eleBuf.at(i + 1) + 1), posBuf.at(3 * eleBuf.at(i + 1) + 2));
+		glm::vec3 p2 = glm::vec3(posBuf.at(3 * eleBuf.at(i + 2)), posBuf.at(3 * eleBuf.at(i + 2) + 1), posBuf.at(3 * eleBuf.at(i + 2) + 2));
+		//compute the vectors that minimally describe the triangle
+		glm::vec3 u = p1 - p0;
+		glm::vec3 v = p2 - p0;
+		glm::vec3 normal = glm::cross(u, v);
+
+		populateNorBuf(i, normal);
+	}
+	//all done with triangles. Now normalize the summed normal vectors.
+	normalizeNorBuf();
+}
+
 /* copy the data from the shape to this object */
 void Shape::createShape(tinyobj::shape_t & shape)
 {
@@ -29,6 +97,21 @@ void Shape::createShape(tinyobj::shape_t & shape)
 		norBuf = shape.mesh.normals;
 		texBuf = shape.mesh.texcoords;
 		eleBuf = shape.mesh.indices;
+}
+
+//precompute a scale. THIS MODIFIES ALL OF A SHAPE'S VERTEX POSITION DATA,
+//FOR EVERYTHING THAT USES THE SHAPE!
+void Shape::scale(glm::vec3 scaleFactor) {
+	measure();
+	for (size_t v = 0; v < posBuf.size() / 3; v++) {
+		//x
+		posBuf[3 * v + 0] *= scaleFactor.x;
+		//y
+		posBuf[3 * v + 1] *= scaleFactor.y;
+		//z
+		posBuf[3 * v + 2] *= scaleFactor.z;
+	}
+	
 }
 
 void Shape::measure() {

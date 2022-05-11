@@ -10,12 +10,13 @@ uniform vec3 flashCol;
 void main()
 {
 	vec3 n = normalize(vertex_normal);
-  vec3 lp=vec3(50, 30, 50);
-  vec3 ld = normalize(lp - vertex_pos);
-  float diffuse = dot(n,ld);
-  vec3 tcol= texture(tex, vertex_tex).rgb;
-  color.rgb = (1- flashAmt) * tcol + flashAmt * flashCol;
-  diffuse = clamp(diffuse, 0.2f, 1.0f);
-  color *= diffuse;
-  color.a = 1;
+	vec3 lp=vec3(50, 30, 50);
+	vec3 ld = normalize(lp - vertex_pos);
+	float diffuse = dot(n,ld);
+	vec3 tcol= texture(tex, vertex_tex).rgb;
+	color.rgb = (1- flashAmt) * tcol + flashAmt * flashCol;
+	diffuse = clamp(diffuse, 0.1f, 1.0f);
+	color *= diffuse;
+	// color *= 1000;
+	color.a = 1;
 }

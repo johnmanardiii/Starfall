@@ -1,7 +1,8 @@
 #include "ParticleStaticSplash.h"
 #include "ComponentManager.h"
 void ParticleStaticSplashRenderer::Update(float frameTime, ComponentManager* compMan)
-{
+{   
+    totalTime += frameTime;
     //reset the particle orientation to the camera's view matrix.
     particles->setCamera(compMan->GetCamera().GetView());
     particles->setProjection(compMan->GetCamera().GetPerspective());
@@ -10,8 +11,8 @@ void ParticleStaticSplashRenderer::Update(float frameTime, ComponentManager* com
 
 void ParticleStaticSplashRenderer::Draw(float frameTime)
 {
-    particles->drawMe(prog, trans);
-    particles->update(frameTime, trans);
+    particles->drawMe(prog, trans, totalTime);
+    //particles->update(frameTime, trans);
 }
 
 void ParticleStaticSplashRenderer::Init(ComponentManager* compMan)
@@ -21,11 +22,8 @@ void ParticleStaticSplashRenderer::Init(ComponentManager* compMan)
     int index = obj.GetComponentLocation("Transform");
     trans = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
 
-    //might be useful. Get the time at which this init happened.
-    startTime = compMan->GetGameState()->GetTotalFrameTime();
-
     //set the particles' starting position to the linked transfor component
-    particles = make_unique<particleSys>(100, trans->GetPos());
-    //set up gpu data
-    particles->gpuSetup();
+    particles = make_unique<particleSys>(100000, trans->GetPos());
+    
+    
 }

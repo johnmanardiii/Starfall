@@ -18,6 +18,7 @@ using namespace glm;
 int main(int argc, char *argv[])
 {
 	srand(time(0));
+	
 	// Where the resources are loaded from
 	std::string resourceDir = "../resources";
 

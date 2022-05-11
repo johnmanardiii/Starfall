@@ -1,7 +1,10 @@
 #include "Bloom.h"
+#include <cmath>
 #include <iostream>
 using namespace std; 
 
+// Intitializes all shaders from the files. Only needs to be called once at
+// the beginning.
 void Bloom::InitializeShaders()
 {
 	std::string resourceDir = "../resources";
@@ -38,12 +41,21 @@ void Bloom::InitializeShaders()
 	glUseProgram(bloomUpsample->pid);
 	glUniform1i(TexLocation, 0);
 	TexLocation = glGetUniformLocation(bloomUpsample->pid, "currentRes");
-	glUseProgram(bloomUpsample->pid);
 	glUniform1i(TexLocation, 1);
 }
 
+// sets up all framebuffers required for rendering bloom.
 void Bloom::InitializeFramebuffers(int width, int height)
 {
+	// calculate number of downsamples needed and allocate that much memory for
+	// FBO and Tex arrays
+	//num_downsamples = int(min(log2(width), log2(height))) - 1;
+
+	//downsampleFBOs = new GLuint[num_downsamples];
+	//downsampledTex = new GLuint[num_downsamples];
+	//upsampledFBOs = new GLuint[num_downsamples];
+	//upsampledTex = new GLuint[num_downsamples];
+
 	int scaleDownFactor = 1;
 	glGenFramebuffers(1, &bloomFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
@@ -118,22 +130,46 @@ void Bloom::InitializeFramebuffers(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-Bloom::Bloom(int width, int height)
+void Bloom::OnResizeWindow()
 {
+	DeleteFBOTex();
+	InitializeFramebuffers(postProcessing->GetWidth(), postProcessing->GetHeight());
+}
+
+Bloom::Bloom(PostProcessing* pp)
+{
+	this->postProcessing = pp;
+
 	// initialize framebuffers + textures
-	InitializeFramebuffers(width, height);
+	InitializeFramebuffers(postProcessing->GetWidth(), postProcessing->GetHeight());
 	// intialize shaders
 	InitializeShaders();
 }
 
-Bloom::~Bloom()
+void Bloom::DeleteFBOTex()
 {
-	// delete framebuffers + textures
 	glDeleteFramebuffers(1, &bloomFBO);
-	// TODO: delete used textures.
+	glDeleteFramebuffers(num_downsamples, downsampleFBOs);
+	glDeleteFramebuffers(num_downsamples, upsampledFBOs);
+
+	glDeleteTextures(1, &bloomTex);
+	glDeleteTextures(num_downsamples, downsampledTex);
+	glDeleteTextures(num_downsamples, upsampledTex);
+
+	//delete[] downsampleFBOs;
+	//delete[] downsampledTex;
+	//delete[] upsampledFBOs;
+	//delete[] upsampledTex;
 }
 
-void Bloom::DownSample(GLuint quad_vao, int width, int height)
+Bloom::~Bloom()
+{
+	DeleteFBOTex();
+}
+
+// Renders the threshold scene into lower and lower resolutions, using 13-box downsample to average out the pixels
+// as the resolution is halved each pass.
+void Bloom::DownSample()
 {
 	bool first = true;
 	int scaleDownFactor = 1;
@@ -143,9 +179,9 @@ void Bloom::DownSample(GLuint quad_vao, int width, int height)
 		scaleDownFactor *= 2;
 		glBindFramebuffer(GL_FRAMEBUFFER, downsampleFBOs[i]);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glViewport(0, 0, width / scaleDownFactor, height / scaleDownFactor);	// set viewport to texture size (hopefully)
+		glViewport(0, 0, postProcessing->GetWidth() / scaleDownFactor, postProcessing->GetHeight() / scaleDownFactor);	// set viewport to texture size (hopefully)
 		bloomDownsample->bind();
-		glBindVertexArray(quad_vao);
+		glBindVertexArray(postProcessing->GetQuadVAO());
 		glActiveTexture(GL_TEXTURE0);
 		if (first)
 		{
@@ -161,13 +197,14 @@ void Bloom::DownSample(GLuint quad_vao, int width, int height)
 	}
 }
 
-/*
-TODO: LOOK AT THIS CODE WHEN I AM NOT TIRED AND WALK THROUGH ALL PASSES OF DOWNSCALE AND UPSCALE ON PAPER
-*/
-void Bloom::Upsample(GLuint quad_vao, int width, int height)
+// Combines the last-lowest resolution with the next-highest resolution by upsampling the lower resolution image
+// and adding it to the higher resolution image. This is where exponential falloff occurs and I am not sure
+// if it should because the upsample uses a tent filter but it doesn't seem to do enough.
+void Bloom::Upsample()
 {
 	bool first = true;
 	int scaleDownFactor = pow(2, num_downsamples);
+	bloomUpsample->bind();
 	// start off by rendering a single downsample into FBO2
 	for (int i = 0; i < num_downsamples ; i++)
 	{
@@ -175,63 +212,57 @@ void Bloom::Upsample(GLuint quad_vao, int width, int height)
 		int j = num_downsamples - i - 1;	// index into lower res upsamples first
 		glBindFramebuffer(GL_FRAMEBUFFER, upsampledFBOs[j]);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glViewport(0, 0, width /  (scaleDownFactor), height / (scaleDownFactor));	// set viewport to texture size (hopefully)
-		bloomUpsample->bind();
-		glBindVertexArray(quad_vao);
+		glViewport(0, 0, postProcessing->GetWidth() /  (scaleDownFactor), postProcessing->GetHeight() / (scaleDownFactor));	// set viewport to texture size (hopefully)
+		glBindVertexArray(postProcessing->GetQuadVAO());
 		glActiveTexture(GL_TEXTURE0);
 		if (j == 0)
 		{
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, upsampledTex[1]);	// bind lowres
+			glBindTexture(GL_TEXTURE_2D, upsampledTex[1]);	// bind lowres (highest res upsample (width/2, height/2))
 
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, bloomTex);	// bind currentRes
+			glBindTexture(GL_TEXTURE_2D, bloomTex);	// bind (full-res threshold image)
 		}
 		if (first)
 		{
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, downsampledTex[j]);	// bind lowres	[AFTER THE FIRST, THIS NEEDS TO BE THE UPSAMPLED TEX!!!
+			glBindTexture(GL_TEXTURE_2D, downsampledTex[j]);	// bind lowest res downsample
 
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, downsampledTex[j - 1]);	// bind currentRes
+			glBindTexture(GL_TEXTURE_2D, downsampledTex[j - 1]);	// bind next lowest res downsample
+			first = false;
 		}
 		else
 		{
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, upsampledTex[j + 1]);	// bind lowres	[AFTER THE FIRST, THIS NEEDS TO BE THE UPSAMPLED TEX!!!]
+			glBindTexture(GL_TEXTURE_2D, upsampledTex[j + 1]);	// bind lowres upsample [AFTER THE FIRST, THIS NEEDS TO BE THE UPSAMPLED TEX!!!]
 
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, downsampledTex[j - 1]);	// bind currentRes
+			glBindTexture(GL_TEXTURE_2D, downsampledTex[j - 1]);	// bind currentRes downsampled image
 		}
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		bloomUpsample->unbind();
-		first = false;
 	}
+	bloomUpsample->unbind();
 }
 
-void Bloom::RenderBloom(GLuint quad_vao, GLuint screenTexture, int width, int height)
+// Renders all bloom using the PostProcessing BaseTex.
+// Result of sampling threshold values found in upsampledTex[0]
+void Bloom::RenderBloom()
 {
 	// clear all framebuffers of color data
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-
-	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	// glClear(GL_DEPTH_BUFFER_BIT);
-
 	glClear(GL_COLOR_BUFFER_BIT);
-	glViewport(0, 0, width, height);
+	glViewport(0, 0, postProcessing->GetWidth(), postProcessing->GetHeight());
 	// extract out threshold values into bloomTex (bloomFBO)
 	bloomThresholdProg->bind();
-	glBindVertexArray(quad_vao);
+	glBindVertexArray(postProcessing->GetQuadVAO());
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, screenTexture);
+	glBindTexture(GL_TEXTURE_2D, postProcessing->GetBaseTex());
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	bloomThresholdProg->unbind();
 	// downsample image 5 times:
-	DownSample(quad_vao, width, height);
+	DownSample();
 	// upscale image into bloomTex (bloomFBO)
-	Upsample(quad_vao, width, height);
-
-	// TODO: blur the upsample result (Idk i don't think im supposed to need this tho):
-
+	Upsample();
 }

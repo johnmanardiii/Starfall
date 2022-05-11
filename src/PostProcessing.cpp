@@ -35,7 +35,11 @@ void PostProcessing::InitializeQuad()
 
 void PostProcessing::InitializeShaders()
 {
+#ifdef __APPLE__
+    std::string resourceDir = "../../resources";
+#else
 	std::string resourceDir = "../resources";
+#endif
 	simple_prog = make_shared<Program>();
 	simple_prog->setVerbose(true);
 	simple_prog->setShaderNames(resourceDir + "/post_vert.glsl", resourceDir + "/post_simple_frag.glsl");
@@ -50,17 +54,13 @@ void PostProcessing::InitializeShaders()
 	glUniform1i(TexLocation, 1);
 }
 
-PostProcessing::PostProcessing(WindowManager* wm)
+void PostProcessing::InitializeFramebuffers()
 {
-	windowManager = wm;
-	InitializeQuad();
-	InitializeShaders();
-
 	// initialize default size of framebuffer textures
 	// Get current frame buffer size.
 	glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(1.0, 0.0, 0.0, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glViewport(0, 0, width, height);
 	// Clear default framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -80,40 +80,79 @@ PostProcessing::PostProcessing(WindowManager* wm)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, base_color, 0);
 
-	glGenRenderbuffers(1, &base_depth_stencil);
-	glBindRenderbuffer(GL_RENDERBUFFER, base_depth_stencil);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, base_depth_stencil);
+
+	// make a texture for the depth buffer for rendering motion blur and other effects.
+	glGenTextures(1, &base_depth);
+	glBindTexture(GL_TEXTURE_2D, base_depth);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, base_depth, 0);
 
 	// check if framebuffer is set up properly:
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
 		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
 	}
-	glViewport(0, 0, width, height);
 	// Clear default framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+PostProcessing::PostProcessing(WindowManager* wm, Camera* cam)
+{
+	windowManager = wm;
+	camera = cam;
+	InitializeQuad();
+	InitializeShaders();
+	InitializeFramebuffers();
 
 	// initialize Bloom rendering object
-	bloom = make_shared<Bloom>(width, height);
+	bloom = make_shared<Bloom>(this);
+	mb = make_shared<MotionBlur>(this);
+	rb = make_shared<RadialBlur>(this);
+}
+
+void PostProcessing::DeleteTexturesFramebuffers()
+{
+	glDeleteFramebuffers(1, &base_fbo);
+	glDeleteTextures(1, &base_color);
+	glDeleteTextures(1, &base_depth);
 }
 
 PostProcessing::~PostProcessing()
 {
-	glDeleteFramebuffers(1, &base_fbo);
-	//TODO: delete textures
+	glDeleteBuffers(1, &quad_vbo);
+	glDeleteVertexArrays(1, &quad_vao);
 }
 
-void PostProcessing::ClearFramebuffers()
+// Clears the Main frame buffer and binds it as an active framebuffer for component manager.
+// This method should be called before every frame.
+void PostProcessing::SetUpFrameBuffers()
 {
-	//TODO: check for width/height change and adjust the textures.
-	glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+	// check if width/height has changed
+	int currWidth, currHeight;
+	glfwGetFramebufferSize(windowManager->getHandle(), &currWidth, &currHeight);
+	if (currWidth != width || currHeight != height)
+	{
+		width = currWidth;
+		height = currHeight;
+		DeleteTexturesFramebuffers();
+		InitializeFramebuffers();
+		// tell bloom and motion blur that resolution has changed
+		// and the framebuffers and viewports need to be
+		// re-initialized.
+		bloom->OnResizeWindow();
+		mb->OnResizeWindow();
+		rb->OnResizeWindow();
+	}
 
 	// clear the base framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, base_fbo);
+	glClearColor(0.0, 0.0, 0.0, 1.0);	// clear color for background of scene
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	// clear the default framebuffer
@@ -125,6 +164,7 @@ void PostProcessing::ClearFramebuffers()
 	glEnable(GL_DEPTH_TEST);
 }
 
+// Renders all effects to the screen using the main framebuffer.
 void PostProcessing::RenderPostProcessing()
 {
 	glDisable(GL_DEPTH_TEST);
@@ -132,8 +172,11 @@ void PostProcessing::RenderPostProcessing()
 	glBindTexture(GL_TEXTURE_2D, base_color);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
+	// mb->RenderMotionBlur(camera);
+	// rb->RenderRadialBlur();	// uncomment this if you want radial blur for speed.
+
 	// generate bloom
-	bloom->RenderBloom(quad_vao, base_color, width, height);
+	bloom->RenderBloom();
 	glViewport(0, 0, width, height);
 
 	// bind default framebuffer
@@ -141,7 +184,7 @@ void PostProcessing::RenderPostProcessing()
 	simple_prog->bind();
 	glBindVertexArray(quad_vao);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, base_color);
+	glBindTexture(GL_TEXTURE_2D, GetBaseTex());
 	// bind in bloom texture and additive blend
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, bloom->GetBloomTex());

@@ -16,7 +16,7 @@ float luminance(vec3 rgb)
 void main()
 { 
     vec3 fb_color = texture(screenTexture, TexCoord, 0).rgb;
-    if(luminance(fb_color) < .8)
+    if(luminance(fb_color) < 1.0)
     {
         color = vec4(0, 0, 0, 1);
     }
