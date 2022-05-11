@@ -18,10 +18,6 @@ using glm::vec3;
 using glm::mat4;
 using glm::normalize;
 
-#define MAX_SLOPE_MULT 20.0f
-#define GRAVITY_MULT 10.0f
-#define STRONG_GRAVITY_MULT 20.0f
-
 class Player
 {
 private:
@@ -54,7 +50,7 @@ public:
 	void Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
 		shared_ptr<Transform> head, shared_ptr<Transform> arm1,
 		shared_ptr<Transform> arm2);
-	const vec3 GetPosition() { return pos; }
+	const vec3 GetPosition() { return pTransform->GetPos(); }
 	static Player& GetInstance(vec3 pos) {
 		static Player instance(pos);
 		return instance;
