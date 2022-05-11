@@ -96,6 +96,42 @@ void ComponentManager::Init(std::string resourceDirectory)
     AddGameObject(floorName, floorComps);
 }
 
+void ComponentManager::AddLineOfStars()
+{
+    int numStarsToSpawn = (rand() % 8) + 1; //1-8 stars spawning
+    RandomGenerator randTrans(-10, 10); //generate a position offset from the player's right-vector
+    
+    float offsetRight = randTrans.GetFloat();    //get some number between -4 and 4
+    float distFactor = 40.0f; //how far away from the player, in world space units, do we start spawning star fragments
+    float spacing = 4.0f; //the distance between each star fragment, if multiple are spawned.
+    vec3 playerGaze = normalize(player.GetForward()); //double check that this is normalized.
+    vec3 playerRight = cross(playerGaze, vec3(0, 1, 0));
+
+    //start initializing stars.
+    for (int i = 0; i < numStarsToSpawn; ++i){
+        string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
+        string sphereShapeFileName = "Star Bit";
+        shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", "Star", sphereName);
+        shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
+        shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
+        shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
+        shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
+
+        //where all the variables at the top come in.
+        vec3 pos = player.GetPosition() + //the player's position
+            playerGaze * (distFactor + (spacing * i)) +  //plus distFactor units in front of the player, plus an additional spacing for each one spawned.
+            playerRight * offsetRight; //plus shifted to the /left or right a random number, which is the same for all star fragments in this particular line.
+            
+        //finally, calculate each spawned fragment's height at this position.
+        transform->ApplyTranslation(vec3(pos.x, heightCalc(pos.x, pos.z), pos.z));
+        transform->ApplyScale(vec3(0.02f));
+        vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collision, collect };
+        AddGameObject(sphereName, sphereComps);
+        state.TotalObjectsEverMade++;
+        //cout << "\nAdded one more star!\n";
+    }
+}
+
 // Iterate through all of the component vectors. Usually call Update on all of them, although
 // Collision is dependent on other Collision objects, so the pattern is different.
 //
@@ -107,25 +143,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     //the first thing that should happen in every frame. Stores total time.
     state.IncTotalFrameTime(frameTime);
     if (state.ShouldSpawn()) {
-        RandomGenerator randMove(-10, 10);
-        RandomGenerator randTrans(-40, 40);
-        RandomGenerator randScale(0.2, 2);
-        string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
-        string sphereShapeFileName = "Star Bit";
-        shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", "Star", sphereName);
-        shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
-        vec3 startingVelocity = vec3(randMove.GetFloat(), 0, randMove.GetFloat());
-        shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
-        shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
-        shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
-        float x = randTrans.GetFloat();
-        float z = randTrans.GetFloat();
-        transform->ApplyTranslation(vec3(x, heightCalc(x, z), z));
-        transform->ApplyScale(vec3(0.02f));
-        vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collision, collect };
-        AddGameObject(sphereName, sphereComps);
-        state.TotalObjectsEverMade++;
-        cout << "\nAdded one more monkey!\n";
+        AddLineOfStars();
     }
 
     // update movements
