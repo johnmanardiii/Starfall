@@ -13,35 +13,33 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
-	// player movement
+  
+	//player movement
 	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		componentManager.GetPlayer().inputBuffer[0] = true;
+		componentManager.GetPlayer().SetInput(W, true);
+		//eyePos -= movementSensitivity * w;
 	}
 
 	if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-		componentManager.GetPlayer().inputBuffer[1] = true;
+		componentManager.GetPlayer().SetInput(A, true);
+		//eyePos += movementSensitivity * u;
 	}
 	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-		componentManager.GetPlayer().inputBuffer[2] = true;
+		componentManager.GetPlayer().SetInput(S, true);
+		//eyePos += movementSensitivity * w;
 	}
 
 	if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-		componentManager.GetPlayer().inputBuffer[3] = true;
+		componentManager.GetPlayer().SetInput(D, true);
+		//eyePos -= movementSensitivity * u;
 	}
 
-	if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
-		componentManager.GetPlayer().inputBuffer[0] = false;
+	// Falling toggle
+	if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS) {
+		componentManager.GetPlayer().SetInput(LSHIFT, true);
 	}
-
-	if (key == GLFW_KEY_A && action == GLFW_RELEASE) {
-		componentManager.GetPlayer().inputBuffer[1] = false;
-	}
-	if (key == GLFW_KEY_S && action == GLFW_RELEASE) {
-		componentManager.GetPlayer().inputBuffer[2] = false;
-	}
-
-	if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
-		componentManager.GetPlayer().inputBuffer[3] = false;
+	if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE) {
+		componentManager.GetPlayer().SetInput(LSHIFT, false);
 	}
 }
 

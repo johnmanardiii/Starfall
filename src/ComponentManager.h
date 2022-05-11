@@ -2,9 +2,9 @@
 
 #include "GameObject.h"
 #include "Camera.h"
-#include "Player.h"
 #include "Component.h"
 #include "Movement.h"
+#include "Player.h"
 #include "Collect.h"
 #include "Transform.h"
 #include "Collision.h"
