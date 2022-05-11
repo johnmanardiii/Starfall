@@ -15,46 +15,23 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
     UpdateRotation(frameTime);
 
     // store result of W and S as speed
-    float speedInput = inputBuffer[0] - inputBuffer[2];
-    currentSpeed += speedInput * speed * frameTime;
+    float speedInput = inputBuffer[W] - inputBuffer[S];
+
     // TODO: add acceleration to input, and make luna lean forward and backward
     // based on acceleration rather than direct speed.
-    /*accel += speedInput * speed * frameTime;
-    velocity += glm::rotate(trans->GetRot(), vec3(0, 0, -1)) * accel.x * frameTime;
-    accel *= 0.8;*/
-    // Apply Gravity
-    //velocity.y -= (inputBuffer[4] ? STRONG_GRAVITY_MULT : GRAVITY_MULT) * frameTime;
-    currentDownSpeed -= (inputBuffer[4] ? STRONG_GRAVITY_MULT : GRAVITY_MULT) * frameTime;
-
-    // Multiply velocity value by factor determined by slope difference
-    //   up to double speed if sloped down, down to zeroing speed if sloped up
-    static float twoOverPi = 2.0f / pi<float>();
-    float slopeDiff = GetSlopeDiff(frameTime);
-    float slopeMult; // = (-atan(slopeDiff / 4.0f) * twoOverPi + 1.0f) * MAX_SLOPE_MULT;
-    if (slopeDiff < 0)
+    vec3 dir = glm::rotate(trans->GetRot(), vec3(0, 0, -1));
+    velocity +=  dir * speedInput * SPEED * frameTime;
+    ApplyGravity(frameTime);
+    if (inputBuffer[LSHIFT])
     {
-        slopeMult = 3 * pow(-slopeDiff, 0.5f);
+        velocity.y -= STRONG_GRAVITY_MULT * frameTime;
     }
-    else
-    {
-        slopeMult = -pow(slopeDiff, 0.5f);
-    }
-    slopeMult = inputBuffer[4] ? slopeMult : 0.0f;
-    currentSpeed += MAX_SLOPE_MULT * slopeMult * frameTime;
-    currentSpeed = min(currentSpeed, MAX_SPEED);
-    currentSpeed = max(0, currentSpeed);
-
-    // move player by their velocity
-    vec3 translation = currentSpeed * vec3(0, 0, -1) * frameTime;
-    translation = glm::rotate(trans->GetRot(), translation);
-    translation.y += currentDownSpeed;
-    trans->ApplyTranslation(translation);
-    // Perform ground collision resolution 
-    //   (make sure player doesn't fall through floor)
-    GroundCollision();
-
-    currentSpeed *= 0.99;
-    currentDownSpeed *= 0.99;
+    GroundCollision(frameTime);
+    trans->ApplyTranslation(velocity);
+    vec3 pos = trans->GetPos();
+    pos.y = (glm::max)(pos.y, heightCalc(pos.x, pos.z));
+    trans->SetPos(pos);
+    velocity -= velocity * SPEED_FALLOFF * frameTime;
 }
 
 void PlayerMovement::UpdateRotation(float frameTime)
@@ -70,6 +47,11 @@ void PlayerMovement::UpdateRotation(float frameTime)
     trans->SetRot(quat(newRotation));
 }
 
+void PlayerMovement::ApplyGravity(float frameTime)
+{
+    velocity.y -= GRAVITY_MULT * frameTime;
+}
+
 float PlayerMovement::GetSlopeDiff(float frameTime)
 {
     vec3 forward = glm::rotate(trans->GetRot(), vec3(0, 0, -1)) * frameTime;
@@ -80,16 +62,27 @@ float PlayerMovement::GetSlopeDiff(float frameTime)
     return nextH - currentH;
 }
 
-void PlayerMovement::GroundCollision()
+void PlayerMovement::GroundCollision(float frameTime)
 {
-    vec3 pos = trans->GetPos();
-    float groundY = heightCalc(pos.x, pos.z);
-    if (pos.y < groundY)
+    vec3 pos = trans->GetPos(),
+        offPos = pos + velocity * frameTime;
+    offPos.y = (glm::max)(offPos.y, heightCalc(offPos.x, offPos.z));
+    vec3 slopeVec = offPos - pos;
+    if (glm::length(slopeVec) < 0.001)
     {
-        currentDownSpeed = 0.0f;
-        pos.y = groundY;
+        return;
     }
-    trans->SetPos(pos);
+    slopeVec = glm::normalize(slopeVec);
+    if (inputBuffer[LSHIFT])
+    {
+        // project velocity onto slope vector
+        velocity = glm::dot(velocity, slopeVec) * slopeVec;
+    }
+    else
+    {
+        velocity = slopeVec * glm::length(velocity);
+    }
+
 }
 
 float PlayerMovement::GetAngularSpeed()
