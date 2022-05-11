@@ -207,6 +207,9 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/noiseTex.png", "noiseTex");
 	loadTexture("/sandShallow.jpg", "sandShallow");
 	loadTexture("/sandSteep.jpg", "sandSteep");
+	loadTexture("/CloudNoise/cloud_BaseNoise.png", "cloudBaseNoise");
+	loadTexture("/CloudNoise/cloud_NoiseTexture.png", "cloudNoise");
+	loadTexture("/CloudNoise/cloud_Distort.png", "cloudDistort");
 
 	loadTexture("/rainbow.jpg", "Rainbow");
 
@@ -368,11 +371,20 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	skyboxProg->addUniform("horizonColor");
 	skyboxProg->addUniform("sunDir");
 	skyboxProg->addUniform("moonOffset");
+	skyboxProg->addUniform("cloudScale");
+	skyboxProg->addUniform("cloudSpeed");
+	skyboxProg->addUniform("cloudCutoff");
+	skyboxProg->addUniform("cloudFuzziness");
+	skyboxProg->addUniform("cloudColorDayEdge");
+	skyboxProg->addUniform("cloudColorDayMain");
+	skyboxProg->addUniform("cloudColorNightEdge");
+	skyboxProg->addUniform("cloudColorNightMain");
+
 	skyboxProg->addAttribute("vertPos");
 
-	TexLocation = glGetUniformLocation(skyboxProg->pid, "tex");
-	TexLocation2 = glGetUniformLocation(skyboxProg->pid, "tex2");
-	TexLocation3 = glGetUniformLocation(skyboxProg->pid, "noiseTex");
+	TexLocation = glGetUniformLocation(skyboxProg->pid, "cloudBaseNoise");
+	TexLocation2 = glGetUniformLocation(skyboxProg->pid, "cloudNoise");
+	TexLocation3 = glGetUniformLocation(skyboxProg->pid, "cloudDistort");
 
 	glUseProgram(skyboxProg->pid);
 	glUniform1i(TexLocation, 0);

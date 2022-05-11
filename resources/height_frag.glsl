@@ -21,7 +21,7 @@ uniform float time;
 float diffuseContrast = 2;
 vec3 shadowColor = vec3(0.611, 0.44, 0.32);
 vec3 terrainColor = vec3(1, 0.79, 0.65);
-float sandStrength = 0.2;
+float sandStrength = 0.1;
 
 // rim 
 float rimStrength = 0.3;
@@ -41,6 +41,7 @@ float rand(vec2 co){
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
+// like slerp
 vec3 nlerp(vec3 n1, vec3 n2, float t) {
 	return normalize(mix(n1, n2, t));
 }
@@ -55,13 +56,14 @@ vec3 DiffuseColor(vec3 normal, vec3 ligthDir)
 vec3 SandNormal(vec3 normal, vec2 texcoords)
 {
 	vec3 random = texture(noiseTex, texcoords * 50).rgb;
-	random = normalize(random * 2 - 1);
+	random = normalize(random * 2 - 1); // [-1 to 1]
 	vec3 Ns = nlerp(normal, random, sandStrength);
 	return Ns;
 }
 
 vec3 OceanSpecular(vec3 normal, vec3 lightDir, vec3 view)
 {
+	// Specular blinn phong
 	vec3 H = normalize(view + lightDir);
 	float NdotH = max(0, dot(normal, H));
 	float spec = pow(NdotH, oceanSpecularPower) * oceanSpecularStrength;
@@ -70,8 +72,9 @@ vec3 OceanSpecular(vec3 normal, vec3 lightDir, vec3 view)
 
 vec3 RimLighting(vec3 normal, vec3 viewDir)
 {
+	// Fresnal lighting equation
 	float rim = 1.0 - clamp(dot(normal, viewDir), 0, 1);
-	rim = clamp(pow(rim, rimPower) * rimStrength, 0, 1);
+	rim = clamp(pow(rim, rimPower) * rimStrength, 0, 1); // Strength
 	rim = max(rim, 0);
 	return rim * rimColor;
 }
@@ -79,20 +82,20 @@ vec3 RimLighting(vec3 normal, vec3 viewDir)
 vec3 SandRipples(vec2 texcoords, vec3 lightDir, vec3 view)
 {
 	// Sand ripples
-	float steepness_x = clamp(dot(frag_norm, vec3(0, 1, 0)), 0, 1);
-	steepness_x = pow(steepness_x, steepnessSharpnessPower);
+	float steepness = clamp(dot(frag_norm, vec3(0, 1, 0)), 0, 1);
+	steepness = pow(steepness, steepnessSharpnessPower);
 
 	vec3 shallow_x = texture(sandShallow, texcoords * 50).rgb;
 	vec3 steep_x = texture(sandSteep, texcoords * 50).rgb;
-	vec3 S_x = nlerp(steep_x, shallow_x, steepness_x);
+	vec3 S_x = nlerp(steep_x, shallow_x, steepness);
 
 	
 
 	vec2 flippedTexcoords = vec2(texcoords.y, texcoords.x);
-
+	/*
 	float steepness_z = clamp(dot(frag_norm, vec3(0, 0, 1)), 0, 1);
 	steepness_z = pow(steepness_x, steepnessSharpnessPower);
-	/*
+	
 	vec3 shallow_z = texture(sandShallow, flippedTexcoords * 30).rgb;
 	vec3 steep_z = texture(sandSteep, flippedTexcoords * 30).rgb;
 	vec3 S_z = nlerp(steep_z, shallow_z, steepness_z);
@@ -118,9 +121,14 @@ void main()
 	vec2 texcoords=frag_tex;
 	float t=1./100.;
 	texcoords -= vec2(camoff.x,camoff.z)*t;
+
+	float len = length(frag_pos.xz-campos.xz);
+	len-=41;
+	len/=8.;
+	len=clamp(len,0,1);
 	
 	// Sand normals
-	vec3 sandNormal = SandNormal(frag_norm, texcoords);
+	vec3 sandNormal = SandNormal(frag_norm, texcoords) * (1 - len);
 	vec3 view = normalize(vec3(V[0][2], V[1][2], V[2][2]));
 
 	// Specular
@@ -134,12 +142,6 @@ void main()
 	//diffuseColor = mix(diffuseColor, sandRipplesColor * 0.5, 0.4);
 	color.rgb = spec + diffuseColor * 0.7 * sandRipplesColor;
 	
-	//color.rgb = sandRipplesColor;
-	
-	float len = length(frag_pos.xz-campos.xz);
-	len-=41;
-	len/=8.;
-	len=clamp(len,0,1);
 	color.a=1-len;
 	//color.rgb = normalize(frag_norm);
 	

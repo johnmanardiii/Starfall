@@ -4,6 +4,10 @@ out vec4 color;
 in vec3 TexCoords;
 in vec2 uv;
 
+uniform sampler2D cloudBaseNoise;
+uniform sampler2D cloudNoiseTextures;
+uniform sampler2D cloudDistort;
+
 // Stars
 uniform samplerCube skybox;
 
@@ -18,6 +22,17 @@ uniform vec3 horizonColor;
 uniform vec3 sunDir;
 uniform float moonOffset;
 
+// Clouds
+uniform float cloudScale;
+uniform float cloudSpeed;
+uniform float cloudCutoff;
+uniform float cloudFuzziness;
+uniform vec3 cloudColorDayEdge;
+uniform vec3 cloudColorDayMain;
+uniform vec3 cloudColorNightEdge;
+uniform vec3 cloudColorNightMain;
+
+
 // Time 
 uniform float time;
 
@@ -29,6 +44,7 @@ vec3 SkyGradient(vec3 texCoords, float yCoord)
 	vec3 gradientDay = mix(dayTopColor, dayBottomColor, yCoord);
 	vec3 gradientNight = mix(nightTopColor, nightBottomColor, yCoord);
 
+	// mix night and day colors
 	vec3 skyGradients = mix(clamp(gradientDay, 0, 1), clamp(gradientNight, 0, 1), normalizedSun.y);
 	skyGradients = clamp(skyGradients, 0, 1);
 	return skyGradients;
@@ -38,6 +54,7 @@ vec3 SunAndMoon(vec3 texCoords, float yCoord)
 {
 	vec3 normalizedSun = normalize(sunDir);
 	float sun = distance(texCoords, normalizedSun);
+	// 13 sun size hard coded for now ;u;
 	float sunDisc = (1 - clamp(sun * 13, 0, 1)) * 100;
 
 	vec3 normalizedMoon = -normalize(sunDir);
@@ -56,7 +73,29 @@ vec3 HorizonColor(vec3 texCoords, float yCoord)
 	float horizon = clamp(abs(texCoords.y), 0, 1);
 	vec3 normalizedSun = normalize(sunDir);
 	float horizonGlow = clamp((1 - horizon) * clamp(normalizedSun.y, 0, 1), 0, 1);
-	return vec3((1 - horizonGlow) * horizonColor * 0.3);
+	return vec3((1 - horizonGlow) * horizonColor * 0.5);
+}
+
+vec3 Clouds(vec3 texCoords, float yCoord)
+{
+	vec3 normalizedSun = normalize(sunDir);
+	float horizon = clamp(abs(texCoords.y), 0, 1);
+
+	vec2 skyUV = texCoords.xz /texCoords.y;
+	vec3 baseNoise = texture(cloudBaseNoise, (skyUV - time * cloudSpeed) * cloudScale).rgb;
+	vec3 noise1 = texture(cloudDistort, (skyUV + baseNoise.r - time * cloudSpeed) * cloudScale).rgb;
+	vec3 noise2 = texture(cloudNoiseTextures, (skyUV + noise1.r - time * cloudSpeed) * cloudScale).rgb;
+
+	float finalNoise = clamp(noise1.r * noise2.r, 0, 1) * 1 - clamp(yCoord, 0, 1);
+	float clouds = clamp(smoothstep(cloudCutoff, cloudCutoff + cloudFuzziness, finalNoise), 0, 1);
+
+	vec3 cloudsColoredDay = mix(cloudColorDayEdge,  cloudColorDayMain , clouds) * clouds;
+	vec3 cloudsColoredNight = mix(cloudColorNightEdge,  cloudColorNightMain , clouds) * clouds;
+
+	vec3 cloudMix = mix(clamp(cloudsColoredDay, 0, 1), clamp(cloudsColoredNight, 0, 1), normalizedSun.y);
+	cloudMix = clamp(cloudMix, 0, 1);
+
+	return vec3(cloudMix);
 }
 
 void main() {
@@ -73,6 +112,7 @@ void main() {
 	vec3 sunAndMoonColor = SunAndMoon(normTexCoords, yCoord);
 	// Horizon color
 	vec3 horizon = HorizonColor(normTexCoords, yCoord);
+	vec3 clouds = Clouds(normTexCoords, yCoord);
 
-	color = vec4(skyColor + sunAndMoonColor + stars.xyz + horizon, 1);
+	color = vec4(skyColor + sunAndMoonColor + stars.xyz + horizon + clouds, 1);
 }

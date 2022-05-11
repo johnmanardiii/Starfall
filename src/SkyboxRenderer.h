@@ -15,6 +15,10 @@ public:
 		ShaderManager shaderMan = ShaderManager::GetInstance();
 		prog = shaderMan.GetShader("Skybox");
 		model = shaderMan.GetModel(mod);
+
+		cloudBaseNoise = shaderMan.GetTexture("cloudBaseNoise");
+		cloudNoiseTextures = shaderMan.GetTexture("cloudNoise");
+		cloudDistort = shaderMan.GetTexture("cloudDistort");
 	}
 	void Update(float frameTime, ComponentManager& compMan) { Draw(frameTime); }
 	void Init(ComponentManager* compMan);
@@ -30,5 +34,23 @@ private:
 	float texCoordAddOffset = 0;
 	float texCoordsMultOffset = 0;
 	vec3 sunDir = vec3(0.6, 0.01, -0.806);
+
+	float sunRotation = 0;
+
 	float moonOffset = 0.067;
+
+	float cloudFuzziness = 0.2;
+	float cloudScale = 0.2;
+	float cloudSpeed = 0.2;
+	float cloudCutoff = 0.2;
+
+	vec3 cloudColorDayEdge = vec3(0.36, 0.4, 1);
+	vec3 cloudColorDayMain = vec3(0.36, 0.4, 1);
+	vec3 cloudColorNightEdge = vec3(0.36, 0.4, 1);
+	vec3 cloudColorNightMain = vec3(0.36, 0.4, 1);
+
+	// Textures
+	GLuint cloudBaseNoise;
+	GLuint cloudNoiseTextures;
+	GLuint cloudDistort;
 };

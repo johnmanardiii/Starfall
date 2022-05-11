@@ -2,6 +2,9 @@
 #include "Camera.h"
 #include "LightComponent.h"
 #include <iostream>
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 void SkyboxRenderer::Init(ComponentManager* compMan)
 {
@@ -10,6 +13,7 @@ void SkyboxRenderer::Init(ComponentManager* compMan)
 
 void SkyboxRenderer::UpdateUniforms()
 {
+	// Gradient
 	ImGui::ColorEdit3("Day Top Color", (float*)&dayTopColor);
 	glUniform3fv(prog->getUniform("dayTopColor"), 1, &dayTopColor[0]);
 
@@ -27,11 +31,37 @@ void SkyboxRenderer::UpdateUniforms()
 
 	LightComponent light = LightComponent::GetInstance(vec3(1, 0, 0));
 
-	ImGui::SliderFloat3("Light Direction",(float*)&sunDir, -1.0f, 1.0f);
+	ImGui::SliderFloat("Sun Rotation", (float*)&sunRotation, 0.0f, 10.0f);
 	glUniform3fv(prog->getUniform("sunDir"), 1, &sunDir[0]);
 
 	ImGui::SliderFloat("MoonOffset", (float*)&moonOffset, -1.0f, 1.0f);
 	glUniform1f(prog->getUniform("moonOffset"), moonOffset);
+
+	// Clouds
+	ImGui::SliderFloat("Cloud Fuzziness", (float*)&cloudFuzziness, 0.0f, 1.0f);
+	glUniform1f(prog->getUniform("cloudFuzziness"), cloudFuzziness);
+
+	ImGui::SliderFloat("cloudScale", (float*)&cloudScale, 0.0f, 1.0f);
+	glUniform1f(prog->getUniform("cloudScale"), cloudScale);
+
+	ImGui::SliderFloat("cloudSpeed", (float*)&cloudSpeed, 0.0f, 1.0f);
+	glUniform1f(prog->getUniform("cloudSpeed"), cloudSpeed);
+
+	ImGui::SliderFloat("cloudCutoff", (float*)&cloudCutoff, 0.0f, 1.0f);
+	glUniform1f(prog->getUniform("cloudCutoff"), cloudCutoff);
+
+	ImGui::ColorEdit3("cloudColorDayEdge", (float*)&cloudColorDayEdge);
+	glUniform3fv(prog->getUniform("cloudColorDayEdge"), 1, &cloudColorDayEdge[0]);
+
+	ImGui::ColorEdit3("cloudColorDayMain", (float*)&cloudColorDayMain);
+	glUniform3fv(prog->getUniform("cloudColorDayMain"), 1, &cloudColorDayMain[0]);
+
+	ImGui::ColorEdit3("cloudColorNightEdge", (float*)&cloudColorNightEdge);
+	glUniform3fv(prog->getUniform("cloudColorNightEdge"), 1, &cloudColorNightEdge[0]);
+
+	ImGui::ColorEdit3("cloudColorNightMain", (float*)&cloudColorNightMain);
+	glUniform3fv(prog->getUniform("cloudColorNightMain"), 1, &cloudColorNightMain[0]);
+
 }
 
 void SkyboxRenderer::Draw(float frameTime)
@@ -47,11 +77,25 @@ void SkyboxRenderer::Draw(float frameTime)
 	mat4 P = cam.GetPerspective(),
 		V = cam.GetView(),
 		M = trans->GetModelMat();
+	
+	// Sun direction
+	mat4 rotY = glm::rotate(mat4(1.0f), sunRotation, glm::vec3(1.0f, 0.0f, 0.0f));
+	mat4 inverted = glm::inverse(rotY);
+	sunDir = normalize(glm::vec3(inverted[2]));
+	
 	glDepthFunc(GL_LEQUAL);
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
 	glUniform1f(prog->getUniform("time"), glfwGetTime());
+
+	// Textures
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, cloudBaseNoise);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, cloudNoiseTextures);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, cloudBaseNoise);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, shaderMan.skyboxTexId);
 	model->draw(prog);
