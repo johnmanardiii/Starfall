@@ -4,10 +4,10 @@
 enum Input {W = 0, A = 1, S = 2, D = 3, LSHIFT = 4};
 
 #define MAX_SPEED 50.0f
-#define SPEED 3.0f
-#define GRAVITY_MULT 2.0f
-#define STRONG_GRAVITY_MULT 3.0f
-#define SPEED_FALLOFF 4.5f
+#define SPEED 1.0f
+#define GRAVITY_MULT 0.75f
+#define STRONG_GRAVITY_MULT 2.5f
+#define SPEED_FALLOFF 3.0f
 
 class PlayerMovement : public Movement
 {
