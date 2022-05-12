@@ -176,6 +176,7 @@ void PostProcessing::RenderPostProcessing()
 	// rb->RenderRadialBlur();	// uncomment this if you want radial blur for speed.
 
 	// generate bloom
+	// glViewport(0, 0, width, height);
 	bloom->RenderBloom();
 	glViewport(0, 0, width, height);
 

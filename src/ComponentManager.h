@@ -14,6 +14,7 @@
 #include "RandomGenerator.h"
 #include "GameState.h"
 #include "HeightCalc.h"
+#include "LightComponent.h"
 
 #include <glm/gtx/quaternion.hpp>
 #include <string>
@@ -54,6 +55,7 @@ public:
     shared_ptr<Component> GetComponent(string, int);
     Camera& GetCamera() { return camera; } //direct access, camera isn't componentized yet.
     Player& GetPlayer() { return player; }
+    LightComponent& GetLights() { return lightComponent; }
     GameState* GetGameState() { return &state; }
     
 private:
@@ -75,5 +77,6 @@ private:
     //one camera for now
     Camera& camera = Camera::GetInstance(vec3(0,1,0));
     Player& player = Player::GetInstance(vec3(0, 1, 0));
+    LightComponent& lightComponent = LightComponent::GetInstance(vec3(10, 0, 10));
 };
 

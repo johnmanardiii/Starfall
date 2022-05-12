@@ -53,7 +53,7 @@ void main()
 {
     vec3 fb_color = texture(screenTexture, TexCoord).rgb;
     vec3 bloom_color = texture(bloomTexture, TexCoord).rgb;
-    fb_color += bloom_color.rgb * .005;
+    fb_color += bloom_color.rgb;
     fb_color = ACESFilm(fb_color);
     color = vec4(fb_color, 1.0);
 }

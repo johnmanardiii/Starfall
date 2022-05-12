@@ -3,6 +3,7 @@
 #include "PlayerTransform.h"
 #include "EulerTransform.h"
 #include "MonkeyMovement.h"
+#include "SkyboxRenderer.h"
 
 ComponentManager::ComponentManager()
 {
@@ -89,12 +90,22 @@ void ComponentManager::Init(std::string resourceDirectory)
     RandomGenerator randTrans(-40, 40);
     RandomGenerator randScale(0.2, 2);
 
+    // initialize skybox
+    string skyboxName = "Skybox";
+    shared_ptr<SkyboxRenderer> skyboxRenderer = make_shared<SkyboxRenderer>(skyboxName, "unit_cube");
+    transform = make_shared<Transform>(skyboxName);
+    transform->SetPos(vec3(0, 0, 0));
+    transform->SetScale(vec3(100, 100, 100));
+    vector<shared_ptr<Component>> skyboxComps = { skyboxRenderer, transform };
+    AddGameObject(skyboxName, skyboxComps);
+
     string floorName = "Floor";
     renderer = make_shared<TerrainRenderer>("Cat", "Cat", floorName);
     transform = make_shared<Transform>(floorName);
     transform->SetPos(vec3(50, 1, -50));
     vector<shared_ptr<Component>> floorComps = { renderer, transform };
     AddGameObject(floorName, floorComps);
+
 }
 
 void ComponentManager::AddLineOfStars()
@@ -179,6 +190,9 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     
     // update the camera
     camera.Update(frameTime, width, height, this);
+
+    // update lights
+    lightComponent.Update(frameTime, this);
 
     //finally update renderers/draw.
 

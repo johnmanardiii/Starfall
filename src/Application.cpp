@@ -145,6 +145,43 @@ void Application::InitTerrain() {
 	shaderManager.Terrain = terrain;
 }
 
+void Application::InitSkybox(const std::string& resourceDirectory)
+{
+	unsigned int textureID;
+
+	vector<std::string> faces{
+		"StarSkybox041.png",
+		"StarSkybox042.png",
+		"StarSkybox043.png",
+		"StarSkybox044.png",
+		"StarSkybox045.png",
+		"StarSkybox046.png"
+	};
+
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(false);
+	for (GLuint i = 0; i < faces.size(); i++) {
+		unsigned char *data =
+			stbi_load((resourceDirectory + "/StarSkybox/" + faces[i]).c_str(), &width, &height, &nrChannels, 0);
+		if (data) {
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+				0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		}
+		else {
+			cout << "failed to load: " << (resourceDirectory + "/" + faces[i]).c_str() << endl;
+		}
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	cout << " creating cube map any errors : " << glGetError() << endl;
+	shaderManager.skyboxTexId = textureID;
+}
+
 void Application::InitShaderManager(const std::string& resourceDirectory)
 {
 	shaderManager = ShaderManager::GetInstance();
@@ -177,6 +214,12 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/grass.jpg", "Grass");
 	loadTexture("/alpha.png", "Alpha");
 	loadTexture("/noiseTex.png", "noiseTex");
+	loadTexture("/sandShallow.jpg", "sandShallow");
+	loadTexture("/sandSteep.jpg", "sandSteep");
+	loadTexture("/CloudNoise/cloud_BaseNoise.png", "cloudBaseNoise");
+	loadTexture("/CloudNoise/cloud_NoiseTexture.png", "cloudNoise");
+	loadTexture("/CloudNoise/cloud_Distort.png", "cloudDistort");
+
 	loadTexture("/rainbow.jpg", "Rainbow");
 
 	// used on Luna
@@ -293,6 +336,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	heightProg->addUniform("camoff");
 	heightProg->addUniform("campos");
 	heightProg->addUniform("lightDir");
+	heightProg->addUniform("time");
 	heightProg->addAttribute("vertPos");
 	heightProg->addAttribute("vertTex");
 	assert(glGetError() == GL_NO_ERROR);
@@ -300,18 +344,69 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	TexLocation = glGetUniformLocation(heightProg->pid, "tex");
 	GLuint TexLocation2 = glGetUniformLocation(heightProg->pid, "tex2");
 	GLuint TexLocation3 = glGetUniformLocation(heightProg->pid, "noiseTex");
+	GLuint TexLocation4 = glGetUniformLocation(heightProg->pid, "sandShallow");
+	GLuint TexLocation5 = glGetUniformLocation(heightProg->pid, "sandSteep");
+
 	glUseProgram(heightProg->pid);
 	glUniform1i(TexLocation, 0);
 	glUniform1i(TexLocation2, 1);
 	glUniform1i(TexLocation3, 2);
+	glUniform1i(TexLocation4, 3);
+	glUniform1i(TexLocation5, 4);
 
 	assert(glGetError() == GL_NO_ERROR);
 
 	shaderManager.SetShader("Height", heightProg);
 
+	// Skybox Shader
+	auto skyboxProg = make_shared<Program>();
+	skyboxProg->setVerbose(true);
+	skyboxProg->setShaderNames(resourceDirectory + "/skybox_vert.glsl", resourceDirectory + "/skybox_frag.glsl");
+	if (!skyboxProg->Init())
+
+	{
+		std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+		exit(1);
+	}
+
+	skyboxProg->addUniform("P");
+	skyboxProg->addUniform("V");
+	skyboxProg->addUniform("M");
+	skyboxProg->addUniform("time");
+	skyboxProg->addUniform("dayBottomColor");
+	skyboxProg->addUniform("dayTopColor");
+	skyboxProg->addUniform("nightBottomColor");
+	skyboxProg->addUniform("nightTopColor");
+	skyboxProg->addUniform("horizonColor");
+	skyboxProg->addUniform("sunDir");
+	skyboxProg->addUniform("moonOffset");
+	skyboxProg->addUniform("cloudScale");
+	skyboxProg->addUniform("cloudSpeed");
+	skyboxProg->addUniform("cloudCutoff");
+	skyboxProg->addUniform("cloudFuzziness");
+	skyboxProg->addUniform("cloudColorDayEdge");
+	skyboxProg->addUniform("cloudColorDayMain");
+	skyboxProg->addUniform("cloudColorNightEdge");
+	skyboxProg->addUniform("cloudColorNightMain");
+
+	skyboxProg->addAttribute("vertPos");
+
+	TexLocation = glGetUniformLocation(skyboxProg->pid, "cloudBaseNoise");
+	TexLocation2 = glGetUniformLocation(skyboxProg->pid, "cloudNoise");
+	TexLocation3 = glGetUniformLocation(skyboxProg->pid, "cloudDistort");
+
+	glUseProgram(skyboxProg->pid);
+	glUniform1i(TexLocation, 1);
+	glUniform1i(TexLocation2, 2);
+	glUniform1i(TexLocation3, 3);
+
+	assert(glGetError() == GL_NO_ERROR);
+	shaderManager.SetShader("Skybox", skyboxProg);
+
+
 	//the obj files you want to load. Add more to read them all.
 	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/luna_arm",
-		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head" };
+		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head", "unit_cube"};
 	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
@@ -340,21 +435,33 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	}
 
 	InitTerrain();
+	InitSkybox(resourceDirectory);
 }
+
+void Application::InitImGui()
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(windowManager->getHandle(), true);
+	ImGui_ImplOpenGL3_Init("#version 330");
+}
+
 
 void Application::Init(std::string resourceDirectory)
 {
 	GLSL::checkVersion();
 	// lock the mouse cursor
-	glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	// Set background color.
 	// glClearColor(.12f, .34f, .56f, 1.0f);
 	// Enable z-buffer test.
-
 	CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
 	CHECKED_GL_CALL(glEnable(GL_BLEND));
 	CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 	glPointSize(5.0f);
+	InitImGui();
 	InitShaderManager(resourceDirectory);
 	// do ComponentManager's init here
 	componentManager.Init(resourceDirectory);
@@ -364,8 +471,14 @@ void Application::Init(std::string resourceDirectory)
 	postProcessing = make_shared<PostProcessing>(windowManager, &componentManager.GetCamera());
 }
 
+
 void Application::render(float frameTime)
 {
+	// imgui
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
 	// local modelview matrix use this for later labs
 
 	auto M = make_shared<MatrixStack>();
@@ -381,7 +494,7 @@ void Application::render(float frameTime)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-	// clear all framebuffers
+	// clear all framebuffers + bind base one
 	postProcessing->SetUpFrameBuffers();
 
 	if (renderLines)
@@ -390,9 +503,17 @@ void Application::render(float frameTime)
 	}
 	componentManager.UpdateComponents(frameTime, width, height);
 
+	// render post-processing
 	if (!renderLines)
-	{
-		// render post-processing
-		postProcessing->RenderPostProcessing();
-	}
+    {
+    	// render post-processing
+    	postProcessing->RenderPostProcessing();
+    }
+
+	ImGui::Begin("Helo there");
+	ImGui::Text("AHH");
+	ImGui::End();
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
