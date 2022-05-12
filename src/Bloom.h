@@ -30,7 +30,7 @@ private:
 	void Upsample();
 	void DeleteFBOTex();
 public:
-	GLuint GetBloomTex() const { return upsampledTex[0]; }
+	GLuint GetBloomTex() const { return upsampledTex[1]; }
 	Bloom(PostProcessing* _pp);
 	~Bloom();
 	void RenderBloom();

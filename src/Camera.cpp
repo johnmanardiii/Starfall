@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "ComponentManager.h"
+#include "HeightCalc.h"
 
 // interpolates between two values using an exponential falloff
 template<typename T>
@@ -45,6 +46,8 @@ void Camera::Update(float frameTime, int width, int height, ComponentManager* co
         // move pos in the direction of goal_pos just within range
         pos = goal_pos + normalize(pos - goal_pos) * max_lerp_distance;
     }
+    float currHeight = std::max<float>(pos.y, heightCalc(pos.x, pos.z) + 1.0f);
+    pos = vec3(pos.x, currHeight, pos.z);
     vec3 up = vec3(0, 1, 0);
     mat4 lookAt = glm::lookAt(pos, target, up); //first person camera. "looks at" the direction of target from the starting point of pos.
     // update last view for motion blur

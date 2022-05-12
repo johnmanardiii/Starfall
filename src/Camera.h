@@ -33,7 +33,7 @@ private:
     const float lowestCamDistZ = 7.0f;  // camera is closer when moving at max speed.
     const float highestCamDistZ = 12.0f;    // camera is farther back when still. Lerped between so camera doesn't lag too much with FOV change
     const float backwardsCamDistZ = 8.0f;   // amount camera is behind player when travelling backwards
-    const float camDistHeight = 3.0f;   // desired height of camera position above player
+    const float camDistHeight = 4.6f;   // desired height of camera position above player
     const float max_lerp_distance = 3.0f;   // max distance before setting camera position manually (to prevent too much cam lag)
 
     vec3 get_wanted_pos(ComponentManager* compMan);     // gets the desired point behind the player

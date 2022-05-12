@@ -45,6 +45,15 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 		componentManager.GetPlayer().SetInput(D, false);
 	}
 
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
+		renderLines = true;
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	if (key == GLFW_KEY_Z && action == GLFW_RELEASE) {
+		renderLines = false;
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
 	// Falling toggle
 	if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS) {
 		componentManager.GetPlayer().SetInput(LSHIFT, true);
@@ -471,6 +480,7 @@ void Application::render(float frameTime)
 	ImGui::NewFrame();
 
 	// local modelview matrix use this for later labs
+
 	auto M = make_shared<MatrixStack>();
 	auto V = make_shared<MatrixStack>();
 	auto P = make_shared<MatrixStack>();
@@ -484,12 +494,22 @@ void Application::render(float frameTime)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-	// clear all framebuffers
+	// clear all framebuffers + bind base one
 	postProcessing->SetUpFrameBuffers();
+
+	if (renderLines)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 	componentManager.UpdateComponents(frameTime, width, height);
 
 	// render post-processing
-	postProcessing->RenderPostProcessing();
+	if (!renderLines)
+    {
+    	// render post-processing
+    	postProcessing->RenderPostProcessing();
+    }
+
 	ImGui::Begin("Helo there");
 	ImGui::Text("AHH");
 	ImGui::End();

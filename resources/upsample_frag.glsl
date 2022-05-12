@@ -42,5 +42,5 @@ void main()
 
     // additionally, the brightness is unfortunately dependent on the number
     // of upsamples as well because of this.
-    color = upsample_color * .34 + currentRes_color;
+    color = upsample_color * 1 + currentRes_color;
 }
