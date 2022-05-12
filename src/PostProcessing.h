@@ -20,11 +20,13 @@ class PostProcessing
 {
 private:
 	int width, height;
+	bool renderRadialBlur = false;
 	WindowManager* windowManager;
 	Camera* camera;
 	GLuint base_fbo;
 	GLuint quad_vao, quad_vbo;
 	GLuint base_color, base_depth;
+	GLuint last_processed_screen;
 	std::shared_ptr<Program> simple_prog;
 	std::shared_ptr<Bloom> bloom;
 	std::shared_ptr<MotionBlur> mb;
@@ -44,6 +46,9 @@ public:
 	const GLuint GetBaseTex() const { return base_color; }
 	const GLuint GetMotionBlurTex() const { return mb->GetMotionBlurTex(); }
 	const GLuint GetDepthTexture() const { return base_depth; }
+	const GLuint GetLastProcessedScreen() const { return last_processed_screen; }
 	void SetUpFrameBuffers();
 	void RenderPostProcessing();
+	void RenderRadialBlur(bool shouldRender);
+	void SetLastProcessedScreen(GLuint tex);
 };

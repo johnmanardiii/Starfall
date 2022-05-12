@@ -164,16 +164,30 @@ void PostProcessing::SetUpFrameBuffers()
 	glEnable(GL_DEPTH_TEST);
 }
 
+void PostProcessing::RenderRadialBlur(bool shouldRender)
+{
+	renderRadialBlur = shouldRender;
+}
+
+void PostProcessing::SetLastProcessedScreen(GLuint tex)
+{
+	last_processed_screen = tex;
+}
+
 // Renders all effects to the screen using the main framebuffer.
 void PostProcessing::RenderPostProcessing()
 {
+	last_processed_screen = base_color;
 	glDisable(GL_DEPTH_TEST);
 	// Generate the mipmaps for the rendered scene
 	glBindTexture(GL_TEXTURE_2D, base_color);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// mb->RenderMotionBlur(camera);
-	// rb->RenderRadialBlur();	// uncomment this if you want radial blur for speed.
+	if (renderRadialBlur)
+	{
+		rb->RenderRadialBlur();	// uncomment this if you want radial blur for speed.
+	}
 
 	// generate bloom
 	// glViewport(0, 0, width, height);
@@ -185,7 +199,7 @@ void PostProcessing::RenderPostProcessing()
 	simple_prog->bind();
 	glBindVertexArray(quad_vao);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GetBaseTex());
+	glBindTexture(GL_TEXTURE_2D, GetLastProcessedScreen());
 	// bind in bloom texture and additive blend
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, bloom->GetBloomTex());

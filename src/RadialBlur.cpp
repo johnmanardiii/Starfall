@@ -95,7 +95,8 @@ void RadialBlur::RenderRadialBlur()
 	glBindVertexArray(postProcessing->GetQuadVAO());
 	// upload inverse of the PV matrix to the program to recreate the world space positions.
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, postProcessing->GetBaseTex());
+	glBindTexture(GL_TEXTURE_2D, postProcessing->GetLastProcessedScreen());
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	radialBlurProg->unbind();
+	postProcessing->SetLastProcessedScreen(GetRadialBlurTex());
 }

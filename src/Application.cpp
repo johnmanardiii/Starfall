@@ -54,6 +54,13 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
+	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
+		postProcessing->RenderRadialBlur(true);
+	}
+	if (key == GLFW_KEY_B && action == GLFW_RELEASE) {
+		postProcessing->RenderRadialBlur(false);
+	}
+
 	// Falling toggle
 	if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS) {
 		componentManager.GetPlayer().SetInput(LSHIFT, true);

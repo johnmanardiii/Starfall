@@ -258,7 +258,7 @@ void Bloom::RenderBloom()
 	bloomThresholdProg->bind();
 	glBindVertexArray(postProcessing->GetQuadVAO());
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, postProcessing->GetBaseTex());
+	glBindTexture(GL_TEXTURE_2D, postProcessing->GetLastProcessedScreen());
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	bloomThresholdProg->unbind();
 	// downsample image 5 times:
