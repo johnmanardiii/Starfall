@@ -24,6 +24,9 @@
 
 class Application : public EventCallbacks
 {
+private:
+	bool renderLines = false;
+
 public:
 	// the various managers that make up the application.
 	ComponentManager componentManager;

@@ -45,6 +45,15 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 		componentManager.GetPlayer().SetInput(D, false);
 	}
 
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
+		renderLines = true;
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	if (key == GLFW_KEY_Z && action == GLFW_RELEASE) {
+		renderLines = false;
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
 	// Falling toggle
 	if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS) {
 		componentManager.GetPlayer().SetInput(LSHIFT, true);
@@ -374,8 +383,16 @@ void Application::render(float frameTime)
 
 	// clear all framebuffers
 	postProcessing->SetUpFrameBuffers();
+
+	if (renderLines)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 	componentManager.UpdateComponents(frameTime, width, height);
 
-	// render post-processing
-	postProcessing->RenderPostProcessing();
+	if (!renderLines)
+	{
+		// render post-processing
+		postProcessing->RenderPostProcessing();
+	}
 }

@@ -22,7 +22,7 @@ public:
 		noiseTexture = shaderMan.GetTexture("noiseTex");
 		terrain = shaderMan.Terrain;
 	}
-	void Update(float frameTime, ComponentManager& compMan) { Draw(frameTime); }
+	void Update(float frameTime, ComponentManager& compMan) { }//Draw(frameTime); } I commented this out because its a renderer component.
 	void Init(ComponentManager* compMan);
 
 	void Draw(float frameTime);

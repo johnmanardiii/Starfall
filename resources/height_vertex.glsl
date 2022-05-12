@@ -14,7 +14,8 @@ uniform vec3 camoff;
 
 float heightCalc(float x, float z)
 {
-  return z * 0.2f + sin(x / 20.0) * sin(z / 20.0) * 20.0 * cos(x / 20.) * cos(z / 15.);
+	return z * 0.2f + sin(x / 20.0) * sin(z / 20.0) * 20.0 * cos(x / 20.) * cos(z / 15.);
+	// return z * .5;
 }
 
 // from user Appas www.stackoverflow.com/quesitons/4200224/random-noise-functions-for-glsl
