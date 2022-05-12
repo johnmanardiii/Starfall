@@ -381,8 +381,27 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	heightProg->addUniform("campos");
 	heightProg->addUniform("lightDir");
 	heightProg->addUniform("time");
+
+
+	heightProg->addUniform("diffuseContrast");
+	heightProg->addUniform("shadowColor");
+	heightProg->addUniform("terrainColor");
+	heightProg->addUniform("sandStrength");
+	// rim 
+	heightProg->addUniform("rimStrength");
+	heightProg->addUniform("rimPower");
+	heightProg->addUniform("rimColor");
+	// ocean spec
+	heightProg->addUniform("oceanSpecularStrength");
+	heightProg->addUniform("oceanSpecularPower");
+	heightProg->addUniform("oceanSpecularColor");
+	// sand ripples
+	heightProg->addUniform("steepnessSharpnessPower");
+	heightProg->addUniform("specularHardness");
+
 	heightProg->addAttribute("vertPos");
 	heightProg->addAttribute("vertTex");
+
 	assert(glGetError() == GL_NO_ERROR);
 
 	TexLocation = glGetUniformLocation(heightProg->pid, "tex");

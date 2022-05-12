@@ -18,24 +18,24 @@ uniform mat4 V;
 uniform float time;
 
 // diffuse
-float diffuseContrast = 2;
-vec3 shadowColor = vec3(0.611, 0.44, 0.32);
-vec3 terrainColor = vec3(1, 0.79, 0.65);
-float sandStrength = 0.1;
+uniform float diffuseContrast;
+uniform vec3 shadowColor;
+uniform vec3 terrainColor;
+uniform float sandStrength;
 
 // rim 
-float rimStrength = 0.3;
-float rimPower = 20;
-vec3 rimColor = vec3(1, 0.9, 0.94);
+uniform float rimStrength;
+uniform float rimPower;
+uniform vec3 rimColor;
 
 // ocean spec
-float oceanSpecularStrength = 0.3;
-float oceanSpecularPower = 100;
-vec3 oceanSpecularColor = vec3(1, 0.9, 0.94);
+uniform float oceanSpecularStrength;
+uniform float oceanSpecularPower;
+uniform vec3 oceanSpecularColor;
 
 // sand ripples
-float steepnessSharpnessPower = 20.0;
-float specularHardness = 2.0;
+uniform float steepnessSharpnessPower;
+uniform float specularHardness;
 
 float rand(vec2 co){
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
@@ -55,7 +55,7 @@ vec3 DiffuseColor(vec3 normal, vec3 ligthDir)
 
 vec3 SandNormal(vec3 normal, vec2 texcoords)
 {
-	vec3 random = texture(noiseTex, texcoords * 50).rgb;
+	vec3 random = texture(noiseTex, texcoords * 20).rgb;
 	random = normalize(random * 2 - 1); // [-1 to 1]
 	vec3 Ns = nlerp(normal, random, sandStrength);
 	return Ns;
@@ -85,8 +85,8 @@ vec3 SandRipples(vec2 texcoords, vec3 lightDir, vec3 view)
 	float steepness = clamp(dot(frag_norm, vec3(0, 1, 0)), 0, 1);
 	steepness = pow(steepness, steepnessSharpnessPower);
 
-	vec3 shallow_x = texture(sandShallow, texcoords * 50).rgb;
-	vec3 steep_x = texture(sandSteep, texcoords * 50).rgb;
+	vec3 shallow_x = texture(sandShallow, texcoords * 20).rgb;
+	vec3 steep_x = texture(sandSteep, texcoords * 20).rgb;
 	vec3 S_x = nlerp(steep_x, shallow_x, steepness);
 
 	
@@ -111,7 +111,7 @@ vec3 SandRipples(vec2 texcoords, vec3 lightDir, vec3 view)
 
 	vec3 S = S_x;
 	float NdotL = max(0, diffuseContrast * dot(S, lightDir));
-	vec3 color = mix(shadowColor, terrainColor, NdotL);
+	vec3 color = mix(shadowColor * 2.0, terrainColor, NdotL);
 	return color;
 }
 
@@ -133,7 +133,7 @@ void main()
 
 	// Specular
 	vec3 rim = RimLighting(frag_norm, view);
-	vec3 oceanSpecColor = OceanSpecular(frag_norm, lightDir, view);
+	vec3 oceanSpecColor = OceanSpecular(sandNormal, lightDir, view);
 	vec3 spec = clamp(max(rim, oceanSpecColor), vec3(0), vec3(1));
 
 	// Combining

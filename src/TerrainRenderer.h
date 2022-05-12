@@ -36,4 +36,27 @@ private:
 	GLuint noiseTexture;
 	GLuint shallowTexture;
 	GLuint steepTexture;
+
+	vec3 sunDir = vec3(0.6, 0.01, -0.806);
+	float sunRotation = 0;
+
+	// diffuse
+	float diffuseContrast = 2;
+	vec3 shadowColor = vec3(0.611, 0.44, 0.32);
+	vec3 terrainColor = vec3(1, 0.79, 0.65);
+	float sandStrength = 0.1;
+
+	// rim 
+	float rimStrength = 0.3;
+	float rimPower = 20;
+	vec3 rimColor = vec3(1, 0.9, 0.94);
+
+	// ocean spec
+	float oceanSpecularStrength = 0.3;
+	float oceanSpecularPower = 100;
+	vec3 oceanSpecularColor = vec3(1, 0.9, 0.94);
+
+	// sand ripples
+	float steepnessSharpnessPower = 20.0;
+	float specularHardness = 2.0;
 };
