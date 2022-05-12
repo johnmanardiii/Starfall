@@ -30,6 +30,7 @@ class Application : public EventCallbacks
 {
 private:
 	bool renderLines = false;
+	bool renderPostProcessing = true;
 
 public:
 	// the various managers that make up the application.

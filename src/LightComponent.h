@@ -17,7 +17,7 @@ public:
 	vec3 sunDir = vec3(0, 0, 1);
 private:
 	float timeLeft = 60;
-	float startSunRotation = 7;
+	float startSunRotation = 6.8;
 	float endSunRotation = 5.982;
 	float startTime = 60;
 };

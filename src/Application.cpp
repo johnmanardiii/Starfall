@@ -61,6 +61,13 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 		postProcessing->RenderRadialBlur(false);
 	}
 
+	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+		renderPostProcessing = false;
+	}
+	if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
+		renderPostProcessing = true;
+	}
+
 	// Falling toggle
 	if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS) {
 		componentManager.GetPlayer().SetInput(LSHIFT, true);
@@ -534,23 +541,19 @@ void Application::render(float frameTime)
 	// clear all framebuffers + bind base one
 	postProcessing->SetUpFrameBuffers();
 
-	if (renderLines)
+	if (renderLines || !renderPostProcessing)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, width, height);
 	}
 	componentManager.UpdateComponents(frameTime, width, height);
 
 	// render post-processing
-	if (!renderLines)
+	if (renderPostProcessing && !renderLines)
     {
     	// render post-processing
     	postProcessing->RenderPostProcessing();
     }
-
-	ImGui::Begin("Helo there");
-	ImGui::Text("AHH");
-	ImGui::End();
-
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

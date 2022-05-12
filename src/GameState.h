@@ -27,7 +27,7 @@ public:
         cout << "\n---------------------------------";
         cout << "\nObject Collected!";
         cout << "\nTotal Objects Collected:" << objectsCollected;
-        cout << "\nTotal Objects Remaining: " << GetCount();
+        cout << "\nTotal Objects Remaining: " << objectsNeeded;
         cout << "\n---------------------------------" << endl;
     }
     void IncTotalFrameTime(float frameTime) {
@@ -37,9 +37,13 @@ public:
     }
     void EndGame()
     {
-        cout << "You have collected: " << objectsCollected << " star fragments in "
+        cout << "You have collected: " << objectsCollected << " out of " << objectsNeeded << " star fragments in "
             << cumulativeFrameTime << " seconds, a rate of " << setprecision(2) <<
-            (objectsCollected / cumulativeFrameTime) << " per second." << endl;\
+            (objectsCollected / cumulativeFrameTime) << " per second." << endl;
+        if (objectsCollected >= objectsNeeded)
+            cout << "YOU WIN! Collected enough star fragments!" << endl;
+        else
+            cout << "YOU LOST! Did not collect enough star fragments, you are stranded." << endl;
         isGameEnded = true;
     }
     float GetTotalFrameTime() const { return cumulativeFrameTime; }
@@ -77,5 +81,6 @@ private:
     float spawnSandFrames;
     float cumulativeFrameTime;
     bool isGameEnded = false;
+    int objectsNeeded = 50;
     
 };
