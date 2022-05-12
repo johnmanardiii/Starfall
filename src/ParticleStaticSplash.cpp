@@ -31,9 +31,7 @@ void ParticleRenderer::Update(float frameTime, ComponentManager* compMan)
 
 void ParticleRenderer::Draw(float frameTime)
 {
-	(this->*func)(totalTime);// func(prog, trans, totalTime);
-    //particles->func(prog, trans, totalTime);
-    //particles->update(frameTime, trans);
+	(this->*func)(totalTime);
 }
 
 void ParticleRenderer::Init(ComponentManager* compMan)
@@ -135,7 +133,7 @@ void ParticleRenderer::drawSand(float totalTime) {
 	glBindBuffer(GL_ARRAY_BUFFER, rotBufObj[bufObjIndex]);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ShaderManager::GetInstance().GetTexture("Circle"));
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(Projection));
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(View));
 	mat4 Model = glm::translate(mat4(1.0f), trans->GetPos());

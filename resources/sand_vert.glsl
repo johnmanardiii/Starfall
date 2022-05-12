@@ -28,8 +28,8 @@ void main()
 	M0[0] = vec4(1.0, 0.0, 0.0, 0.0);
 	M0[1] = vec4(0.0, 1.0, 0.0, 0.0);
 	M0[2] = vec4(0.0, 0.0, 1.0, 0.0);
-
-	gl_Position = P * V * vec4(centerPos + pNormal, 1.0);
+	vec3 newPosition = centerPos + pNormal * (0.1 - 16 * (totalTime * totalTime * totalTime * totalTime) * 1.0);
+	gl_Position = P * V * vec4(centerPos + (5 * pNormal), 1.0);
 
 	partCol = pColor;
 }

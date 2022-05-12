@@ -167,6 +167,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/LUNA/LUNA_test_tex.png", "Luna");
 	loadTexture("/grass.jpg", "Grass");
 	loadTexture("/alpha.png", "Alpha");
+	loadTexture("/alpha.bmp", "SandPartTex");
 	loadTexture("/noiseTex.png", "noiseTex");
 	loadTexture("/rainbow.jpg", "Rainbow");
 
@@ -373,7 +374,7 @@ void Application::Init(std::string resourceDirectory)
 	CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
 	CHECKED_GL_CALL(glEnable(GL_BLEND));
 	CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-	glPointSize(5.0f);
+	glPointSize(50.0f);
 	InitShaderManager(resourceDirectory);
 	// do ComponentManager's init here
 	componentManager.Init(resourceDirectory);
