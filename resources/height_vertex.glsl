@@ -18,7 +18,7 @@ float heightCalc(float x, float z)
 	float dist = abs(x - 20.0f * sin(z / 100.0f) * cos(z / 50.0f));
 	dist = max(30.0f, dist);
 	dist -= 30.0f;
-	return z * 0.6f + min(50.0f, dist) + 0.2 * sin(z/2.0f) * sin(x/3.0f);
+	return z * 0.6f + min(50.0f, dist);
 }
 
 // from user Appas www.stackoverflow.com/quesitons/4200224/random-noise-functions-for-glsl
