@@ -46,12 +46,6 @@ public:
     const int ReportObjectsCollected() const { return objectsCollected; }
     //spawnFrames is the number of seconds since an object was last spawned.
     bool ShouldSpawnStar() {
-        if(currentObjectCount == 0){
-            cout << "You Win! Collected: " << objectsCollected << " objects in "
-                << cumulativeFrameTime << " seconds, a rate of " << setprecision(2) <<
-            (objectsCollected / cumulativeFrameTime) << " per second." << endl;
-            exit(EXIT_SUCCESS);
-        }
         if (spawnStarFrames >= SECONDS_BETWEEN_NEW_GAME_OBJ) {
             spawnStarFrames = 0;
             currentObjectCount++;

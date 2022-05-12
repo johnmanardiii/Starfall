@@ -205,9 +205,10 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     if (state.ShouldSpawnStar()) {
         AddLineOfStars();
     }
-    if (state.ShouldSpawnSand()) {
-        AddBunchOfSandParticles();
-    }
+    //re-add this when it looks good
+    //if (state.ShouldSpawnSand()) {
+    //    AddBunchOfSandParticles();
+    //}
 
     // update movements
     for (auto& move : components["Movement"])
