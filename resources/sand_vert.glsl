@@ -9,11 +9,12 @@ uniform mat4 P;
 uniform mat4 M;
 uniform mat4 V;
 
-
+uniform vec3 campos;
 uniform vec3 centerPos;
 uniform float totalTime;
 
 out vec3 partCol;
+out vec3 vertex_pos;
 
 //
 // GLSL textureless classic 3D noise "cnoise",
@@ -210,29 +211,23 @@ float rand(vec2 co){
 
 void main()
 {
-
-	float noise = 10.0 * -0.1f * turbulence(0.5 * pNormal + 5);
-
-    float b = 5.0 * pnoise(0.05 * centerPos + vec3(2.0 * 5), vec3(100.0f));
-
-    float displacement = 5 * noise + b;
-
-    vec3 newPosition;
-
-    newPosition = centerPos + pNormal * (0.1 - 16 * (totalTime * totalTime * totalTime * totalTime) * displacement);
-	  //newPosition += pRotation;
-
-
-
-
+	
 	// Billboarding: set the upper 3x3 to be the identity matrix
 	mat4 M0 = M;
 
 	M0[0] = vec4(1.0, 0.0, 0.0, 0.0);
 	M0[1] = vec4(0.0, 1.0, 0.0, 0.0);
 	M0[2] = vec4(0.0, 0.0, 1.0, 0.0);
+	vec3 newPosition = centerPos + pNormal * (0.1 - 16 * fract(totalTime * totalTime * totalTime * totalTime) * 1.0);
+
+	float horizontalSpread = 60.0f;
+	newPosition = centerPos + vec3(horizontalSpread * pNormal.x,-4.0f,horizontalSpread * pNormal.z);
+	vec3 globalWindDir = vec3(rand(centerPos.xy), 1, rand(centerPos.yz));
+	vec3 individualWindDir = vec3(turbulence(0.5 * pNormal + totalTime / 6.0), 60 * abs(turbulence(0.5 * pNormal + totalTime / 6.0)) - 20, turbulence(0.5 * pRotation + totalTime / 6.0));
+	newPosition += globalWindDir + individualWindDir + 6 * totalTime;
+
 
 	gl_Position = P * V * vec4(newPosition, 1.0);
-
+	vertex_pos = (vec4(newPosition, 1.0)).xyz; 
 	partCol = pColor;
 }

@@ -12,7 +12,8 @@ public:
         currentObjectCount(init),
         objectsCollected(0),
         SECONDS_BETWEEN_NEW_GAME_OBJ(5),
-        spawnFrames(0),
+        spawnStarFrames(0),
+        spawnSandFrames(0),
         cumulativeFrameTime(0),
         TotalObjectsEverMade(init)
     {}
@@ -31,7 +32,8 @@ public:
     }
     void IncTotalFrameTime(float frameTime) {
         cumulativeFrameTime += frameTime; 
-        spawnFrames += frameTime;
+        spawnStarFrames += frameTime;
+        spawnSandFrames += frameTime;
     }
     void EndGame()
     {
@@ -43,15 +45,15 @@ public:
     float GetTotalFrameTime() const { return cumulativeFrameTime; }
     const int ReportObjectsCollected() const { return objectsCollected; }
     //spawnFrames is the number of seconds since an object was last spawned.
-    bool ShouldSpawn() {
+    bool ShouldSpawnStar() {
         if(currentObjectCount == 0){
             cout << "You Win! Collected: " << objectsCollected << " objects in "
                 << cumulativeFrameTime << " seconds, a rate of " << setprecision(2) <<
             (objectsCollected / cumulativeFrameTime) << " per second." << endl;
             exit(EXIT_SUCCESS);
         }
-        if (spawnFrames >= SECONDS_BETWEEN_NEW_GAME_OBJ) {
-            spawnFrames = 0;
+        if (spawnStarFrames >= SECONDS_BETWEEN_NEW_GAME_OBJ) {
+            spawnStarFrames = 0;
             currentObjectCount++;
             return true;
         }
@@ -59,6 +61,15 @@ public:
     }
     bool IsGameEnded() { return isGameEnded; }
 
+    //for now just do it every time you spawn star fragments.
+    bool ShouldSpawnSand() {
+        if (spawnSandFrames >= 1) {
+            spawnSandFrames = 0;
+            currentObjectCount++;
+            return true;
+        }
+        return false;
+    }
 
     int TotalObjectsEverMade;
 
@@ -68,7 +79,8 @@ private:
     int currentObjectCount;
     int objectsCollected;
     const int SECONDS_BETWEEN_NEW_GAME_OBJ;
-    float spawnFrames;
+    float spawnStarFrames;
+    float spawnSandFrames;
     float cumulativeFrameTime;
     bool isGameEnded = false;
     

@@ -43,6 +43,8 @@ public:
     
     void AddLineOfStars();
 
+    void AddBunchOfSandParticles();
+
     //update components. Done once every render pass.
     void UpdateComponents(float frameTime, int width, int height);
     //Make components, throw them in a vector<shared_ptr>> in any order, give it a name, and componentManager will manage it.

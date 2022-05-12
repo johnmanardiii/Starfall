@@ -46,9 +46,9 @@ public:
         return instance;
     }
     const vec3 GetPos() const { return pos; }
-    const mat4 const GetView() { return view; }
+    const mat4 GetView() const { return view; }
     const mat4 GetPerspective() const { return perspective; }
-    const mat4 const GetPrevView() { return lastView; }
-    const mat4 const GetPrevProj() { return lastPerspective; }
+    const mat4 GetPrevView() const { return lastView; }
+    const mat4 GetPrevProj() const { return lastPerspective; }
 };
 
