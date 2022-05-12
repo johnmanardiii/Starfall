@@ -14,8 +14,11 @@ uniform vec3 camoff;
 
 float heightCalc(float x, float z)
 {
-	return z * 0.2f + sin(x / 20.0) * sin(z / 20.0) * 20.0 * cos(x / 20.) * cos(z / 15.);
-	// return z * .5;
+	//return z * 0.2f + sin(x / 20.0) * sin(z / 20.0) * 20.0 * cos(x / 20.) * cos(z / 15.);
+	float dist = abs(x - 20.0f * sin(z / 100.0f) * cos(z / 50.0f));
+	dist = max(30.0f, dist);
+	dist -= 30.0f;
+	return z * 0.6f + min(50.0f, dist) + 0.2 * sin(z/2.0f) * sin(x/3.0f);
 }
 
 // from user Appas www.stackoverflow.com/quesitons/4200224/random-noise-functions-for-glsl
@@ -34,7 +37,7 @@ void main()
 
 	vec4 tpos =  vec4(vertPos, 1.0);
 	tpos =  M * tpos;
-	tpos.z +=camoff.z;
+	tpos.z +=camoff.z - 50.0f;
 	tpos.x +=camoff.x;
 
 	float proc_height = heightCalc(tpos.x, tpos.z);

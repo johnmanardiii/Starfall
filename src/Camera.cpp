@@ -72,5 +72,5 @@ void Camera::CalcPerspective(float frametime, int width, int height, ComponentMa
     // set last perspective for rendering motion blur
     lastPerspective = perspective;
     //currentFov
-    perspective = glm::perspective((float)(glm::radians(currentFov)), static_cast<float>(width) / height, 0.1f, 1000.0f);
+    perspective = glm::perspective((float)(glm::radians(currentFov)), static_cast<float>(width) / height, 0.1f, 10.0f);
 }

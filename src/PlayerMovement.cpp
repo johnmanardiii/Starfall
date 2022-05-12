@@ -16,11 +16,12 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
 
     // store result of W and S as speed
     float speedInput = inputBuffer[W] - inputBuffer[S];
-
+    float horizontalInput = inputBuffer[D] - inputBuffer[A];
     // TODO: add acceleration to input, and make luna lean forward and backward
     // based on acceleration rather than direct speed.
-    vec3 dir = glm::rotate(trans->GetRot(), vec3(0, 0, -1));
+    vec3 dir = vec3(0, 0, -1); //glm::rotate(trans->GetRot(), vec3(0, 0, -1));
     velocity +=  dir * speedInput * SPEED * frameTime;
+    velocity += vec3(1, 0, 0) * horizontalInput * SPEED * frameTime;
     // cout << "Speed: " << glm::length(velocity) << endl;
     ApplyGravity(frameTime);
     if (inputBuffer[LSHIFT])
@@ -45,7 +46,10 @@ void PlayerMovement::UpdateRotation(float frameTime)
     // rotate the player's orientation around the y axis by the amount specified
     mat4 newRotation = glm::rotate(mat4(1), currentAngularSpeed * frameTime, vec3(0, 1, 0)) *
         mat4(trans->GetRot());
-    trans->SetRot(quat(newRotation));
+    quat newRot = glm::rotation(vec3(0, 0, -1), vec3(0, 0, -1));
+    newRot = newRot * quat(0, 0, 0, 1);
+    trans->SetRot(newRot);
+    //trans->SetRot(quat(newRotation));
 }
 
 void PlayerMovement::ApplyGravity(float frameTime)

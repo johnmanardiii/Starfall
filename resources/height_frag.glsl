@@ -122,9 +122,10 @@ void main()
 	float t=1./100.;
 	texcoords -= vec2(camoff.x,camoff.z)*t;
 
-	float len = length(frag_pos.xz-campos.xz);
+	float zoff = -6.0f;
+	float len = length(frag_pos.xz-campos.xz+zoff);
 	len-=41;
-	len/=8.;
+	len/=32.;
 	len=clamp(len,0,1);
 	
 	// Sand normals
@@ -142,7 +143,8 @@ void main()
 	//diffuseColor = mix(diffuseColor, sandRipplesColor * 0.5, 0.4);
 	color.rgb = spec + diffuseColor * 0.7 * sandRipplesColor;
 	
-	color.a=1-len;
+	//color.a=1-len;
+	color.a = 1.0f;
 	//color.rgb = normalize(frag_norm);
 	
 }
