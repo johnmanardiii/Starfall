@@ -33,8 +33,8 @@ void TerrainRenderer::Draw(float frameTime)
 	glUniform3fv(prog->getUniform("lightDir"), 1, &lightDir[0]);
 	glUniform1f(prog->getUniform("time"), glfwGetTime());
 	glBindVertexArray(terrain.VAOId);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_BLEND); //re-add these if Init is no longer GL_ONE_MINUS_SRC_ALPHA or if other renderers use different blend funcs
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain.IndexBuff);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, heightTexture);
@@ -49,5 +49,5 @@ void TerrainRenderer::Draw(float frameTime)
 
 	glDrawElements(GL_TRIANGLES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
 	prog->unbind();
-	glDisable(GL_BLEND);
+	//glDisable(GL_BLEND);
 }
