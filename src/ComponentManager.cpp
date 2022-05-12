@@ -167,7 +167,7 @@ void ComponentManager::AddBunchOfSandParticles() {
 
         //where all the variables at the top come in.
         vec3 pos = player.GetPosition() + //the player's position                                                __
-            playerGaze * (distFactor) +  //plus distFactor units in front of the player,        |               |  |
+            //playerGaze * (distFactor) +  //plus distFactor units in front of the player,        |               |  |
             playerRight * offsetRight + //plus shifted to the left or right a random number     | P-> ----------|  | approximates the spawning location from player.
             randTrans.GetVec3(); //plus some random noise.                                      |               |__|
 

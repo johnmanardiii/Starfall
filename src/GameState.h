@@ -12,7 +12,8 @@ public:
         currentObjectCount(init),
         objectsCollected(0),
         SECONDS_BETWEEN_NEW_GAME_OBJ(5),
-        spawnFrames(0),
+        spawnStarFrames(0),
+        spawnSandFrames(0),
         cumulativeFrameTime(0),
         TotalObjectsEverMade(init)
     {}
@@ -31,7 +32,8 @@ public:
     }
     void IncTotalFrameTime(float frameTime) {
         cumulativeFrameTime += frameTime; 
-        spawnFrames += frameTime;
+        spawnStarFrames += frameTime;
+        spawnSandFrames += frameTime;
     }
     float GetTotalFrameTime() const { return cumulativeFrameTime; }
     const int ReportObjectsCollected() const { return objectsCollected; }
@@ -43,8 +45,8 @@ public:
             (objectsCollected / cumulativeFrameTime) << " per second." << endl;
             exit(EXIT_SUCCESS);
         }
-        if (spawnFrames >= SECONDS_BETWEEN_NEW_GAME_OBJ) {
-            //spawnFrames = 0;
+        if (spawnStarFrames >= SECONDS_BETWEEN_NEW_GAME_OBJ) {
+            spawnStarFrames = 0;
             currentObjectCount++;
             return true;
         }
@@ -53,8 +55,8 @@ public:
 
     //for now just do it every time you spawn star fragments.
     bool ShouldSpawnSand() {
-        if (spawnFrames >= SECONDS_BETWEEN_NEW_GAME_OBJ) {
-            spawnFrames = 0;
+        if (spawnSandFrames >= 1) {
+            spawnSandFrames = 0;
             currentObjectCount++;
             return true;
         }
@@ -69,7 +71,8 @@ private:
     int currentObjectCount;
     int objectsCollected;
     const int SECONDS_BETWEEN_NEW_GAME_OBJ;
-    float spawnFrames;
+    float spawnStarFrames;
+    float spawnSandFrames;
     float cumulativeFrameTime;
     
 };

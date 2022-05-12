@@ -231,6 +231,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	sandProg->addUniform("V");
 	sandProg->addUniform("totalTime");
 	sandProg->addUniform("centerPos");
+	sandProg->addUniform("campos");
 	sandProg->addUniform("alphaTexture");
 	sandProg->addUniform("alphaMult");
 	sandProg->addAttribute("pColor");
