@@ -219,7 +219,14 @@ void main()
 	M0[1] = vec4(0.0, 1.0, 0.0, 0.0);
 	M0[2] = vec4(0.0, 0.0, 1.0, 0.0);
 	vec3 newPosition = centerPos + pNormal * (0.1 - 16 * fract(totalTime * totalTime * totalTime * totalTime) * 1.0);
-	newPosition = centerPos + vec3(60*pNormal.x,-4.0f,60*pNormal.z);
+
+	float horizontalSpread = 60.0f;
+	newPosition = centerPos + vec3(horizontalSpread * pNormal.x,-4.0f,horizontalSpread * pNormal.z);
+	vec3 globalWindDir = vec3(rand(centerPos.xy), 1, rand(centerPos.yz));
+	vec3 individualWindDir = vec3(turbulence(0.5 * pNormal + totalTime / 6.0), 60 * abs(turbulence(0.5 * pNormal + totalTime / 6.0)) - 20, turbulence(0.5 * pRotation + totalTime / 6.0));
+	newPosition += globalWindDir + individualWindDir + 6 * totalTime;
+
+
 	gl_Position = P * V * vec4(newPosition, 1.0);
 	vertex_pos = (vec4(newPosition, 1.0)).xyz; 
 	partCol = pColor;
