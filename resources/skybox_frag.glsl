@@ -114,6 +114,6 @@ void main() {
 
 
 	vec3 combined = skyColor + sunAndMoonColor + stars.xyz + clouds;
-	combined = clamp(combined, vec3(0), vec3(1));
+	combined = clamp(combined, vec3(0), vec3(1.5));	// fiona u should probably change this to what looks good 
 	color = vec4(combined, 1);
 }
