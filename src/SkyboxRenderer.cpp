@@ -73,7 +73,7 @@ void SkyboxRenderer::Draw(float frameTime)
 
 	Camera cam = Camera::GetInstance(vec3(0, 1, 0));
 	vec3 pos = cam.GetPos();
-	trans->SetPos(vec3(pos.x, 0, pos.z));
+	trans->SetPos(pos);
 	ShaderManager shaderMan = ShaderManager::GetInstance();
 	mat4 P = cam.GetPerspective(),
 		V = cam.GetView(),

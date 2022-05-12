@@ -6,6 +6,11 @@ void TerrainRenderer::Init(ComponentManager* compMan)
 	Renderer::Init(compMan);
 }
 
+void TerrainRenderer::UpdateUniforms()
+{
+
+}
+
 void TerrainRenderer::Draw(float frameTime)
 {
 	prog->bind();

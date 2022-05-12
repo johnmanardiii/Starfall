@@ -3,6 +3,7 @@
 
 void LightComponent::Update(float frameTime, ComponentManager* compMan)
 {
+	if (compMan->GetGameState()->IsGameEnded()) return;
 	if (timeLeft > 0)
 	{ 
 		timeLeft -= frameTime;
@@ -10,7 +11,7 @@ void LightComponent::Update(float frameTime, ComponentManager* compMan)
 		cout << "Time Left Until Moon Sets: " << timeLeft << '\r' << std::flush;
 	}
 	else {
-		cout << "CONGRATS! YOU HAVE RECIEVED ___ STAR FRAGMENTS! YOU (WON) OR (LOST)!" << endl;
+		compMan->GetGameState()->EndGame();
 	}
 
 	// Sun direction

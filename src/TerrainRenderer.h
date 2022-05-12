@@ -27,7 +27,7 @@ public:
 	}
 	void Update(float frameTime, ComponentManager& compMan) { Draw(frameTime); }
 	void Init(ComponentManager* compMan);
-
+	void UpdateUniforms();
 	void Draw(float frameTime);
 private:
 	TerrainS terrain;
