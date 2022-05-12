@@ -21,6 +21,7 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
     // based on acceleration rather than direct speed.
     vec3 dir = glm::rotate(trans->GetRot(), vec3(0, 0, -1));
     velocity +=  dir * speedInput * SPEED * frameTime;
+    cout << "Speed: " << glm::length(velocity) << endl;
     ApplyGravity(frameTime);
     if (inputBuffer[LSHIFT])
     {
