@@ -1,6 +1,9 @@
 /* Hello triangle lab - intro OGL
 Z. Wood + S. Sueda
 */
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_glfw.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
 
 #include <iostream>
 #include <glad/glad.h>
@@ -42,6 +45,8 @@ int main(int argc, char *argv[])
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
 
+
+
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
 
@@ -71,6 +76,10 @@ int main(int argc, char *argv[])
 		// Poll for and process events.
 		glfwPollEvents();
 	}
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	// Quit program.
 	application->audioEngine.Cleanup();

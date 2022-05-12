@@ -27,11 +27,18 @@ public:
         cout << "\nObject Collected!";
         cout << "\nTotal Objects Collected:" << objectsCollected;
         cout << "\nTotal Objects Remaining: " << GetCount();
-        cout << "\n---------------------------------";
+        cout << "\n---------------------------------" << endl;
     }
     void IncTotalFrameTime(float frameTime) {
         cumulativeFrameTime += frameTime; 
         spawnFrames += frameTime;
+    }
+    void EndGame()
+    {
+        cout << "You have collected: " << objectsCollected << " star fragments in "
+            << cumulativeFrameTime << " seconds, a rate of " << setprecision(2) <<
+            (objectsCollected / cumulativeFrameTime) << " per second." << endl;\
+        isGameEnded = true;
     }
     float GetTotalFrameTime() const { return cumulativeFrameTime; }
     const int ReportObjectsCollected() const { return objectsCollected; }
@@ -50,6 +57,7 @@ public:
         }
         return false;
     }
+    bool IsGameEnded() { return isGameEnded; }
 
 
     int TotalObjectsEverMade;
@@ -62,5 +70,6 @@ private:
     const int SECONDS_BETWEEN_NEW_GAME_OBJ;
     float spawnFrames;
     float cumulativeFrameTime;
+    bool isGameEnded = false;
     
 };
