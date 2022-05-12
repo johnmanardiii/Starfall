@@ -374,7 +374,7 @@ void Application::Init(std::string resourceDirectory)
 	CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
 	CHECKED_GL_CALL(glEnable(GL_BLEND));
 	CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-	glPointSize(50.0f);
+	glPointSize(5.0f);
 	InitShaderManager(resourceDirectory);
 	// do ComponentManager's init here
 	componentManager.Init(resourceDirectory);

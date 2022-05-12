@@ -36,7 +36,7 @@ public:
     float GetTotalFrameTime() const { return cumulativeFrameTime; }
     const int ReportObjectsCollected() const { return objectsCollected; }
     //spawnFrames is the number of seconds since an object was last spawned.
-    bool ShouldSpawn() {
+    bool ShouldSpawnStar() {
         if(currentObjectCount == 0){
             cout << "You Win! Collected: " << objectsCollected << " objects in "
                 << cumulativeFrameTime << " seconds, a rate of " << setprecision(2) <<
@@ -44,13 +44,22 @@ public:
             exit(EXIT_SUCCESS);
         }
         if (spawnFrames >= SECONDS_BETWEEN_NEW_GAME_OBJ) {
-            spawnFrames = 0;
+            //spawnFrames = 0;
             currentObjectCount++;
             return true;
         }
         return false;
     }
 
+    //for now just do it every time you spawn star fragments.
+    bool ShouldSpawnSand() {
+        if (spawnFrames >= SECONDS_BETWEEN_NEW_GAME_OBJ) {
+            spawnFrames = 0;
+            currentObjectCount++;
+            return true;
+        }
+        return false;
+    }
 
     int TotalObjectsEverMade;
 

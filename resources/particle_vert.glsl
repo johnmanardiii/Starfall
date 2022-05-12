@@ -215,7 +215,7 @@ void main()
 
     float b = 5.0 * pnoise(0.05 * centerPos + vec3(2.0 * 5), vec3(100.0f));
 
-    float displacement = -5 * noise + b;
+    float displacement = 5 * noise + b;
 
     vec3 newPosition;
 
