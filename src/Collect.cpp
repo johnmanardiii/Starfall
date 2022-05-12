@@ -44,6 +44,6 @@ void Collect::Init(ComponentManager* compMan)
 	transform = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
 
 	index = obj.GetComponentLocation("Particle");
-	particle = static_pointer_cast<ParticleStaticSplashRenderer>(compMan->GetComponent("Particle", index));
+	particle = static_pointer_cast<ParticleRenderer>(compMan->GetComponent("Particle", index));
 	particle->IsActive = false;
 }

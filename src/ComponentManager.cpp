@@ -44,8 +44,9 @@ void ComponentManager::Init(std::string resourceDirectory)
     shared_ptr<Transform> transform = pTransform;
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
     shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("Circle", "Sand", player.pName, 100000, &ParticleRenderer::drawSand);
     shared_ptr<Movement> playerMovement = make_shared<PlayerMovement>(player.pName);
-    std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer, playerMovement};
+    std::vector<std::shared_ptr<Component>> playerComps = { transform, particles, renderer, playerMovement};
     transform->SetPos(vec3(0, 1, 2));
     transform->SetScale(vec3(.5));
     AddGameObject(player.pName, playerComps);
@@ -72,7 +73,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans);
 
     //initialize random starting attributes for particles. Generate a few batches of 100k particles.
-    particleSys::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 100000);
+    ParticleRenderer::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 100000);
 
     // Initialize the GLSL program, just for the ground plane.
     auto prog = make_shared<Program>();
@@ -113,7 +114,7 @@ void ComponentManager::AddLineOfStars()
         string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
         string sphereShapeFileName = "Star Bit";
         shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", "Star", sphereName);
-        shared_ptr<Renderer> particles = make_shared<ParticleStaticSplashRenderer>("Alpha", sphereName);
+        shared_ptr<Renderer> particles = make_shared<ParticleRenderer>("Alpha", "particle", sphereName, 100000, &ParticleRenderer::drawSplash);
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
         shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
         shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
@@ -235,7 +236,7 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
     else if (nullptr != (ptr = dynamic_pointer_cast<Collision>(comp))) {
         compType = "Collision";
     }
-    else if (nullptr != (ptr = dynamic_pointer_cast<ParticleStaticSplashRenderer>(comp))) {
+    else if (nullptr != (ptr = dynamic_pointer_cast<ParticleRenderer>(comp))) {
         compType = "Particle";
     }
     else if (nullptr != (ptr = dynamic_pointer_cast<Renderer>(comp))) {

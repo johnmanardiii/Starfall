@@ -217,6 +217,34 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	shaderManager.SetShader("particle", partProg);
 
+
+	//used for sand
+	auto sandProg = make_shared<Program>();
+	sandProg->setVerbose(true);
+	sandProg->setShaderNames(
+		resourceDirectory + "/sand_vert.glsl",
+		resourceDirectory + "/sand_frag.glsl");
+	sandProg->Init();
+	sandProg->addUniform("P");
+	sandProg->addUniform("M");
+	sandProg->addUniform("V");
+	sandProg->addUniform("totalTime");
+	sandProg->addUniform("centerPos");
+	sandProg->addUniform("alphaTexture");
+	sandProg->addUniform("alphaMult");
+	sandProg->addAttribute("pColor");
+	sandProg->addAttribute("pNormal");
+	sandProg->addAttribute("pRotation");
+
+	GLuint SandLocation0 = glGetUniformLocation(sandProg->pid, "Sand");
+	
+	glUseProgram(sandProg->pid);
+	glUniform1i(SandLocation0, 0);
+
+	shaderManager.SetShader("Sand", sandProg);
+
+
+
 	//used for star fragments
 	auto starProg = make_shared<Program>();
 	starProg->setVerbose(true);
