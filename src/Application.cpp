@@ -387,9 +387,9 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	TexLocation3 = glGetUniformLocation(skyboxProg->pid, "cloudDistort");
 
 	glUseProgram(skyboxProg->pid);
-	glUniform1i(TexLocation, 0);
-	glUniform1i(TexLocation2, 1);
-	glUniform1i(TexLocation3, 2);
+	glUniform1i(TexLocation, 1);
+	glUniform1i(TexLocation2, 2);
+	glUniform1i(TexLocation3, 3);
 
 	assert(glGetError() == GL_NO_ERROR);
 	shaderManager.SetShader("Skybox", skyboxProg);

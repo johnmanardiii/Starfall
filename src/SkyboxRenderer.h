@@ -17,7 +17,7 @@ public:
 		model = shaderMan.GetModel(mod);
 
 		cloudBaseNoise = shaderMan.GetTexture("cloudBaseNoise");
-		cloudNoiseTextures = shaderMan.GetTexture("cloudNoise");
+		cloudNoise = shaderMan.GetTexture("cloudNoise");
 		cloudDistort = shaderMan.GetTexture("cloudDistort");
 	}
 	void Update(float frameTime, ComponentManager& compMan) { Draw(frameTime); }
@@ -51,6 +51,6 @@ private:
 
 	// Textures
 	GLuint cloudBaseNoise;
-	GLuint cloudNoiseTextures;
+	GLuint cloudNoise;
 	GLuint cloudDistort;
 };

@@ -5,7 +5,7 @@ in vec3 TexCoords;
 in vec2 uv;
 
 uniform sampler2D cloudBaseNoise;
-uniform sampler2D cloudNoiseTextures;
+uniform sampler2D cloudNoise;
 uniform sampler2D cloudDistort;
 
 // Stars
@@ -79,14 +79,13 @@ vec3 HorizonColor(vec3 texCoords, float yCoord)
 vec3 Clouds(vec3 texCoords, float yCoord)
 {
 	vec3 normalizedSun = normalize(sunDir);
-	float horizon = clamp(abs(texCoords.y), 0, 1);
-
 	vec2 skyUV = texCoords.xz /texCoords.y;
+
 	vec3 baseNoise = texture(cloudBaseNoise, (skyUV - time * cloudSpeed) * cloudScale).rgb;
 	vec3 noise1 = texture(cloudDistort, (skyUV + baseNoise.r - time * cloudSpeed) * cloudScale).rgb;
-	vec3 noise2 = texture(cloudNoiseTextures, (skyUV + noise1.r - time * cloudSpeed) * cloudScale).rgb;
+	vec3 noise2 = texture(cloudNoise, (skyUV + noise1.r - time * cloudSpeed) * cloudScale).rgb;
 
-	float finalNoise = clamp(noise1.r * noise2.r, 0, 1) * 1 - clamp(yCoord, 0, 1);
+	float finalNoise = clamp(noise1.r * noise2.r, 0, 1) * 1 - clamp((texCoords.y + 0.3) * 1.5, 0, 1);
 	float clouds = clamp(smoothstep(cloudCutoff, cloudCutoff + cloudFuzziness, finalNoise), 0, 1);
 
 	vec3 cloudsColoredDay = mix(cloudColorDayEdge,  cloudColorDayMain , clouds) * clouds;
@@ -94,8 +93,7 @@ vec3 Clouds(vec3 texCoords, float yCoord)
 
 	vec3 cloudMix = mix(clamp(cloudsColoredDay, 0, 1), clamp(cloudsColoredNight, 0, 1), normalizedSun.y);
 	cloudMix = clamp(cloudMix, 0, 1);
-
-	return vec3(cloudMix);
+	return cloudMix;
 }
 
 void main() {
@@ -105,7 +103,7 @@ void main() {
 
 	// Stars
 	vec4 stars = texture(skybox, TexCoords);
-	stars *= clamp(clamp(-yCoord + 0.7, 0, 1) * 0.5 * normalizedSun.y, 0, 1);
+	stars *= clamp(clamp(-yCoord + 0.8, 0, 1) * 0.5 * normalizedSun.y, 0, 1);
 	// Gradient Sky
 	vec3 skyColor = SkyGradient(normTexCoords, yCoord);
 	// Sun + Moon
@@ -114,5 +112,8 @@ void main() {
 	vec3 horizon = HorizonColor(normTexCoords, yCoord);
 	vec3 clouds = Clouds(normTexCoords, yCoord);
 
-	color = vec4(skyColor + sunAndMoonColor + stars.xyz + horizon + clouds, 1);
+
+	vec3 combined = skyColor + sunAndMoonColor + stars.xyz + horizon + clouds;
+	combined = clamp(combined, vec3(0), vec3(1));
+	color = vec4(combined, 1);
 }

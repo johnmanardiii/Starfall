@@ -82,7 +82,6 @@ void SkyboxRenderer::Draw(float frameTime)
 	mat4 rotY = glm::rotate(mat4(1.0f), sunRotation, glm::vec3(1.0f, 0.0f, 0.0f));
 	mat4 inverted = glm::inverse(rotY);
 	sunDir = normalize(glm::vec3(inverted[2]));
-	
 	glDepthFunc(GL_LEQUAL);
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
@@ -90,12 +89,12 @@ void SkyboxRenderer::Draw(float frameTime)
 	glUniform1f(prog->getUniform("time"), glfwGetTime());
 
 	// Textures
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, cloudBaseNoise);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, cloudNoiseTextures);
-	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, cloudBaseNoise);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, cloudNoise);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, cloudDistort);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, shaderMan.skyboxTexId);
 	model->draw(prog);
