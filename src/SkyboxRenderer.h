@@ -26,8 +26,8 @@ public:
 	void UpdateUniforms();
 private:
 	shared_ptr<Shape> model;
-	vec3 dayTopColor = vec3(0.36, 0.4, 1);
-	vec3 dayBottomColor = vec3(0.95, 0.25, 0.14);
+	vec3 dayTopColor = vec3(0, 0, 0.37);
+	vec3 dayBottomColor = vec3(0.52, 0.16, 0.16);
 	vec3 nightTopColor = vec3(0, 0.01, 0.25);
 	vec3 nightBottomColor = vec3(0.03, 0.01, 0.23);
 	vec3 horizonColor = vec3(1, 0, 0);
@@ -39,10 +39,10 @@ private:
 
 	float moonOffset = 0.067;
 
-	float cloudFuzziness = 0.2;
-	float cloudScale = 0.2;
-	float cloudSpeed = 0.2;
-	float cloudCutoff = 0.2;
+	float cloudFuzziness = 0.311;
+	float cloudScale = 0.1;
+	float cloudSpeed = 0.1;
+	float cloudCutoff = 0.1;
 
 	vec3 cloudColorDayEdge = vec3(0.36, 0.4, 1);
 	vec3 cloudColorDayMain = vec3(0.36, 0.4, 1);

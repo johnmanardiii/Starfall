@@ -94,7 +94,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     string skyboxName = "Skybox";
     shared_ptr<SkyboxRenderer> skyboxRenderer = make_shared<SkyboxRenderer>(skyboxName, "unit_cube");
     transform = make_shared<Transform>(skyboxName);
-    transform->SetPos(vec3(0, 1, 2));
+    transform->SetPos(vec3(0, 0, 0));
     transform->SetScale(vec3(100, 100, 100));
     vector<shared_ptr<Component>> skyboxComps = { skyboxRenderer, transform };
     AddGameObject(skyboxName, skyboxComps);
@@ -190,6 +190,9 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     
     // update the camera
     camera.Update(frameTime, width, height, this);
+
+    // update lights
+    lightComponent.Update(frameTime, this);
 
     //finally update renderers/draw.
 

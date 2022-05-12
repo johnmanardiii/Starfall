@@ -13,6 +13,7 @@ void SkyboxRenderer::Init(ComponentManager* compMan)
 
 void SkyboxRenderer::UpdateUniforms()
 {
+	if (ImGui::CollapsingHeader("Skybox!")) {}
 	// Gradient
 	ImGui::ColorEdit3("Day Top Color", (float*)&dayTopColor);
 	glUniform3fv(prog->getUniform("dayTopColor"), 1, &dayTopColor[0]);
@@ -32,7 +33,7 @@ void SkyboxRenderer::UpdateUniforms()
 	LightComponent light = LightComponent::GetInstance(vec3(1, 0, 0));
 
 	ImGui::SliderFloat("Sun Rotation", (float*)&sunRotation, 0.0f, 10.0f);
-	glUniform3fv(prog->getUniform("sunDir"), 1, &sunDir[0]);
+	glUniform3fv(prog->getUniform("sunDir"), 1, &light.sunDir[0]);
 
 	ImGui::SliderFloat("MoonOffset", (float*)&moonOffset, -1.0f, 1.0f);
 	glUniform1f(prog->getUniform("moonOffset"), moonOffset);
@@ -77,11 +78,12 @@ void SkyboxRenderer::Draw(float frameTime)
 	mat4 P = cam.GetPerspective(),
 		V = cam.GetView(),
 		M = trans->GetModelMat();
-	
+
 	// Sun direction
 	mat4 rotY = glm::rotate(mat4(1.0f), sunRotation, glm::vec3(1.0f, 0.0f, 0.0f));
 	mat4 inverted = glm::inverse(rotY);
 	sunDir = normalize(glm::vec3(inverted[2]));
+
 	glDepthFunc(GL_LEQUAL);
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);

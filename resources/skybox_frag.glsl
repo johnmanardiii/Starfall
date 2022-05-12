@@ -79,13 +79,13 @@ vec3 HorizonColor(vec3 texCoords, float yCoord)
 vec3 Clouds(vec3 texCoords, float yCoord)
 {
 	vec3 normalizedSun = normalize(sunDir);
-	vec2 skyUV = texCoords.xz /texCoords.y;
+	vec2 skyUV = texCoords.xz /(texCoords.y - 0.2);
 
 	vec3 baseNoise = texture(cloudBaseNoise, (skyUV - time * cloudSpeed) * cloudScale).rgb;
 	vec3 noise1 = texture(cloudDistort, (skyUV + baseNoise.r - time * cloudSpeed) * cloudScale).rgb;
 	vec3 noise2 = texture(cloudNoise, (skyUV + noise1.r - time * cloudSpeed) * cloudScale).rgb;
 
-	float finalNoise = clamp(noise1.r * noise2.r, 0, 1) * 1 - clamp((texCoords.y + 0.3) * 1.5, 0, 1);
+	float finalNoise = clamp(noise1.r * noise2.r, 0, 1) * 1 - clamp((texCoords.y + 0.3) , 0, 1);
 	float clouds = clamp(smoothstep(cloudCutoff, cloudCutoff + cloudFuzziness, finalNoise), 0, 1);
 
 	vec3 cloudsColoredDay = mix(cloudColorDayEdge,  cloudColorDayMain , clouds) * clouds;
@@ -113,7 +113,7 @@ void main() {
 	vec3 clouds = Clouds(normTexCoords, yCoord);
 
 
-	vec3 combined = skyColor + sunAndMoonColor + stars.xyz + horizon + clouds;
+	vec3 combined = skyColor + sunAndMoonColor + stars.xyz + clouds;
 	combined = clamp(combined, vec3(0), vec3(1));
 	color = vec4(combined, 1);
 }
