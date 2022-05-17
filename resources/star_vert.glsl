@@ -122,7 +122,7 @@ float cnoise(vec3 P)
   return 2.2 * n_xyz;
 }
 
-// Classic Perlin noise, periodic variant
+// Classic Perlin noise, periodic variant. This should be "tileable".
 float pnoise(vec3 P, vec3 rep)
 {
   vec3 Pi0 = mod(floor(P), rep); // Integer part, modulo period
@@ -192,7 +192,10 @@ float pnoise(vec3 P, vec3 rep)
   return 2.2 * n_xyz;
 }
 
-
+// takes in a 3D vector, computes        //the vector       // the period
+// summation from n=(1,10) of : pnoise ( vec3(input * 2^n) , vec3(10) / 2^n) ).
+// First "layer" of added noise (1) influences the final value the most, with additional
+// layers (2-10) refining the value to smooth out gradient.
 float turbulence( vec3 p ) {
     float w = 10.0;
     float t = -.5;
@@ -203,6 +206,9 @@ float turbulence( vec3 p ) {
     return t;
 }
 
+//abuses the way sin is calculated on some platforms in order to sometimes get random numbers between -1 and 1,
+//given a vec2 "seed." Not guaranteed to work on all platforms. If it doesn't create a random value, provides
+//a hash function from a vec2 into a float.
 float rand(vec2 co){
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
