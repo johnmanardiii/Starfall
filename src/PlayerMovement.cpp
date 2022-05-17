@@ -58,7 +58,7 @@ float PlayerMovement::GetSlopeDiff(float frameTime)
     vec3 forward = glm::rotate(trans->GetRot(), vec3(0, 0, -1)) * frameTime;
     vec3 pos = trans->GetPos();
     float currentH = pos.y,
-        nextH = max(pos.y - (inputBuffer[4] ? STRONG_GRAVITY_MULT : GRAVITY_MULT) * frameTime,
+        nextH = (std::max)(pos.y - (inputBuffer[4] ? STRONG_GRAVITY_MULT : GRAVITY_MULT) * frameTime,
             heightCalc(pos.x + forward.x, pos.z + forward.z));
     return nextH - currentH;
 }

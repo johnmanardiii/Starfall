@@ -1,5 +1,6 @@
 #pragma once
 #include "Movement.h"
+#include <algorithm>
 
 enum Input {W = 0, A = 1, S = 2, D = 3, LSHIFT = 4};
 
