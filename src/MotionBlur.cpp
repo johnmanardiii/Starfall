@@ -9,7 +9,11 @@ using namespace std;
 // setting up the motion blur shader.
 void MotionBlur::InitializeShaders()
 {
-	std::string resourceDir = "../resources";
+#ifdef __APPLE__
+    std::string resourceDir = "../../resources";
+#else
+    std::string resourceDir = "../resources";
+#endif
 	motionBlurProg = make_shared<Program>();
 	motionBlurProg->setVerbose(true);
 	motionBlurProg->setShaderNames(resourceDir + "/post_vert.glsl", resourceDir + "/motion_blur_frag.glsl");

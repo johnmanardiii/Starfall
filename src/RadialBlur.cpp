@@ -9,7 +9,11 @@ using namespace std;
 // setting up the motion blur shader.
 void RadialBlur::InitializeShaders()
 {
-	std::string resourceDir = "../resources";
+#ifdef __APPLE__
+    std::string resourceDir = "../../resources";
+#else
+    std::string resourceDir = "../resources";
+#endif
 	radialBlurProg = make_shared<Program>();
 	radialBlurProg->setVerbose(true);
 	radialBlurProg->setShaderNames(resourceDir + "/post_vert.glsl", resourceDir + "/radial_blur.glsl");

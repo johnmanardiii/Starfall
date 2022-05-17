@@ -276,11 +276,11 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	partProg->addAttribute("pNormal");
 	partProg->addAttribute("pRotation");
 
-	GLuint PartLocation0 = glGetUniformLocation(partProg->pid, "particle");
-	GLuint PartLocation1 = glGetUniformLocation(partProg->pid, "particle");
+	GLuint PartLocation0 = glGetUniformLocation(partProg->pid, "alphaTexture");
+	GLuint PartLocation1 = glGetUniformLocation(partProg->pid, "rainbowTexture");
 	glUseProgram(partProg->pid);
 	glUniform1i(PartLocation0, 0);
-	glUniform1i(PartLocation1, 0);
+	glUniform1i(PartLocation1, 1);
 
 	shaderManager.SetShader("particle", partProg);
 
