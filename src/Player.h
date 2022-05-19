@@ -44,6 +44,15 @@ private:
 	void UpdatePlayerAnimations(float frameTime);
 	vec3 rightArmEulerOffset = vec3(0, 0, 0);
 	vec3 leftArmEulerOffset = vec3(0, 0, 0);
+
+
+	// animation constants (keyframes)
+	vec3 rightArmBoostForward = vec3(-39, 0, -11);
+	vec3 leftArmBoostForward = vec3(-39, 0, 11);
+	vec3 rightArmTurnOut = vec3(0, 0, 28);
+	vec3 leftArmTurnOut = vec3(0, 0, -28);
+	vec3 rightArmBoostBackward = vec3(39, 0, -11);
+	vec3 leftArmBoostBackward = vec3(39, 0, 11);
 public:
 	const std::string pName = "player";
 	const std::string pArm1Name = "arm1";

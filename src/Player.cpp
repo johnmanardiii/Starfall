@@ -102,9 +102,10 @@ void Player::AnimatePlayerModel(float frameTime)
     currentZRotation = exponential_growth(currentZRotation, goalZRotation, .02 * 60.0f, frameTime);
     pTransform->SetRoll(currentZRotation);
 
-    float goalForwardsRotation = (movement->GetSpeed() * 30);   // TODO add this to player class as const
-    currentXRotation = exponential_growth(currentXRotation, goalForwardsRotation, .5 * 60.0f, frameTime);
-    pTransform->SetLean(currentXRotation);
+    // cout << movement->GetSpeed() / frameTime;
+    // float goalForwardsRotation = (movement->GetSpeed() /frameTime);   // TODO add this to player class as const
+    // currentXRotation = exponential_growth(currentXRotation, goalForwardsRotation, .5 * 60.0f, frameTime);
+    // pTransform->SetLean(currentXRotation);
 }
 
 // animation code begins here:
@@ -112,9 +113,37 @@ void Player::UpdatePlayerAnimations(float frameTime)
 {
     // update the values on Imgui
     if (ImGui::CollapsingHeader("PlayerAnims")) {}
-    // Gradient
-    ImGui::DragFloat3("RightArmEulerOffset", (float*)&rightArmEulerOffset);
-    ImGui::DragFloat3("LeftArmEulerOffset", (float*)&leftArmEulerOffset);
+        // Gradient
+        ImGui::DragFloat3("RightArmEulerOffset", (float*)&rightArmEulerOffset);
+        ImGui::DragFloat3("LeftArmEulerOffset", (float*)&leftArmEulerOffset);
+
+        if (ImGui::Button("Set Right Arm Boost Forward"))
+        {
+            rightArmEulerOffset = rightArmBoostForward;
+        }
+        if (ImGui::Button("Set Left Arm Boost Forward"))
+        {
+            leftArmEulerOffset = leftArmBoostForward;
+        }
+
+        if (ImGui::Button("Set Right Arm Turn Out"))
+        {
+            rightArmEulerOffset = rightArmTurnOut;
+        }
+        if (ImGui::Button("Set Left Arm Turn Out"))
+        {
+            leftArmEulerOffset = leftArmTurnOut;
+        }
+
+        if (ImGui::Button("Set Right Arm Boost Backward"))
+        {
+            rightArmEulerOffset = rightArmBoostBackward;
+        }
+        if (ImGui::Button("Set Left Arm Boost Backward"))
+        {
+            leftArmEulerOffset = leftArmBoostBackward;
+        }
+    // }
 
     // Animate player model based on input
     AnimatePlayerModel(frameTime);
