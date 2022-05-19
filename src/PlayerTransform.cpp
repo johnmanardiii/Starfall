@@ -8,7 +8,7 @@ void PlayerTransform::CalcModelMat()
 		R = mat4(rotation),
 		S = glm::scale(i, scale);
 	parentTransform->CalcModelMat();
-	M = parentTransform->GetM() * T * R * S;
+	M = parentTransform->GetM() * T * R * S * baseRotation;
 }
 
 PlayerTransform::PlayerTransform(std::string name, std::shared_ptr<Transform> parent) : Transform(name)

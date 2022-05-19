@@ -9,6 +9,8 @@
 #include "GameObject.h"
 #include "EulerTransform.h"
 #include "PlayerMovement.h"
+#include "PlayerTransform.h"
+#include "imgui/imgui.h"
 
 #include <vector>
 #include <memory>
@@ -36,9 +38,12 @@ private:
 	shared_ptr<Transform> trans = NULL;
 	shared_ptr<EulerTransform> pTransform;
 	shared_ptr<Transform> headTrans;
-	shared_ptr<Transform> arm1Trans;
-	shared_ptr<Transform> arm2Trans;
+	shared_ptr<PlayerTransform> arm1Trans;
+	shared_ptr<PlayerTransform> arm2Trans;
 	shared_ptr<PlayerMovement> movement = NULL;
+	void UpdatePlayerAnimations(float frameTime);
+	vec3 rightArmEulerOffset = vec3(0, 0, 0);
+	vec3 leftArmEulerOffset = vec3(0, 0, 0);
 public:
 	const std::string pName = "player";
 	const std::string pArm1Name = "arm1";
@@ -50,8 +55,8 @@ public:
 	float GetCurrentSpeed() { return movement->GetSpeed(); }
 	float GetMaxSpeed() { return movement->GetMaxSpeed(); }
 	void Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
-		shared_ptr<Transform> head, shared_ptr<Transform> arm1,
-		shared_ptr<Transform> arm2);
+		shared_ptr<PlayerTransform> head, shared_ptr<PlayerTransform> arm1,
+		shared_ptr<PlayerTransform> arm2);
 	const vec3 GetPosition() { return pTransform->GetPos(); }
   // Is GetRadius Needed?
 	float GetRadius() { return radius; }
