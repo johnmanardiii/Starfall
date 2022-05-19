@@ -28,11 +28,12 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
         velocity.y -= STRONG_GRAVITY_MULT * frameTime;
     }
     GroundCollision(frameTime);
-    trans->ApplyTranslation(velocity);
+    trans->ApplyTranslation(velocity * frameTime);
     vec3 pos = trans->GetPos();
     pos.y = (glm::max)(pos.y, heightCalc(pos.x, pos.z));
     trans->SetPos(pos);
     velocity -= velocity * SPEED_FALLOFF * frameTime;
+    cout << length(velocity) << "vel" << endl;
 }
 
 void PlayerMovement::UpdateRotation(float frameTime)
@@ -58,7 +59,7 @@ float PlayerMovement::GetSlopeDiff(float frameTime)
     vec3 forward = glm::rotate(trans->GetRot(), vec3(0, 0, -1)) * frameTime;
     vec3 pos = trans->GetPos();
     float currentH = pos.y,
-        nextH = (std::max)(pos.y - (inputBuffer[4] ? STRONG_GRAVITY_MULT : GRAVITY_MULT) * frameTime,
+        nextH = (std::max)(pos.y - (inputBuffer[LSHIFT] ? STRONG_GRAVITY_MULT : GRAVITY_MULT) * frameTime,
             heightCalc(pos.x + forward.x, pos.z + forward.z));
     return nextH - currentH;
 }
