@@ -53,6 +53,12 @@ private:
 	vec3 leftArmTurnOut = vec3(0, 0, -28);
 	vec3 rightArmBoostBackward = vec3(39, 0, -11);
 	vec3 leftArmBoostBackward = vec3(39, 0, 11);
+
+	quat rBoostForwards, lBoostForwards,
+		rArmTurnOut, lArmTurnOut,
+		rBoostBackwards, lBoostBackwards;
+	quat rRot = glm::identity<quat>();
+	quat lRot = glm::identity<quat>();
 public:
 	const std::string pName = "player";
 	const std::string pArm1Name = "arm1";
