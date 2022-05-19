@@ -195,9 +195,8 @@ float pnoise(vec3 P, vec3 rep)
 
 
 float turbulence( vec3 p ) {
-    float w = 10.0;
     float t = -.5;
-    for (float f = 1.0; f <= 10.0; f++){
+    for (float f = 1.0; f <= 2.0; f++){
         float power = pow(2.0, f);
         t += abs(pnoise(vec3(power * p), vec3(10.0)) / power);
     }
@@ -219,11 +218,8 @@ void main()
 
     vec3 newPosition;
 
-    newPosition = centerPos + pNormal * (0.1 - 16 * (totalTime * totalTime * totalTime * totalTime) * displacement);
-	  //newPosition += pRotation;
-
-
-
+    newPosition = centerPos + pNormal * (0.1 - 16 * pow(totalTime, 4.0f) * displacement);
+    //newPosition += pRotation;
 
 	// Billboarding: set the upper 3x3 to be the identity matrix
 	mat4 M0 = M;
