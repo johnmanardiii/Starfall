@@ -4,7 +4,6 @@
 #include "EulerTransform.h"
 #include "MonkeyMovement.h"
 #include "SkyboxRenderer.h"
-
 ComponentManager::ComponentManager()
 {
     //specify what you want the components to be called here.
@@ -200,6 +199,7 @@ void ComponentManager::AddBunchOfSandParticles() {
 //synchronized to the same frame. 
 void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 {
+    //Timer timer;
     //the first thing that should happen in every frame. Stores total time.
     state.IncTotalFrameTime(frameTime);
     if (state.ShouldSpawnStar()) {
@@ -209,34 +209,40 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     //if (state.ShouldSpawnSand()) {
     //    AddBunchOfSandParticles();
     //}
-
+    //timer.start();
+    
     // update movements
     for (auto& move : components["Movement"])
     {
         if (!move->IsActive) continue;
         move->Update(frameTime, this);
     }
+    //int mvtime = timer.stop();
     //resolve collisions.
+    //timer.start();
     for (auto& giver : components["Collision"])
     {
         if (!giver->IsActive) continue;  //don't collide with destroyed objects.
         giver->Update(frameTime, this);
     }
-
+    //int colitime = timer.stop();
+    //timer.start();
     // update transforms based on movements.
     for (auto& trans : components["Transform"])
     {
         if (!trans->IsActive) continue;
         trans->Update(frameTime, this);
     }
-
+    //int transtime = timer.stop();
+    //timer.start();
     // update flashing animation
     for (auto& collect : components["Collect"])
     {
         if (!collect->IsActive) continue;
         collect->Update(frameTime, this);
     }
-
+    //int coletime = timer.stop();
+    //timer.start();
     // update the player
     player.Update(frameTime, this);
     
@@ -245,21 +251,25 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 
     // update lights
     lightComponent.Update(frameTime, this);
-
+    //int pcamlight = timer.stop();
     //finally update renderers/draw.
 
-
+    //timer.start();
     for (auto& rend : components["Renderer"])
     {
         if (!rend->IsActive) continue;
         rend->Update(frameTime, this);
     }
+    //int rendtime = timer.stop();
     //draw particles last because they are transparent.
+    //timer.start();
     for (auto& part : components["Particle"])
     {
         if (!part->IsActive) continue;
         part->Update(frameTime, this);
     }
+    //int parttime = timer.stop();
+    //cout << "mv: " << mvtime << " collide: " << colitime << " trans: " << transtime << " collect: " << coletime << " player: " << pcamlight << " render: " << rendtime << " particles: " << parttime << endl;
 }
 
 void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)

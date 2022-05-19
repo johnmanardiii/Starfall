@@ -6,7 +6,7 @@ void Timer::start(){
 
 int Timer::stop(){
     endTime = high_resolution_clock::now();
-    return duration_cast<milliseconds>(endTime - startTime).count();
+    return duration_cast<microseconds>(endTime - startTime).count();
 }
 
 void Timer::pStop(std::string event){
