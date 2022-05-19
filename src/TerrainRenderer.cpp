@@ -1,4 +1,5 @@
  #include "TerrainRenderer.h"
+#include "Player.h"
 #include <iostream>
 
 void TerrainRenderer::Init(ComponentManager* compMan)
@@ -20,11 +21,11 @@ void TerrainRenderer::Draw(float frameTime)
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &cam.GetView()[0][0]);
 
 	vec3 pos = cam.GetPos();
-	vec3 offset;
+	vec3 offset = Player::GetInstance(vec3(0,0,0)).GetPosition();
 	vec3 color_offset;
 	offset.y = 0;
-	offset.x = (int)pos.x;
-	offset.z = (int)pos.z;
+	offset.x = (int)offset.x;
+	offset.z = (int)offset.z;
 
 	vec3 lightDir = normalize(vec3(1000, 0, 100)); // Hardcoded for now
 

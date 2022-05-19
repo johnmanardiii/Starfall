@@ -26,16 +26,17 @@ float rand(vec2 co){
 void main()
 {
 	vec2 texcoords=vertTex;
-	float t=1./100.;
-	texcoords += vec2(camoff.x,camoff.z)*t;
-	float height = texture(tex, texcoords/100.).r;
+	float t=1/100.;
+	//why negative camoff.x?
+	texcoords += vec2(-camoff.x,camoff.z)*t;
+	float height = texture(tex, texcoords/3.).r;
 	height *= 40.0;
 
 
 	vec4 tpos =  vec4(vertPos, 1.0);
 	tpos =  M * tpos;
-	tpos.z +=camoff.z;
-	tpos.x +=camoff.x;
+	tpos.z += camoff.z;
+	tpos.x += camoff.x;
 
 	float proc_height = heightCalc(tpos.x, tpos.z);
 
@@ -45,7 +46,8 @@ void main()
 	vec3 b = tpos.xyz + vec3(0.1f, 0.0f, 0.1f), 
 		c = tpos.xyz + vec3(0.1f, 0.0f, -0.1f);
 
-	tpos.y += proc_height;
+	//tpos.y += proc_height;
+	tpos.y += height;
 	b.y += heightCalc(b.x, b.z);
 	c.y += heightCalc(c.x, c.z);
 	/*b.y += sin(b.x / 10.) * sin(b.z / 10.) * 10.0 * cos(b.x * 0.2) * cos(b.z * 0.1);
@@ -55,7 +57,7 @@ void main()
 	vec3 ac = (tpos.xyz - c);
 	ac = normalize(ac);
 	vec3 n = normalize(cross(ab,ac));
-
+	n = vec3(0, 1, 0);
 	gl_Position = P * V * tpos;
 	frag_pos = tpos.xyz;
 	frag_height = tpos.y;

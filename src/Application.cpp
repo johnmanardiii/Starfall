@@ -199,6 +199,7 @@ void Application::InitSkybox(const std::string& resourceDirectory)
 void Application::InitShaderManager(const std::string& resourceDirectory)
 {
 	shaderManager = ShaderManager::GetInstance();
+	HeightCalc::GetInstance().Init();
 	GLuint tex;
 	int width, height, channels;
 	
@@ -234,6 +235,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/CloudNoise/cloud_BaseNoise.png", "cloudBaseNoise");
 	loadTexture("/CloudNoise/cloud_NoiseTexture.png", "cloudNoise");
 	loadTexture("/CloudNoise/cloud_Distort.png", "cloudDistort");
+	loadTexture("/HeightMaps/Mountain.jpg", "MountainHeight");
 
 	loadTexture("/rainbow.jpg", "Rainbow");
 

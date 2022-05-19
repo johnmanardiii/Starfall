@@ -101,7 +101,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     AddGameObject(skyboxName, skyboxComps);
 
     string floorName = "Floor";
-    renderer = make_shared<TerrainRenderer>("Cat", "Cat", floorName);
+    renderer = make_shared<TerrainRenderer>("Cat", "MountainHeight", floorName);
     transform = make_shared<Transform>(floorName);
     transform->SetPos(vec3(50, 1, -50));
     vector<shared_ptr<Component>> floorComps = { renderer, transform };
@@ -120,6 +120,7 @@ void ComponentManager::AddLineOfStars()
     vec3 playerGaze = normalize(player.GetForward()); //double check that this is normalized.
     vec3 playerRight = cross(playerGaze, vec3(0, 1, 0));
 
+    HeightCalc heightInstance = HeightCalc::GetInstance();
     //start initializing stars.
     for (int i = 0; i < numStarsToSpawn; ++i){
         string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
@@ -136,7 +137,8 @@ void ComponentManager::AddLineOfStars()
             playerRight * offsetRight; //plus shifted to the /left or right a random number, which is the same for all star fragments in this particular line.
             
         //finally, calculate each spawned fragment's height at this position.
-        transform->ApplyTranslation(vec3(pos.x, heightCalc(pos.x, pos.z), pos.z));
+        float groundHeight = heightInstance.GetHeight(pos.x, pos.z);
+        transform->ApplyTranslation(vec3(pos.x, groundHeight, pos.z));
         transform->ApplyScale(vec3(0.02f));
         vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collision, collect };
         AddGameObject(sphereName, sphereComps);
@@ -168,7 +170,7 @@ void ComponentManager::AddBunchOfSandParticles() {
         RemoveGameObject(name);
     }
     
-
+    HeightCalc heightInstance = HeightCalc::GetInstance();
     //start initializing stars.
     for (int i = 0; i < numSandToSpawn; ++i) {
         string SandName = "Sand" + to_string(state.TotalObjectsEverMade);
@@ -183,7 +185,8 @@ void ComponentManager::AddBunchOfSandParticles() {
             randTrans.GetVec3(); //plus some random noise.                                      |               |__|
 
         //finally, calculate each spawned fragment's height at this position.
-        transform->ApplyTranslation(vec3(pos.x, heightCalc(pos.x, pos.z), pos.z));
+        float groundHeight = heightInstance.GetHeight(pos.x, pos.z);
+        transform->ApplyTranslation(vec3(pos.x, groundHeight, pos.z));
         transform->ApplyScale(vec3(0.02f));
         vector<shared_ptr<Component>> Comps = { particles, transform };
         AddGameObject(SandName, Comps);

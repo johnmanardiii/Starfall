@@ -30,7 +30,8 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
     GroundCollision(frameTime);
     trans->ApplyTranslation(velocity);
     vec3 pos = trans->GetPos();
-    pos.y = (glm::max)(pos.y, heightCalc(pos.x, pos.z));
+    float groundHeight = HeightCalc::GetInstance().GetHeight(pos.x, pos.z);
+    pos.y = (glm::max)(pos.y, groundHeight);
     trans->SetPos(pos);
     velocity -= velocity * SPEED_FALLOFF * frameTime;
 }
@@ -57,9 +58,10 @@ float PlayerMovement::GetSlopeDiff(float frameTime)
 {
     vec3 forward = glm::rotate(trans->GetRot(), vec3(0, 0, -1)) * frameTime;
     vec3 pos = trans->GetPos();
+    float groundHeight = HeightCalc::GetInstance().GetHeight(pos.x + forward.x, pos.z + forward.z);
     float currentH = pos.y,
         nextH = (std::max)(pos.y - (inputBuffer[4] ? STRONG_GRAVITY_MULT : GRAVITY_MULT) * frameTime,
-            heightCalc(pos.x + forward.x, pos.z + forward.z));
+            groundHeight);
     return nextH - currentH;
 }
 
@@ -67,7 +69,8 @@ void PlayerMovement::GroundCollision(float frameTime)
 {
     vec3 pos = trans->GetPos(),
         offPos = pos + velocity * frameTime;
-    offPos.y = (glm::max)(offPos.y, heightCalc(offPos.x, offPos.z));
+    float groundHeight = HeightCalc::GetInstance().GetHeight(offPos.x, offPos.z);
+    offPos.y = (glm::max)(offPos.y, groundHeight);
     vec3 slopeVec = offPos - pos;
     if (glm::length(slopeVec) < 0.001)
     {
