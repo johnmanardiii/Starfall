@@ -35,6 +35,7 @@ private:
 	float radius = 1.0f;
 	void AnimatePlayerModel(float frameTime);
 	void AddIdleOffset(float frameTime);
+	void SetManualPositions();
 	shared_ptr<Transform> trans = NULL;
 	shared_ptr<EulerTransform> pTransform;
 	shared_ptr<Transform> headTrans;

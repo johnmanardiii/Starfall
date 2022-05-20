@@ -45,16 +45,27 @@ void Player::AddIdleOffset(float frameTime)
     pos.y += currentFloatOffset;
 }
 
+quat EulerToQuat(vec3 angles)
+{
+    return quat(glm::rotate(mat4(1), radians<float>(angles.x), vec3(1, 0, 0))
+        * glm::rotate(mat4(1), radians<float>(angles.y), vec3(0, 1, 0))
+        * glm::rotate(mat4(1), radians<float>(angles.z), vec3(0, 0, 1)));
+}
+
 Player::Player(vec3 pos) : pos (pos)
 {
-
+    rBoostForwards = EulerToQuat(rightArmBoostForward);
+    lBoostForwards = EulerToQuat(leftArmBoostForward);
+    rArmTurnOut = EulerToQuat(rightArmTurnOut);
+    lArmTurnOut = EulerToQuat(leftArmTurnOut);
+    rBoostBackwards = EulerToQuat(rightArmBoostBackward);
+    lBoostBackwards = EulerToQuat(leftArmBoostBackward);
 }
 
 void Player::Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans, 
     shared_ptr<PlayerTransform> head,shared_ptr<PlayerTransform> arm1,
     shared_ptr<PlayerTransform> arm2)
 {
-
     pTransform = pTrans;
     trans = static_pointer_cast<Transform>(pTransform);
     // set child transforms
@@ -78,17 +89,11 @@ void Player::SetInput(int index, bool val)
     movement->SetInput(index, val);
 }
 
-void Player::AnimatePlayerModel(float frameTime)
+void Player::SetManualPositions()
 {
-    // if LUNA is still, have them float a bit above the ground. (gets reset upon move)
-    // TODO: Fix idle float calculations
-    //AddIdleOffset(frameTime);
-
-    // animate the right arm according to its euler angles (for now, later blending between saved keyframes
-    // calculate the rotation matrix according to the yaw, pitch, roll
     mat4 manualRightArmPosition = glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.x), vec3(1, 0, 0))
-            * glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.y), vec3(0, 1, 0))
-            * glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.z), vec3(0, 0, 1));
+        * glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.y), vec3(0, 1, 0))
+        * glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.z), vec3(0, 0, 1));
     arm1Trans->SetBaseRotation(manualRightArmPosition);
 
     // do the same for arm 2
@@ -96,7 +101,17 @@ void Player::AnimatePlayerModel(float frameTime)
         * glm::rotate(mat4(1), radians<float>(leftArmEulerOffset.y), vec3(0, 1, 0))
         * glm::rotate(mat4(1), radians<float>(leftArmEulerOffset.z), vec3(0, 0, 1));
     arm2Trans->SetBaseRotation(manualLeftArmPosition);
+}
 
+void Player::AnimatePlayerModel(float frameTime)
+{
+    // if LUNA is still, have them float a bit above the ground. (gets reset upon move)
+    // TODO: Fix idle float calculations
+    //AddIdleOffset(frameTime);
+
+    arm1Trans->SetBaseRotation(mat4(rRot));
+    arm2Trans->SetBaseRotation(mat4(lRot));
+    
     // lerp LUNA to the rotation they are accelerating in (around their local z axis)
     float goalZRotation = -movement->GetAngularSpeed() * 15.0f;
     currentZRotation = exponential_growth(currentZRotation, goalZRotation, .02 * 60.0f, frameTime);
@@ -119,29 +134,29 @@ void Player::UpdatePlayerAnimations(float frameTime)
 
         if (ImGui::Button("Set Right Arm Boost Forward"))
         {
-            rightArmEulerOffset = rightArmBoostForward;
+            rRot = rBoostForwards;
         }
         if (ImGui::Button("Set Left Arm Boost Forward"))
         {
-            leftArmEulerOffset = leftArmBoostForward;
+            lRot = lBoostForwards;
         }
 
         if (ImGui::Button("Set Right Arm Turn Out"))
         {
-            rightArmEulerOffset = rightArmTurnOut;
+            rRot = rArmTurnOut;
         }
         if (ImGui::Button("Set Left Arm Turn Out"))
         {
-            leftArmEulerOffset = leftArmTurnOut;
+            lRot = lArmTurnOut;
         }
 
         if (ImGui::Button("Set Right Arm Boost Backward"))
         {
-            rightArmEulerOffset = rightArmBoostBackward;
+            rRot = rBoostBackwards;
         }
         if (ImGui::Button("Set Left Arm Boost Backward"))
         {
-            leftArmEulerOffset = leftArmBoostBackward;
+            lRot = lBoostBackwards;
         }
     // }
 
