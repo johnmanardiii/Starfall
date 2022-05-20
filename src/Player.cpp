@@ -150,8 +150,8 @@ void Player::SetAutomaticRotations(float frameTime)
             lGoalRot = lArmTurnOut;
         }
     }
-    rRot = rGoalRot;
-    lRot = lGoalRot;
+    rRot = slerp(rRot, rGoalRot, .2f * 60.0f * frameTime);
+    lRot = slerp(lRot, lGoalRot, .2f * 60.0f * frameTime);
     arm1Trans->SetBaseRotation(mat4(rRot));
     arm2Trans->SetBaseRotation(mat4(lRot));
 }
