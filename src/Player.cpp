@@ -103,14 +103,66 @@ void Player::SetManualPositions()
     arm2Trans->SetBaseRotation(manualLeftArmPosition);
 }
 
+void Player::SetAutomaticRotations(float frameTime)
+{
+    int thrust = movement->inputBuffer[W] - movement->inputBuffer[S];
+    int rTurn = movement->inputBuffer[A];
+    int lTurn = movement->inputBuffer[D];
+    quat rGoalRot = glm::identity<quat>();
+    quat lGoalRot = glm::identity<quat>();
+    bool thrustInfluence = false;
+    // calculate where luna wants her arms to go based on input.
+    if (thrust > 0)
+    {
+        rGoalRot = rBoostForwards;
+        lGoalRot = lBoostForwards;
+        thrustInfluence = true;
+    }
+    else if (thrust < 0)
+    {
+        rGoalRot = rBoostBackwards;
+        lGoalRot = lBoostBackwards;
+        thrustInfluence = true;
+    }
+
+    // handle sideways movement
+    if (rTurn)
+    {
+        if (thrustInfluence)
+        {
+            // blend with existing goal
+            rGoalRot = slerp(rGoalRot, rArmTurnOut, .5f);
+        }
+        else
+        {
+            rGoalRot = rArmTurnOut;
+        }
+    }
+    if (lTurn)
+    {
+        if (thrustInfluence)
+        {
+            // blend with existing goal
+            lGoalRot = slerp(lGoalRot, lArmTurnOut, .5f);
+        }
+        else
+        {
+            lGoalRot = lArmTurnOut;
+        }
+    }
+    rRot = rGoalRot;
+    lRot = lGoalRot;
+    arm1Trans->SetBaseRotation(mat4(rRot));
+    arm2Trans->SetBaseRotation(mat4(lRot));
+}
+
 void Player::AnimatePlayerModel(float frameTime)
 {
     // if LUNA is still, have them float a bit above the ground. (gets reset upon move)
     // TODO: Fix idle float calculations
     //AddIdleOffset(frameTime);
-
-    arm1Trans->SetBaseRotation(mat4(rRot));
-    arm2Trans->SetBaseRotation(mat4(lRot));
+    SetAutomaticRotations(frameTime);
+    
     
     // lerp LUNA to the rotation they are accelerating in (around their local z axis)
     float goalZRotation = -movement->GetAngularSpeed() * 15.0f;

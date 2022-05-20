@@ -36,6 +36,7 @@ private:
 	void AnimatePlayerModel(float frameTime);
 	void AddIdleOffset(float frameTime);
 	void SetManualPositions();
+	void SetAutomaticRotations(float frameTime);
 	shared_ptr<Transform> trans = NULL;
 	shared_ptr<EulerTransform> pTransform;
 	shared_ptr<Transform> headTrans;
