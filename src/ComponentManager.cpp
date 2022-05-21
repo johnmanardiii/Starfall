@@ -158,8 +158,8 @@ void ComponentManager::AddBunchOfSandParticles() {
 
     //garbage-collect old sand particle effects.
     vector<string> toRemove;
-    for (auto obj : objects) {
-        cout << obj.first << endl;
+    for (auto& obj : objects) {
+        //cout << obj.first << endl;
         if (obj.first.find("Sand") == 0) { //substring starts with
             toRemove.push_back(obj.first);
         }
@@ -251,7 +251,12 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 
     for (auto& rend : components["Renderer"])
     {
-        if (!rend->IsActive) continue;
+        if (!rend->IsActive) continue; //if the component is active (isn't awaiting replacement in the component vector structure)
+        if (static_pointer_cast<Renderer>(rend)->isCullable && //if the renderer component has been tagged as susceptible to culling.
+            !static_pointer_cast<Renderer>(rend)->IsInViewFrustum(state, this, camera)){ //if the renderer component is actually outside the view frustum.
+            continue;
+        }
+        //else
         rend->Update(frameTime, this);
     }
     //draw particles last because they are transparent.

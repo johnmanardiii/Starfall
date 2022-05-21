@@ -8,6 +8,7 @@ void StarRenderer::Update(float frameTime, ComponentManager* compMan) {
 
 void StarRenderer::Init(ComponentManager* compMan)
 {
+	isCullable = true; //set the star fragments as being available to be culled.
     Renderer::Init(compMan);
 }
 
