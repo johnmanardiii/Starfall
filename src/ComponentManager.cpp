@@ -252,8 +252,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     for (auto& rend : components["Renderer"])
     {
         if (!rend->IsActive) continue; //if the component is active (isn't awaiting replacement in the component vector structure)
-        if (static_pointer_cast<Renderer>(rend)->isCullable && //if the renderer component has been tagged as susceptible to culling.
-            !static_pointer_cast<Renderer>(rend)->IsInViewFrustum(state, this, camera)){ //if the renderer component is actually outside the view frustum.
+        if (!static_pointer_cast<Renderer>(rend)->IsInViewFrustum(state, this, camera)){ //if the renderer component is actually outside the view frustum.
             continue;
         }
         //else
@@ -263,8 +262,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     for (auto& part : components["Particle"])
     {
         if (!part->IsActive) continue;
-        if (static_pointer_cast<Renderer>(part)->isCullable && 
-            !static_pointer_cast<Renderer>(part)->IsInViewFrustum(state, this, camera)) {
+        if (!static_pointer_cast<Renderer>(part)->IsInViewFrustum(state, this, camera)) {
             continue;
         }
         part->Update(frameTime, this);
