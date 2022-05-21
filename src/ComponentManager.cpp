@@ -247,12 +247,10 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     lightComponent.Update(frameTime, this);
 
     //finally update renderers/draw.
-
-
     for (auto& rend : components["Renderer"])
     {
         if (!rend->IsActive) continue; //if the component is active (isn't awaiting replacement in the component vector structure)
-        if (!static_pointer_cast<Renderer>(rend)->IsInViewFrustum(state, this, camera)){ //if the renderer component is actually outside the view frustum.
+        if (!static_pointer_cast<Renderer>(rend)->IsInViewFrustum(state, this, camera)){ //if the renderer component has culling enabled and is actually outside the view frustum.
             continue;
         }
         //else
