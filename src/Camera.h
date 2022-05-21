@@ -5,7 +5,7 @@
 #include <glm/gtc/type_ptr.hpp> //for value_ptr
 
 #include <cmath>
-
+#include <array>
 #include "Component.h"
 #include "WindowManager.h"
 
@@ -38,7 +38,8 @@ private:
 
     vec3 get_wanted_pos(ComponentManager* compMan);     // gets the desired point behind the player
     void CalcPerspective(float frametime, int width, int height, ComponentManager* compMan);
-
+    void extractVFPlanes();
+    std::array<glm::vec4,6> planes; //left, right, bottom, top, near, far
 public:
     void Update(float frameTime, int width, int height, ComponentManager* compMan);
     static Camera& GetInstance(vec3 pos) {
@@ -50,5 +51,6 @@ public:
     const mat4 GetPerspective() const { return perspective; }
     const mat4 GetPrevView() const { return lastView; }
     const mat4 GetPrevProj() const { return lastPerspective; }
+    const std::array<glm::vec4,6>& getVFCPlanes() const { return planes; }
 };
 
