@@ -263,6 +263,10 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     for (auto& part : components["Particle"])
     {
         if (!part->IsActive) continue;
+        if (static_pointer_cast<Renderer>(part)->isCullable && 
+            !static_pointer_cast<Renderer>(part)->IsInViewFrustum(state, this, camera)) {
+            continue;
+        }
         part->Update(frameTime, this);
     }
 }

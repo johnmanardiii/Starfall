@@ -15,12 +15,10 @@ bool Renderer::IsInViewFrustum(const GameState& state, ComponentManager* compMan
 	float dist;
 	auto& planes = camera.getVFCPlanes();
 	if (isCullable) {
-		GameObject& obj = compMan->GetGameObject(Name);
-		shared_ptr<Collision> col = static_pointer_cast<Collision>(compMan->GetComponent("Collision", obj.GetComponentLocation("Collision")));
-		float radius = col->getRadius();
+		
 		for (int i = 0; i < 6; i++) {
 			dist = distToPlane(planes[i].x, planes[i].y, planes[i].z, planes[i].w, center);
-			if (dist < 0 && length(dist) > radius) {
+			if (dist < 0 && length(dist) > cullingRadius) {
 				return false;
 			}
 		}
