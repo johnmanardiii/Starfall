@@ -75,6 +75,14 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 	if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE) {
 		componentManager.GetPlayer().SetInput(LSHIFT, false);
 	}
+
+	if (key == GLFW_KEY_LEFT_ALT && action == GLFW_PRESS) {
+		componentManager.GetCamera().alt_pressed = true;
+	}
+
+	if (key == GLFW_KEY_LEFT_ALT && action == GLFW_RELEASE) {
+		componentManager.GetCamera().alt_pressed = false;
+	}
 }
 
 void Application::mouseCallback(GLFWwindow* window, int button, int action, int mods)
@@ -450,7 +458,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	//the obj files you want to load. Add more to read them all.
 	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/luna_arm",
-		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head", "unit_cube"};
+		"LUNA/luna_arm2", "LUNA/new/luna_body", "LUNA/new/luna_head", "unit_cube"};
 	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());

@@ -77,7 +77,7 @@ void Player::Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
     arm1Trans->SetPos(vec3(-.9, -1.5, 0));
     
     arm2Trans->SetPos(vec3(.9, -1.5, 0));
-    headTrans->SetPos(vec3(0, -2.0, 0));
+    headTrans->SetPos(vec3(0, -1.8, 0));
     GameObject obj = compMan->GetGameObject(pName);
     int index = obj.GetComponentLocation("Movement");
     movement = static_pointer_cast<PlayerMovement>(compMan->GetComponent("Movement", index));
@@ -169,10 +169,10 @@ void Player::AnimatePlayerModel(float frameTime)
     currentZRotation = exponential_growth(currentZRotation, goalZRotation, .02 * 60.0f, frameTime);
     pTransform->SetRoll(currentZRotation);
 
-    // cout << movement->GetSpeed() / frameTime;
-    // float goalForwardsRotation = (movement->GetSpeed() /frameTime);   // TODO add this to player class as const
-    // currentXRotation = exponential_growth(currentXRotation, goalForwardsRotation, .5 * 60.0f, frameTime);
-    // pTransform->SetLean(currentXRotation);
+    int thrust = movement->inputBuffer[W] - movement->inputBuffer[S];
+    float goalForwardsRotation = thrust * 30.0f;
+    currentXRotation = exponential_growth(currentXRotation, goalForwardsRotation, .2 * 60.0f, frameTime);
+    pTransform->SetLean(currentXRotation);
 }
 
 // animation code begins here:

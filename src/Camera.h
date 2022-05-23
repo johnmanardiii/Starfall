@@ -50,5 +50,6 @@ public:
     const mat4 GetPerspective() const { return perspective; }
     const mat4 GetPrevView() const { return lastView; }
     const mat4 GetPrevProj() const { return lastPerspective; }
+    bool alt_pressed = false;
 };
 

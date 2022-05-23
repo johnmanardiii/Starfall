@@ -44,7 +44,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     shared_ptr<EulerTransform> pTransform = make_shared<EulerTransform>(player.pName);
     shared_ptr<Transform> transform = pTransform;
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/new/luna_body", "Luna", player.pName);
     //shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", player.pName, 100000, &ParticleRenderer::drawSand);
     shared_ptr<Movement> playerMovement = make_shared<PlayerMovement>(player.pName);
     std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer, playerMovement};
@@ -55,7 +55,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     // initialize body parts as separate objects
     shared_ptr<PlayerTransform> headTrans = make_shared<PlayerTransform>(player.pHeadName, transform);
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    renderer = make_shared<TextureRenderer>("LUNA/luna_head", "Luna", player.pHeadName);
+    renderer = make_shared<TextureRenderer>("LUNA/new/luna_head", "Luna", player.pHeadName);
     std::vector<std::shared_ptr<Component>> headComps = { headTrans, renderer };
     AddGameObject(player.pHeadName, headComps);
 
