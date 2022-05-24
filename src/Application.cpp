@@ -265,6 +265,25 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	shaderManager.SetShader("Texture", prog);
 
+	auto head_prog = make_shared<Program>();
+	head_prog->setVerbose(true);
+	head_prog->setShaderNames(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/head_frag.glsl");
+	head_prog->Init();
+	head_prog->addUniform("P");
+	head_prog->addUniform("V");
+	head_prog->addUniform("M");
+	head_prog->addUniform("flashAmt");
+	head_prog->addUniform("flashCol");
+	head_prog->addAttribute("vertPos");
+	head_prog->addAttribute("vertNor");
+	head_prog->addAttribute("vertTex");
+
+	TexLocation = glGetUniformLocation(head_prog->pid, "tex");
+	glUseProgram(head_prog->pid);
+	glUniform1i(TexLocation, 0);
+
+	shaderManager.SetShader("HeadShader", head_prog);
+
 	//used for particle effects on star fragments
 	auto partProg = make_shared<Program>();
 	partProg->setVerbose(true);

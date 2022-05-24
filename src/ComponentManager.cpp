@@ -4,6 +4,7 @@
 #include "EulerTransform.h"
 #include "MonkeyMovement.h"
 #include "SkyboxRenderer.h"
+#include "HeadRenderer.h"
 
 ComponentManager::ComponentManager()
 {
@@ -55,7 +56,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     // initialize body parts as separate objects
     shared_ptr<PlayerTransform> headTrans = make_shared<PlayerTransform>(player.pHeadName, transform);
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    renderer = make_shared<TextureRenderer>("LUNA/new/luna_head", "Luna", player.pHeadName);
+    renderer = make_shared<HeadRenderer>("LUNA/new/luna_head", "Luna", player.pHeadName);
     std::vector<std::shared_ptr<Component>> headComps = { headTrans, renderer };
     AddGameObject(player.pHeadName, headComps);
 

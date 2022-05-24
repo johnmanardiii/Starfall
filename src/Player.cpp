@@ -76,9 +76,9 @@ void Player::Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
     arm2Trans = arm2;
 
     // set initial positions of each body part
-    arm1Trans->SetPos(vec3(-.9, -1.5, 0));
+    arm1Trans->SetPos(vec3(-1.0, -1.5, 0));
     
-    arm2Trans->SetPos(vec3(.9, -1.5, 0));
+    arm2Trans->SetPos(vec3(1.0, -1.5, 0));
     headTrans->SetPos(vec3(0, -1.8, 0));
     GameObject obj = compMan->GetGameObject(pName);
     int index = obj.GetComponentLocation("Movement");
@@ -152,8 +152,8 @@ void Player::SetAutomaticRotations(float frameTime)
             lGoalRot = lArmTurnOut;
         }
     }
-    rRot = slerp(rRot, rGoalRot, .2f * 60.0f * frameTime);
-    lRot = slerp(lRot, lGoalRot, .2f * 60.0f * frameTime);
+    rRot = slerp(rRot, rGoalRot, .16f * 60.0f * frameTime);
+    lRot = slerp(lRot, lGoalRot, .16f * 60.0f * frameTime);
     arm1Trans->SetBaseRotation(mat4(rRot));
     arm2Trans->SetBaseRotation(mat4(lRot));
 }
