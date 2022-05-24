@@ -35,7 +35,7 @@ private:
 	float radius = 1.0f;
 	void AnimatePlayerModel(float frameTime);
 	void AddIdleOffset(float frameTime);
-	void SetManualPositions();
+	void SetManualRotations();
 	void SetAutomaticRotations(float frameTime);
 	shared_ptr<Transform> trans = NULL;
 	shared_ptr<EulerTransform> pTransform;
@@ -51,14 +51,17 @@ private:
 	// animation constants (keyframes)
 	vec3 rightArmBoostForward = vec3(-39, 0, -11);
 	vec3 leftArmBoostForward = vec3(-39, 0, 11);
-	vec3 rightArmTurnOut = vec3(0, 0, 28);
-	vec3 leftArmTurnOut = vec3(0, 0, -28);
+	vec3 rightArmTurnOut = vec3(0, 0, 20);
+	vec3 leftArmTurnOut = vec3(0, 0, -20);
 	vec3 rightArmBoostBackward = vec3(39, 0, -11);
 	vec3 leftArmBoostBackward = vec3(39, 0, 11);
+	vec3 rightArmIdle = vec3(0, 33, -9);
+	vec3 leftArmIdle = vec3(0, -33, 9);
 
 	quat rBoostForwards, lBoostForwards,
 		rArmTurnOut, lArmTurnOut,
-		rBoostBackwards, lBoostBackwards;
+		rBoostBackwards, lBoostBackwards,
+		rArmIdle, lArmIdle;
 	quat rRot = glm::identity<quat>();
 	quat lRot = glm::identity<quat>();
 public:

@@ -54,6 +54,8 @@ quat EulerToQuat(vec3 angles)
 
 Player::Player(vec3 pos) : pos (pos)
 {
+    rArmIdle = EulerToQuat(rightArmIdle);
+    lArmIdle = EulerToQuat(leftArmIdle);
     rBoostForwards = EulerToQuat(rightArmBoostForward);
     lBoostForwards = EulerToQuat(leftArmBoostForward);
     rArmTurnOut = EulerToQuat(rightArmTurnOut);
@@ -89,7 +91,7 @@ void Player::SetInput(int index, bool val)
     movement->SetInput(index, val);
 }
 
-void Player::SetManualPositions()
+void Player::SetManualRotations()
 {
     mat4 manualRightArmPosition = glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.x), vec3(1, 0, 0))
         * glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.y), vec3(0, 1, 0))
@@ -108,8 +110,8 @@ void Player::SetAutomaticRotations(float frameTime)
     int thrust = movement->inputBuffer[W] - movement->inputBuffer[S];
     int rTurn = movement->inputBuffer[A];
     int lTurn = movement->inputBuffer[D];
-    quat rGoalRot = glm::identity<quat>();
-    quat lGoalRot = glm::identity<quat>();
+    quat rGoalRot = rArmIdle;
+    quat lGoalRot = lArmIdle;
     bool thrustInfluence = false;
     // calculate where luna wants her arms to go based on input.
     if (thrust > 0)
@@ -131,7 +133,7 @@ void Player::SetAutomaticRotations(float frameTime)
         if (thrustInfluence)
         {
             // blend with existing goal
-            rGoalRot = slerp(rGoalRot, rArmTurnOut, .5f);
+            rGoalRot = slerp(rGoalRot, rArmTurnOut, .8f);
         }
         else
         {
@@ -143,7 +145,7 @@ void Player::SetAutomaticRotations(float frameTime)
         if (thrustInfluence)
         {
             // blend with existing goal
-            lGoalRot = slerp(lGoalRot, lArmTurnOut, .5f);
+            lGoalRot = slerp(lGoalRot, lArmTurnOut, .8f);
         }
         else
         {
@@ -162,6 +164,7 @@ void Player::AnimatePlayerModel(float frameTime)
     // TODO: Fix idle float calculations
     //AddIdleOffset(frameTime);
     SetAutomaticRotations(frameTime);
+    //SetManualRotations();
     
     
     // lerp LUNA to the rotation they are accelerating in (around their local z axis)

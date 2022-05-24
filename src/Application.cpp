@@ -457,8 +457,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 
 	//the obj files you want to load. Add more to read them all.
-	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/luna_arm",
-		"LUNA/luna_arm2", "LUNA/new/luna_body", "LUNA/new/luna_head", "unit_cube"};
+	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/new/luna_arm_right",
+		"LUNA/new/luna_arm_left", "LUNA/new/luna_body", "LUNA/new/luna_head", "unit_cube"};
 	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
