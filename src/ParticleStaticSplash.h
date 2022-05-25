@@ -42,7 +42,7 @@ public:
 
     void drawSplash(float totalTime);
     void drawSand(float totalTime);
-    void drawDust(float totalTime);
+    void drawSmoke(float totalTime);
     static void gpuSetup(std::shared_ptr<Program> prog, int numP);
     void setCamera(mat4 inC) { View = inC; }
     void setProjection(mat4 inP) { Projection = inP; }

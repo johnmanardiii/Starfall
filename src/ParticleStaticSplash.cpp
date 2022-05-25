@@ -157,7 +157,7 @@ void ParticleRenderer::drawSand(float totalTime) {
 	prog->unbind();
 }
 
-void ParticleRenderer::drawDust(float totalTime) {
+void ParticleRenderer::drawSmoke(float totalTime) {
 	prog->bind();
 
 	prog->unbind();
