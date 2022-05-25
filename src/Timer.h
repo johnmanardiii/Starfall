@@ -2,6 +2,7 @@
 #define TIMER_H
 #include <iostream>
 #include <chrono>
+#include <string>
 using namespace std::chrono;
 class Timer {
     
