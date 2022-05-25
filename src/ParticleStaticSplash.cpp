@@ -156,3 +156,9 @@ void ParticleRenderer::drawSand(float totalTime) {
 	glDisable(GL_BLEND);
 	prog->unbind();
 }
+
+void ParticleRenderer::drawDust(float totalTime) {
+	prog->bind();
+
+	prog->unbind();
+}
