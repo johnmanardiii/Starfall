@@ -25,11 +25,14 @@ public:
 
 	void Draw(float frameTime);
 	void SetFlashAmt(float amt) { flashAmt = amt; }
-	vec2 eye1Pos = vec2(.1, .5);
-	float eye1Radius = .05;
+	vec2 eye1Pos = vec2(.07, .44);
+	float eye1Radius = .02;
+	float eyeOpenPct = 1.0f;
 private:
 	shared_ptr<Shape> model;
 	GLuint texture;
 	float flashAmt = 0;
 	vec3 flashColor = vec3(1, 0, 1);
+
+	double totalTime = 0.0;
 };

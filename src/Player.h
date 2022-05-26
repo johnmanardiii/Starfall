@@ -40,14 +40,14 @@ private:
 	void SetAutomaticRotations(float frameTime);
 	shared_ptr<Transform> trans = NULL;
 	shared_ptr<EulerTransform> pTransform;
-	shared_ptr<Transform> headTrans;
+	shared_ptr<PlayerTransform> headTrans;
 	shared_ptr<PlayerTransform> arm1Trans;
 	shared_ptr<PlayerTransform> arm2Trans;
-	shared_ptr<PlayerMovement> movement = NULL;
 	shared_ptr<HeadRenderer> headRenderer;
 	void UpdatePlayerAnimations(float frameTime);
 	vec3 rightArmEulerOffset = vec3(0, 0, 0);
 	vec3 leftArmEulerOffset = vec3(0, 0, 0);
+	vec3 headEulerOffset = vec3(0, 0, 0);
 
 
 	// animation constants (keyframes)
@@ -60,17 +60,23 @@ private:
 	vec3 rightArmIdle = vec3(0, 33, -9);
 	vec3 leftArmIdle = vec3(0, -33, 9);
 
+	vec3 headTurnRight = vec3(0, 22, 0);
+	vec3 headTurnLeft = vec3(0, -22, 0);
+
 	quat rBoostForwards, lBoostForwards,
 		rArmTurnOut, lArmTurnOut,
 		rBoostBackwards, lBoostBackwards,
-		rArmIdle, lArmIdle;
+		rArmIdle, lArmIdle,
+		hTurnRight, hTurnLeft;
 	quat rRot = glm::identity<quat>();
 	quat lRot = glm::identity<quat>();
+	quat hRot = glm::identity<quat>();
 public:
 	const std::string pName = "player";
 	const std::string pArm1Name = "arm1";
 	const std::string pArm2Name = "arm2";
 	const std::string pHeadName = "head";
+	shared_ptr<PlayerMovement> movement = NULL;
 	void Update(float frameTime, ComponentManager* compMan);
 	void SetInput(int index, bool val);
 	vec3 GetForward();

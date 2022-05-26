@@ -62,6 +62,9 @@ Player::Player(vec3 pos) : pos (pos)
     lArmTurnOut = EulerToQuat(leftArmTurnOut);
     rBoostBackwards = EulerToQuat(rightArmBoostBackward);
     lBoostBackwards = EulerToQuat(leftArmBoostBackward);
+
+    hTurnRight = EulerToQuat(headTurnRight);
+    hTurnLeft = EulerToQuat(headTurnLeft);
 }
 
 void Player::Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans, 
@@ -94,16 +97,21 @@ void Player::SetInput(int index, bool val)
 
 void Player::SetManualRotations()
 {
-    mat4 manualRightArmPosition = glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.x), vec3(1, 0, 0))
+    mat4 manualRightArmRotation = glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.x), vec3(1, 0, 0))
         * glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.y), vec3(0, 1, 0))
         * glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.z), vec3(0, 0, 1));
-    arm1Trans->SetBaseRotation(manualRightArmPosition);
+    arm1Trans->SetBaseRotation(manualRightArmRotation);
 
     // do the same for arm 2
-    mat4 manualLeftArmPosition = glm::rotate(mat4(1), radians<float>(leftArmEulerOffset.x), vec3(1, 0, 0))
+    mat4 manualLeftArmRotation = glm::rotate(mat4(1), radians<float>(leftArmEulerOffset.x), vec3(1, 0, 0))
         * glm::rotate(mat4(1), radians<float>(leftArmEulerOffset.y), vec3(0, 1, 0))
         * glm::rotate(mat4(1), radians<float>(leftArmEulerOffset.z), vec3(0, 0, 1));
-    arm2Trans->SetBaseRotation(manualLeftArmPosition);
+    arm2Trans->SetBaseRotation(manualLeftArmRotation);
+
+    mat4 manualHeadRotation = glm::rotate(mat4(1), radians<float>(headEulerOffset.x), vec3(1, 0, 0))
+        * glm::rotate(mat4(1), radians<float>(headEulerOffset.y), vec3(0, 1, 0))
+        * glm::rotate(mat4(1), radians<float>(headEulerOffset.z), vec3(0, 0, 1));
+    headTrans->SetBaseRotation(manualHeadRotation);
 }
 
 void Player::SetAutomaticRotations(float frameTime)
@@ -157,6 +165,22 @@ void Player::SetAutomaticRotations(float frameTime)
     lRot = slerp(lRot, lGoalRot, .16f * 60.0f * frameTime);
     arm1Trans->SetBaseRotation(mat4(rRot));
     arm2Trans->SetBaseRotation(mat4(lRot));
+
+    // turn the head based on the desired input
+    quat headGoal = glm::identity<quat>();
+    int head_turn = rTurn - lTurn;
+    if (head_turn > 0)
+    {
+        // turning right
+        headGoal = hTurnRight;
+    }
+    else if (head_turn < 0)
+    {
+        // turning left
+        headGoal = hTurnLeft;
+    }
+    hRot = slerp(hRot, headGoal, .10f * 60.0f * frameTime);
+    headTrans->SetBaseRotation(mat4(hRot));
 }
 
 void Player::AnimatePlayerModel(float frameTime)
@@ -165,7 +189,7 @@ void Player::AnimatePlayerModel(float frameTime)
     // TODO: Fix idle float calculations
     //AddIdleOffset(frameTime);
     SetAutomaticRotations(frameTime);
-    //SetManualRotations();
+    // SetManualRotations();
     
     
     // lerp LUNA to the rotation they are accelerating in (around their local z axis)
@@ -191,6 +215,11 @@ void Player::UpdatePlayerAnimations(float frameTime)
         // Gradient
         ImGui::DragFloat3("RightArmEulerOffset", (float*)&rightArmEulerOffset);
         ImGui::DragFloat3("LeftArmEulerOffset", (float*)&leftArmEulerOffset);
+        ImGui::DragFloat3("HeadEulerOffset", (float*)&headEulerOffset);
+
+        ImGui::DragFloat2("Eye Position", (float*)&headRenderer->eye1Pos);
+        ImGui::DragFloat("Eye Radius", (float*)&headRenderer->eye1Radius);
+        ImGui::DragFloat("Eye open pct", (float*)&headRenderer->eyeOpenPct);
 
         if (ImGui::Button("Set Right Arm Boost Forward"))
         {

@@ -9,14 +9,24 @@ uniform sampler2D tex;
 uniform vec3 flashCol;
 uniform vec2 eye1Pos;
 uniform float eye1Radius;
+uniform float eyeOpenPct;
+
+bool isUVInEye(vec2 eyePos, vec2 uv)
+{
+	float yRadius = 3.0 * eye1Radius;	// eclipse scale
+	yRadius *= eyeOpenPct;
+	float xdist = ((uv.x - eyePos.x) * (uv.x - eyePos.x)) / (eye1Radius * eye1Radius);
+	float ydist = ((uv.y - eyePos.y) * (uv.y - eyePos.y)) / (yRadius * yRadius);
+	return xdist + ydist <= 1;
+}
 
 vec3 draw_eyes(vec3 base_color)
 {
 	float radius = eye1Radius;
-	vec2 center = eye1Pos;
+	vec2 eye2Pos = vec2(1 - eye1Pos.x, eye1Pos.y);
 	vec3 eye_color = vec3(.28, .88, 1) * 1.4;
 	// TODO: generalize this and remove if statement
-	if(distance(center, vertex_tex) < radius)
+	if(isUVInEye(eye1Pos, vertex_tex) || isUVInEye(eye2Pos, vertex_tex))
 	{
 		return eye_color;
 	}

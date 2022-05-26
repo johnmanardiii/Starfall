@@ -204,6 +204,7 @@ void Application::InitSkybox(const std::string& resourceDirectory)
 	shaderManager.skyboxTexId = textureID;
 }
 
+// Q: Why is shader manager all handled in application?
 void Application::InitShaderManager(const std::string& resourceDirectory)
 {
 	shaderManager = ShaderManager::GetInstance();
@@ -276,6 +277,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	head_prog->addUniform("flashCol");
 	head_prog->addUniform("eye1Pos");
 	head_prog->addUniform("eye1Radius");
+	head_prog->addUniform("eyeOpenPct");
 	head_prog->addAttribute("vertPos");
 	head_prog->addAttribute("vertNor");
 	head_prog->addAttribute("vertTex");
