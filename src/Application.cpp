@@ -582,7 +582,6 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	HUDprog->setVerbose(true);
 	HUDprog->setShaderNames(resourceDirectory + "/hud_vert.glsl", resourceDirectory + "/hud_frag.glsl");
 	if (!HUDprog->Init())
-
 	{
 		std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
 		exit(1);
@@ -602,6 +601,23 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	assert(glGetError() == GL_NO_ERROR);
 	shaderManager.SetShader("HUD", HUDprog);
 
+	// Shadow Depth
+	auto shadowDepthProg = make_shared<Program>();
+	shadowDepthProg->setVerbose(true);
+	shadowDepthProg->setShaderNames(resourceDirectory + "/shadow_depth_vert.glsl", resourceDirectory + "/shadow_depth_frag.glsl");
+	if (!shadowDepthProg->Init())
+	{
+		std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+		exit(1);
+	}
+
+	shadowDepthProg->addUniform("LP");
+	shadowDepthProg->addUniform("LV");
+	shadowDepthProg->addUniform("M");
+	shadowDepthProg->addAttribute("vertPos");
+
+	assert(glGetError() == GL_NO_ERROR);
+	shaderManager.SetShader("ShadowDepth", shadowDepthProg);
 
 	//the obj files you want to load. Add more to read them all.
 	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/new/lunaModelTextures/right_arm",

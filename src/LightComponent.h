@@ -16,6 +16,8 @@ public:
 	float sunRotation = 0;
 	vec3 sunDir = vec3(0, 0, 1);
 	vec3 moonDir = vec3(0, 0, -1);
+	mat4 LightComponent::GetOrthoMatrix();
+	mat4 LightComponent::GetLightView();
 private:
 	float startSunRotation = 0.65;
 	float endSunRotation = -0.4;
