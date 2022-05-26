@@ -27,6 +27,7 @@ void ParticleRenderer::Update(float frameTime, ComponentManager* compMan)
 {   
 	
     totalTime += frameTime;
+	this->frametime = frameTime;
 	if (totalTime > 4) {
 		compMan->RemoveGameObject(Name);
 		return;
@@ -159,7 +160,11 @@ void ParticleRenderer::drawSand(float totalTime) {
 	mat4 Model = trans->GetModelMat();
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(Model));
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
-	glUniform3f(prog->getUniform("centerPos"), trans->GetPos().x, trans->GetPos().y, trans->GetPos().z);
+
+
+	trans->ApplyTranslation(calcNewPos(vec3(1, 0, 0), frametime));
+
+	glUniform3fv(prog->getUniform("centerPos"), 1, glm::value_ptr(trans->GetPos()));
 
 	//do the calculation for, based on the time, which row/column images should be used.
 	//over a period of 2s, so map [0-2) to [0-39], technically [0-40) first.
@@ -178,7 +183,6 @@ void ParticleRenderer::drawSand(float totalTime) {
 	}
 	glUniform3iv(prog->getUniform("Row"), 1, rows);
 	glUniform3iv(prog->getUniform("Column"), 1, cols);
-
 	vec3 campos = Camera::GetInstance(vec3(0, 1, 0)).GetPos();
 	glUniform3f(prog->getUniform("campos"), campos.x, campos.y, campos.z);
 
@@ -186,7 +190,7 @@ void ParticleRenderer::drawSand(float totalTime) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	//instead of drawing the entire array, just start from a random location to get a random set of data to work with. numP should be less than the max particles allocated in gpusetup.
-	glDrawArraysInstanced(GL_POINTS, rand() % (20000 - numP), 1, numP);
+	glDrawArraysInstanced(GL_POINTS, startIndex, 1, numP);
 	glDisable(GL_BLEND);
 	glPointSize(originalPointSize);
 	prog->unbind();
@@ -196,4 +200,18 @@ void ParticleRenderer::drawSmoke(float totalTime) {
 	prog->bind();
 
 	prog->unbind();
+}
+
+vec3 ParticleRenderer::calcNewPos(vec3 globalWindVec, float frametime) {
+	constexpr float horizontalSpread = 10.0f;
+	vec3 offset = vec3(0, 0, 0);// vec3(horizontalSpread * pointRotations[bufObjIndex][startIndex], 0, horizontalSpread * pointRotations[bufObjIndex][startIndex + 2]);
+
+
+	vec3 globalWindForce = totalTime * globalWindVec;
+	vec3 individualWindForce = totalTime * vec3(pointRotations[bufObjIndex][startIndex], pointRotations[bufObjIndex][startIndex + 1], pointRotations[bufObjIndex][startIndex + 2]);
+	vec3 forward = Player::GetInstance(vec3(0)).GetForward();
+	float speed = Player::GetInstance(vec3(0)).GetCurrentSpeed();
+	offset += (1.0f * globalWindForce) + (1.0f * individualWindForce) + (-50.0f * forward * speed);
+	//newPosition.y = heightCalc(newPosition.x, newPosition.z) - 15.0f;
+	return offset * frametime;
 }

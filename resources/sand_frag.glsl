@@ -66,7 +66,7 @@ void main()
     float spriteTime = 2.5f * (mod(totalTime, 0.4)); //[0-1) 
     //mix based on this information.
     float alpha = alphaCurr / 2.0f;//(alphaPrev + alphaCurr + alphaNext)/3.0f; //mix(alphaCurr, alphaNext, totalTime);
-
+    
     //float alpha = alphaPrev + alphaCurr + alphaNext;
 	vec3 color = vec3(0.761f, 0.698f, .502f);
     

@@ -24,6 +24,7 @@ public:
         cullingRadius = cullRadius;
         pointSize = pSize;
         View = glm::mat4(1.0);
+        startIndex = (numP == 20000) ? 0 : rand() % (20000 - numP);
         bufObjIndex = ParticleRenderer::currBufObjs % numUniqueBufObjs;
         ParticleRenderer::currBufObjs++;
     }
@@ -32,7 +33,7 @@ public:
     void Init(ComponentManager* compMan);
     
     float totalTime = 0;
-    
+    int startIndex;
     static int currBufObjs;
     static vector<vector<float>> pointColors;
     static vector<vector<float>> pointNormals;
@@ -48,6 +49,7 @@ public:
     void drawSplash(float totalTime);
     void drawSand(float totalTime);
     void drawSmoke(float totalTime);
+    vec3 calcNewPos(vec3 globalWindVec, float frametime);
     static void gpuSetup(std::shared_ptr<Program> prog, int numP);
     void setCamera(mat4 inC) { View = inC; }
     void setProjection(mat4 inP) { Projection = inP; }
@@ -55,13 +57,14 @@ public:
     constexpr static float originalPointSize = 5.0f;
     bool sorted = false; //particles are not sorted by default. Sort them if you are using transparent alpha values.
     const glm::vec3& getPos() { return trans->GetPos(); }
+    int bufObjIndex;
 private:
     void(ParticleRenderer::*func)(float totalTime);
     GLuint texture;
     float pointSize;
     int numP;
     vec3 start;
-    int bufObjIndex;
+    float frametime;
     mat4 View;
     mat4 Projection;
 };
@@ -72,12 +75,23 @@ class ParticleSorter {
 public:
     bool operator()(const std::shared_ptr<Component>& c0, const std::shared_ptr<Component>& c1) const
     {
-        const glm::vec3& x0 = static_pointer_cast<ParticleRenderer>(c0)->getPos();
-        const glm::vec3& x1 = static_pointer_cast<ParticleRenderer>(c1)->getPos();
-        // Particle positions in camera space
-        vec4 x0w = C * vec4(x0.x, x0.y, x0.z, 1.0f);
-        vec4 x1w = C * vec4(x1.x, x1.y, x1.z, 1.0f);
-        return x0w.z < x1w.z;
+        auto& p0 = static_pointer_cast<ParticleRenderer>(c0);
+        auto& p1 = static_pointer_cast<ParticleRenderer>(c1);
+        const glm::vec3& x0 = p0->getPos();
+        const glm::vec3& x1 = p1->getPos();
+        
+        constexpr glm::vec3 globalWindDir = vec3(1, 0, 0);
+        
+        const float t0 = p0->totalTime;
+        const float t1 = p1->totalTime;
+
+        vec3 curPos0 = (6 * t0 * globalWindDir) + (8 * t0 * ParticleRenderer::pointRotations[p0->bufObjIndex][p0->startIndex]);
+        vec3 curPos1 = (6 * t1 * globalWindDir) + (8 * t1 * ParticleRenderer::pointRotations[p1->bufObjIndex][p1->startIndex]);
+        vec3 campos = Camera::GetInstance(vec3(0, 1, 0)).GetPos();
+        
+
+        return (glm::distance(curPos0, campos) < glm::distance(curPos1, campos));
+        //return x0w.z < x1w.z;
     }
     mat4 C; // current camera matrix
 };
