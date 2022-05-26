@@ -1,6 +1,5 @@
 #include "ParticleStaticSplash.h"
 #include "ComponentManager.h"
-
 using namespace std;
 
 int ParticleRenderer::currBufObjs = 0;
@@ -26,7 +25,6 @@ void ParticleRenderer::Update(float frameTime, ComponentManager* compMan)
     //reset the particle orientation to the camera's view matrix.
     setCamera(compMan->GetCamera().GetView());
     setProjection(compMan->GetCamera().GetPerspective());
-    Draw(frameTime);
 }
 
 void ParticleRenderer::Draw(float frameTime)
@@ -134,11 +132,12 @@ void ParticleRenderer::drawSplash(float totalTime) {
 
 void ParticleRenderer::drawSand(float totalTime) {
 	prog->bind();
+	glPointSize(pointSize);
 	glBindVertexArray(vertArrObj[bufObjIndex]);
 	glBindBuffer(GL_ARRAY_BUFFER, colBufObj[bufObjIndex]);
 	glBindBuffer(GL_ARRAY_BUFFER, norBufObj[bufObjIndex]);
 	glBindBuffer(GL_ARRAY_BUFFER, rotBufObj[bufObjIndex]);
-
+	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(Projection));
@@ -152,8 +151,10 @@ void ParticleRenderer::drawSand(float totalTime) {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDrawArraysInstanced(GL_POINTS, 0, 1, numP);
+	int numToRender = 8;
+	glDrawArraysInstanced(GL_POINTS, (rand() % numP) - numToRender - 1, 1, numToRender);
 	glDisable(GL_BLEND);
+	glPointSize(originalPointSize);
 	prog->unbind();
 }
 

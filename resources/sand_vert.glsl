@@ -209,6 +209,13 @@ float rand(vec2 co){
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
+//this should match the implementation in height_vertex.glsl.
+float heightCalc(float x, float z)
+{
+	return z * 0.2f + sin(x / 20.0) * sin(z / 20.0) * 20.0 * cos(x / 20.) * cos(z / 15.);
+	// return z * .5;
+}
+
 void main()
 {
 	
@@ -221,10 +228,12 @@ void main()
 	vec3 newPosition = centerPos + pNormal * (0.1 - 16 * fract(totalTime * totalTime * totalTime * totalTime) * 1.0);
 
 	float horizontalSpread = 60.0f;
-	newPosition = centerPos + vec3(horizontalSpread * pNormal.x,-4.0f,horizontalSpread * pNormal.z);
-	vec3 globalWindDir = vec3(rand(centerPos.xy), 1, rand(centerPos.yz));
-	vec3 individualWindDir = vec3(turbulence(0.5 * pNormal + totalTime / 6.0), 60 * abs(turbulence(0.5 * pNormal + totalTime / 6.0)) - 20, turbulence(0.5 * pRotation + totalTime / 6.0));
-	newPosition += globalWindDir + individualWindDir + 6 * totalTime;
+	newPosition = centerPos + vec3(horizontalSpread * pNormal.x,0,horizontalSpread * pNormal.z);
+	newPosition.y = heightCalc(newPosition.x, newPosition.z) - 4.0f;
+
+	//vec3 globalWindDir = 
+	//vec3 individualWindDir = 
+	//newPosition += globalWindDir + individualWindDir + 6 * totalTime;
 
 
 	gl_Position = P * V * vec4(newPosition, 1.0);
