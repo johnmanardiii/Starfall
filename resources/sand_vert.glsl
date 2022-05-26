@@ -225,16 +225,15 @@ void main()
 	M0[0] = vec4(1.0, 0.0, 0.0, 0.0);
 	M0[1] = vec4(0.0, 1.0, 0.0, 0.0);
 	M0[2] = vec4(0.0, 0.0, 1.0, 0.0);
-	vec3 newPosition = centerPos + pNormal * (0.1 - 16 * fract(totalTime * totalTime * totalTime * totalTime) * 1.0);
-
+	
 	float horizontalSpread = 60.0f;
-	newPosition = centerPos + vec3(horizontalSpread * pNormal.x,0,horizontalSpread * pNormal.z);
+	vec3 newPosition = centerPos + vec3(horizontalSpread * pNormal.x,0,horizontalSpread * pNormal.z);
+	
+
+	vec3 globalWindForce = totalTime * vec3(1,0,0);
+	vec3 individualWindForce = totalTime * pRotation;
+	newPosition += globalWindForce + individualWindForce + (6 * totalTime);
 	newPosition.y = heightCalc(newPosition.x, newPosition.z) - 4.0f;
-
-	//vec3 globalWindDir = 
-	//vec3 individualWindDir = 
-	//newPosition += globalWindDir + individualWindDir + 6 * totalTime;
-
 
 	gl_Position = P * V * vec4(newPosition, 1.0);
 	vertex_pos = (vec4(newPosition, 1.0)).xyz; 

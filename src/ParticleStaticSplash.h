@@ -26,19 +26,19 @@ public:
         View = glm::mat4(1.0);
         bufObjIndex = ParticleRenderer::currBufObjs % numUniqueBufObjs;
         ParticleRenderer::currBufObjs++;
-
     }
     void Draw(float frameTime);
     void Update(float frameTime, ComponentManager* compMan);
     void Init(ComponentManager* compMan);
     
     float totalTime = 0;
-    constexpr static int numUniqueBufObjs = 7;
+    
     static int currBufObjs;
     static vector<vector<float>> pointColors;
     static vector<vector<float>> pointNormals;
     static vector<vector<float>> pointRotations;
 
+    constexpr static int numUniqueBufObjs = 7;
     static vector<unsigned> vertArrObj;
     static vector<unsigned> colBufObj;
     static vector<unsigned> norBufObj;
@@ -60,9 +60,7 @@ private:
     float pointSize;
     int numP;
     vec3 start;
-
     int bufObjIndex;
-
     mat4 View;
     mat4 Projection;
 };
