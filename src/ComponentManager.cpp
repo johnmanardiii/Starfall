@@ -4,6 +4,8 @@
 #include "EulerTransform.h"
 #include "MonkeyMovement.h"
 #include "SkyboxRenderer.h"
+#include "HeadRenderer.h"
+
 ComponentManager::ComponentManager()
 {
     //specify what you want the components to be called here.
@@ -43,7 +45,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     shared_ptr<EulerTransform> pTransform = make_shared<EulerTransform>(player.pName);
     shared_ptr<Transform> transform = pTransform;
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/new/luna_body", "Luna", player.pName);
     //shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", player.pName, 100000, &ParticleRenderer::drawSand);
     shared_ptr<Movement> playerMovement = make_shared<PlayerMovement>(player.pName);
     std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer, playerMovement};
@@ -52,25 +54,25 @@ void ComponentManager::Init(std::string resourceDirectory)
     AddGameObject(player.pName, playerComps);
 
     // initialize body parts as separate objects
-    shared_ptr<Transform> headTrans = make_shared<PlayerTransform>(player.pHeadName, transform);
+    shared_ptr<PlayerTransform> headTrans = make_shared<PlayerTransform>(player.pHeadName, transform);
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    renderer = make_shared<TextureRenderer>("LUNA/luna_head", "Luna", player.pHeadName);
-    std::vector<std::shared_ptr<Component>> headComps = { headTrans, renderer };
+    shared_ptr<HeadRenderer> hrenderer = make_shared<HeadRenderer>("LUNA/new/luna_head", "Luna", player.pHeadName);
+    std::vector<std::shared_ptr<Component>> headComps = { headTrans, hrenderer };
     AddGameObject(player.pHeadName, headComps);
 
-    shared_ptr<Transform> arm1Trans = make_shared<PlayerTransform>(player.pArm1Name, transform);
+    shared_ptr<PlayerTransform> arm1Trans = make_shared<PlayerTransform>(player.pArm1Name, transform);
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    renderer = make_shared<TextureRenderer>("LUNA/luna_arm", "Luna", player.pArm1Name);
+    renderer = make_shared<TextureRenderer>("LUNA/new/luna_arm_right", "Luna", player.pArm1Name);
     std::vector<std::shared_ptr<Component>> arm1Comps = { arm1Trans, renderer };
     AddGameObject(player.pArm1Name, arm1Comps);
 
-    shared_ptr<Transform> arm2Trans = make_shared<PlayerTransform>(player.pArm2Name, transform);
+    shared_ptr<PlayerTransform> arm2Trans = make_shared<PlayerTransform>(player.pArm2Name, transform);
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    renderer = make_shared<TextureRenderer>("LUNA/luna_arm2", "Luna", player.pArm2Name);
+    renderer = make_shared<TextureRenderer>("LUNA/new/luna_arm_left", "Luna", player.pArm2Name);
     std::vector<std::shared_ptr<Component>> arm2Comps = { arm2Trans, renderer };
     AddGameObject(player.pArm2Name, arm2Comps);
 
-    player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans);
+    player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans, hrenderer);
 
     //initialize random starting attributes for particles. Generate a few batches of 100k particles.
     ParticleRenderer::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 20000);
@@ -157,8 +159,8 @@ void ComponentManager::AddBunchOfSandParticles() {
 
     //garbage-collect old sand particle effects.
     vector<string> toRemove;
-    for (auto obj : objects) {
-        cout << obj.first << endl;
+    for (auto& obj : objects) {
+        //cout << obj.first << endl;
         if (obj.first.find("Sand") == 0) { //substring starts with
             toRemove.push_back(obj.first);
         }
@@ -257,7 +259,11 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     //timer.start();
     for (auto& rend : components["Renderer"])
     {
-        if (!rend->IsActive) continue;
+        if (!rend->IsActive) continue; //if the component is active (isn't awaiting replacement in the component vector structure)
+        if (!static_pointer_cast<Renderer>(rend)->IsInViewFrustum(state, this, camera)){ //if the renderer component has culling enabled and is actually outside the view frustum.
+            continue;
+        }
+        //else
         rend->Update(frameTime, this);
     }
     //int rendtime = timer.stop();
@@ -266,6 +272,9 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     for (auto& part : components["Particle"])
     {
         if (!part->IsActive) continue;
+        if (!static_pointer_cast<Renderer>(part)->IsInViewFrustum(state, this, camera)) {
+            continue;
+        }
         part->Update(frameTime, this);
     }
     //int parttime = timer.stop();

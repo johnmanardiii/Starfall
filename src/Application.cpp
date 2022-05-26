@@ -75,6 +75,14 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 	if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE) {
 		componentManager.GetPlayer().SetInput(LSHIFT, false);
 	}
+
+	if (key == GLFW_KEY_LEFT_ALT && action == GLFW_PRESS) {
+		componentManager.GetCamera().alt_pressed = true;
+	}
+
+	if (key == GLFW_KEY_LEFT_ALT && action == GLFW_RELEASE) {
+		componentManager.GetCamera().alt_pressed = false;
+	}
 }
 
 void Application::mouseCallback(GLFWwindow* window, int button, int action, int mods)
@@ -196,6 +204,7 @@ void Application::InitSkybox(const std::string& resourceDirectory)
 	shaderManager.skyboxTexId = textureID;
 }
 
+// Q: Why is shader manager all handled in application?
 void Application::InitShaderManager(const std::string& resourceDirectory)
 {
 	shaderManager = ShaderManager::GetInstance();
@@ -256,6 +265,28 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	glUniform1i(TexLocation, 0);
 
 	shaderManager.SetShader("Texture", prog);
+
+	auto head_prog = make_shared<Program>();
+	head_prog->setVerbose(true);
+	head_prog->setShaderNames(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/head_frag.glsl");
+	head_prog->Init();
+	head_prog->addUniform("P");
+	head_prog->addUniform("V");
+	head_prog->addUniform("M");
+	head_prog->addUniform("flashAmt");
+	head_prog->addUniform("flashCol");
+	head_prog->addUniform("eye1Pos");
+	head_prog->addUniform("eye1Radius");
+	head_prog->addUniform("eyeOpenPct");
+	head_prog->addAttribute("vertPos");
+	head_prog->addAttribute("vertNor");
+	head_prog->addAttribute("vertTex");
+
+	TexLocation = glGetUniformLocation(head_prog->pid, "tex");
+	glUseProgram(head_prog->pid);
+	glUniform1i(TexLocation, 0);
+
+	shaderManager.SetShader("HeadShader", head_prog);
 
 	//used for particle effects on star fragments
 	auto partProg = make_shared<Program>();
@@ -381,8 +412,27 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	heightProg->addUniform("campos");
 	heightProg->addUniform("lightDir");
 	heightProg->addUniform("time");
+
+
+	heightProg->addUniform("diffuseContrast");
+	heightProg->addUniform("shadowColor");
+	heightProg->addUniform("terrainColor");
+	heightProg->addUniform("sandStrength");
+	// rim 
+	heightProg->addUniform("rimStrength");
+	heightProg->addUniform("rimPower");
+	heightProg->addUniform("rimColor");
+	// ocean spec
+	heightProg->addUniform("oceanSpecularStrength");
+	heightProg->addUniform("oceanSpecularPower");
+	heightProg->addUniform("oceanSpecularColor");
+	// sand ripples
+	heightProg->addUniform("steepnessSharpnessPower");
+	heightProg->addUniform("specularHardness");
+
 	heightProg->addAttribute("vertPos");
 	heightProg->addAttribute("vertTex");
+
 	assert(glGetError() == GL_NO_ERROR);
 
 	TexLocation = glGetUniformLocation(heightProg->pid, "tex");
@@ -449,8 +499,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 
 	//the obj files you want to load. Add more to read them all.
-	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/luna_arm",
-		"LUNA/luna_arm2", "LUNA/luna_body", "LUNA/luna_head", "unit_cube"};
+	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/new/luna_arm_right",
+		"LUNA/new/luna_arm_left", "LUNA/new/luna_body", "LUNA/new/luna_head", "unit_cube"};
 	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());

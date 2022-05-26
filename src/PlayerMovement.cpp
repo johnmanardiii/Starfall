@@ -94,7 +94,7 @@ float PlayerMovement::GetAngularSpeed()
 
 float PlayerMovement::GetSpeed()
 {
-    return currentSpeed;
+    return length(velocity);
 }
 
 float PlayerMovement::GetMaxSpeed()

@@ -25,6 +25,7 @@ public:
 	float GetSpeed();
 	float GetMaxSpeed();
 	float GetAngularSpeed();
+	bool inputBuffer[5] = { false, false, false, false, false };
 private:
 	void ApplyGravity(float frameTime);
 	float speed = 3.0f;	// speed in units/second
@@ -32,6 +33,4 @@ private:
 	float currentAngularSpeed = 0.0f;
 	float currentSpeed = 0.0f;
 	float currentDownSpeed = 0.0f;
-	bool inputBuffer[5] = { false, false, false, false, false };
-
 };

@@ -23,20 +23,26 @@ void Camera::Update(float frameTime, int width, int height, ComponentManager* co
     CalcPerspective(frameTime, width, height, compMan);
     // look at the player
     vec3 target = compMan->GetPlayer().GetPosition();
-    float currentPlayerSpeed = compMan->GetPlayer().GetCurrentSpeed();
+    int currentPlayerSpeed = compMan->GetPlayer().movement->inputBuffer[W] - 
+        compMan->GetPlayer().movement->inputBuffer[S];
     float goalCamDist;
+    float goalCamHeight;
     if (currentPlayerSpeed >= 0)
     {
-        goalCamDist = glm::mix<float>(highestCamDistZ, lowestCamDistZ,
-            currentPlayerSpeed / compMan->GetPlayer().GetMaxSpeed());
+        goalCamDist = glm::mix<float>(lowestCamDistZ, highestCamDistZ,
+            (float)currentPlayerSpeed);
+        goalCamHeight = glm::mix<float>(minCamHeight, maxCamHeight,
+            (float)currentPlayerSpeed);
     }
     else
     {
         // don't have the camera try to go so far back 
         // because it looks really bad when it lags behind the player like this
         goalCamDist = backwardsCamDistZ;
+        goalCamHeight = maxCamHeight;
     }
     currentCamDistZ = exponential_growth(currentCamDistZ, goalCamDist, .035f * 60.0f, frameTime);
+    camDistHeight = exponential_growth(camDistHeight, goalCamHeight, .35f * 60.0f, frameTime);
     vec3 goal_pos = get_wanted_pos(compMan);
     pos = exponential_growth(pos, goal_pos, .07f * 60.0f, frameTime);
     // check to ensure that the camera keeps up with the player at least 3 units away
@@ -53,12 +59,18 @@ void Camera::Update(float frameTime, int width, int height, ComponentManager* co
     // update last view for motion blur
     lastView = view;
     view = lookAt; //something can watch view and do something based on that value.
+    extractVFPlanes(); //extract the view frustum planes for the current view and perspective matrices.
 }
 
 // Returns a point to interpolate to. Currently returns a point behind the player and above the player.
 glm::vec3 Camera::get_wanted_pos(ComponentManager* compMan)
 {
-    vec3 target_pos = compMan->GetPlayer().GetPosition() + currentCamDistZ * -compMan->GetPlayer().GetForward() +
+    float camDistZ = currentCamDistZ;
+    if (alt_pressed)
+    {
+        camDistZ *= -1;
+    }
+    vec3 target_pos = compMan->GetPlayer().GetPosition() + camDistZ * -compMan->GetPlayer().GetForward() +
         vec3(0, 1, 0) * camDistHeight;
     return target_pos;
 }
@@ -73,4 +85,54 @@ void Camera::CalcPerspective(float frametime, int width, int height, ComponentMa
     lastPerspective = perspective;
     //currentFov
     perspective = glm::perspective((float)(glm::radians(currentFov)), static_cast<float>(width) / height, 0.1f, 1000.0f);
+}
+
+void Camera::extractVFPlanes()
+{
+    mat4 comp = perspective * view;
+    vec3 normal;
+    float normalLength;
+    //left
+    planes[0].x = comp[0][3] + comp[0][0];
+    planes[0].y = comp[1][3] + comp[1][0];
+    planes[0].z = comp[2][3] + comp[2][0];
+    planes[0].w = comp[3][3] + comp[3][0];
+
+    //right
+    planes[1].x = comp[0][3] - comp[0][0];
+    planes[1].y = comp[1][3] - comp[1][0];
+    planes[1].z = comp[2][3] - comp[2][0];
+    planes[1].w = comp[3][3] - comp[3][0];
+
+    //bottom
+    planes[2].x = comp[0][3] + comp[0][1];
+    planes[2].y = comp[1][3] + comp[1][1];
+    planes[2].z = comp[2][3] + comp[2][1];
+    planes[2].w = comp[3][3] + comp[3][1];
+
+    //top
+    planes[3].x = comp[0][3] - comp[0][1];
+    planes[3].y = comp[1][3] - comp[1][1];
+    planes[3].z = comp[2][3] - comp[2][1];
+    planes[3].w = comp[3][3] - comp[3][1];
+
+    //near
+    planes[4].x = comp[0][2];
+    planes[4].y = comp[1][2];
+    planes[4].z = comp[2][2];
+    planes[4].w = comp[3][2];
+
+    //far
+    planes[5].x = comp[0][3] - comp[0][2];
+    planes[5].y = comp[1][3] - comp[1][2];
+    planes[5].z = comp[2][3] - comp[2][2];
+    planes[5].w = comp[3][3] - comp[3][2];
+
+    //normalize
+    for (vec4& plane : planes) {
+        normal = vec3(plane.x, plane.y, plane.z);
+        normalLength = length(normal);
+        float w = plane.w;
+        plane = vec4(normal / normalLength, w / normalLength);
+    }
 }

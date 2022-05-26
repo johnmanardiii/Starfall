@@ -8,6 +8,7 @@
 #include "Collect.h"
 #include "Transform.h"
 #include "Collision.h"
+#include "Renderer.h"
 #include "TextureRenderer.h"
 #include "StarRenderer.h"
 #include "ParticleStaticSplash.h"
