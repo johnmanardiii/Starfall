@@ -4,7 +4,7 @@ in vec3 frag_pos;
 in vec2 frag_tex;
 in vec3 frag_norm;
 in float frag_height;
-
+in vec3 frag_col;
 uniform sampler2D tex;
 uniform sampler2D tex2;
 uniform sampler2D noiseTex;
@@ -143,6 +143,7 @@ void main()
 	color.rgb = spec + diffuseColor * 0.7 * sandRipplesColor;
 	
 	color.a=1-len;
-	//color.rgb = normalize(frag_norm);
+	//color.rgb = frag_col;
+	//color.a = 1;
 	
 }

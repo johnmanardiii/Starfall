@@ -42,7 +42,7 @@ public:
     void Init(std::string resourceDirectory);
     
     void AddLineOfStars();
-
+    void AddStarAtPos(float x, float z);
     void AddBunchOfSandParticles();
 
     //update components. Done once every render pass.

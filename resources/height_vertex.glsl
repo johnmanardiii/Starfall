@@ -9,6 +9,7 @@ out vec3 frag_pos;
 out vec2 frag_tex;
 out vec3 frag_norm;
 out float frag_height;
+out vec3 frag_col;
 uniform sampler2D tex;
 uniform vec3 camoff;
 
@@ -27,10 +28,9 @@ void main()
 {
 	vec2 texcoords=vertTex;
 	float t=1/100.;
-	//why negative camoff.x?
-	texcoords += vec2(-camoff.x,camoff.z)*t;
-	float height = texture(tex, texcoords/3.).r;
-	height *= 40.0;
+	texcoords += vec2(-camoff.x, camoff.z)*t;
+	float height = texture(tex, texcoords/4.).r;
+	height *= 100.0;
 
 
 	vec4 tpos =  vec4(vertPos, 1.0);
@@ -38,15 +38,9 @@ void main()
 	tpos.z += camoff.z;
 	tpos.x += camoff.x;
 
-	float proc_height = heightCalc(tpos.x, tpos.z);
-
-	//proc_height = sin(tpos.x / 10.) * sin(tpos.z / 10.) * 10.0 * cos(tpos.x * 0.2) * cos(tpos.z * 0.1);
-	tpos.y -= 5;
-
 	vec3 b = tpos.xyz + vec3(0.1f, 0.0f, 0.1f), 
 		c = tpos.xyz + vec3(0.1f, 0.0f, -0.1f);
 
-	//tpos.y += proc_height;
 	tpos.y += height;
 	b.y += heightCalc(b.x, b.z);
 	c.y += heightCalc(c.x, c.z);
@@ -63,4 +57,5 @@ void main()
 	frag_height = tpos.y;
 	frag_tex = vertTex;
 	frag_norm = n;
+	frag_col = camoff;
 }

@@ -27,11 +27,19 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
     {
         velocity.y -= STRONG_GRAVITY_MULT * frameTime;
     }
+    // perform slope movement calculations
+    // different slope calculations depending on if Lshift is held or not
     GroundCollision(frameTime);
+
+    // actually move the player
     trans->ApplyTranslation(velocity);
+
+    // limit position by ground (player must be heigher than ground)
     vec3 pos = trans->GetPos();
     float groundHeight = HeightCalc::GetInstance().GetHeight(pos.x, pos.z);
+    float oldY = pos.y;
     pos.y = (glm::max)(pos.y, groundHeight);
+    cout << "Old posy: " << oldY << "\n NewY: " << pos.y << "\nGround: " << groundHeight << endl << endl;
     trans->SetPos(pos);
     velocity -= velocity * SPEED_FALLOFF * frameTime;
 }
@@ -69,6 +77,7 @@ void PlayerMovement::GroundCollision(float frameTime)
 {
     vec3 pos = trans->GetPos(),
         offPos = pos + velocity * frameTime;
+    cout << "(x, z): (" << pos.x << ", " << pos.z << ")" << endl;
     float groundHeight = HeightCalc::GetInstance().GetHeight(offPos.x, offPos.z);
     offPos.y = (glm::max)(offPos.y, groundHeight);
     vec3 slopeVec = offPos - pos;

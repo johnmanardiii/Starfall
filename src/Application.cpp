@@ -236,8 +236,12 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/CloudNoise/cloud_NoiseTexture.png", "cloudNoise");
 	loadTexture("/CloudNoise/cloud_Distort.png", "cloudDistort");
 	loadTexture("/HeightMaps/Mountain.jpg", "MountainHeight");
-
 	loadTexture("/rainbow.jpg", "Rainbow");
+
+	tex = shaderManager.GetTexture("MountainHeight");
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
 	// used on Luna
 	auto prog = make_shared<Program>();

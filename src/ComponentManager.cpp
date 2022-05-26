@@ -48,7 +48,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     //shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", player.pName, 100000, &ParticleRenderer::drawSand);
     shared_ptr<Movement> playerMovement = make_shared<PlayerMovement>(player.pName);
     std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer, playerMovement};
-    transform->SetPos(vec3(0, 1, 2));
+    transform->SetPos(vec3(-158.842f, 1, 121.96f));
     transform->SetScale(vec3(.5));
     AddGameObject(player.pName, playerComps);
 
@@ -107,6 +107,25 @@ void ComponentManager::Init(std::string resourceDirectory)
     vector<shared_ptr<Component>> floorComps = { renderer, transform };
     AddGameObject(floorName, floorComps);
 
+}
+
+void ComponentManager::AddStarAtPos(float x, float z)
+{
+    string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
+    string sphereShapeFileName = "Star Bit";
+    shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", "Star", sphereName);
+    shared_ptr<Renderer> particles = make_shared<ParticleRenderer>("Alpha", "particle", sphereName, 100000, &ParticleRenderer::drawSplash);
+    shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
+    shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
+    shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
+
+    //finally, calculate each spawned fragment's height at this position.
+    float groundHeight = HeightCalc::GetInstance().GetHeight(x, z);
+    transform->ApplyTranslation(vec3(x, groundHeight, z));
+    transform->ApplyScale(vec3(0.02f));
+    vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collision, collect };
+    AddGameObject(sphereName, sphereComps);
+    state.TotalObjectsEverMade++;
 }
 
 void ComponentManager::AddLineOfStars()
