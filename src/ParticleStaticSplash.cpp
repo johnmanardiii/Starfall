@@ -12,6 +12,22 @@ vector<unsigned> ParticleRenderer::colBufObj = vector<unsigned>(numUniqueBufObjs
 vector<unsigned> ParticleRenderer::norBufObj = vector<unsigned>(numUniqueBufObjs);
 vector<unsigned> ParticleRenderer::rotBufObj = vector<unsigned>(numUniqueBufObjs);
 
+
+vector<pair<int, int>>  ParticleRenderer::SpriteRowColumnTable;
+//constants used for texturing the specific sprite sheet.
+//total image width and height in pixels
+const int IMAGE_WIDTH_PIX = 1002, IMAGE_HEIGHT_PIX = 571; //truly horrible numbers
+//width and height of a single sprite in pixels
+const int SPRITE_WIDTH_PIX = 100, SPRITE_HEIGHT_PIX = 100;
+//horizontal and vertical spacing that exists inbetween each sprite
+const int WIDTH_SPACING_PIX = 28, HEIGHT_SPACING_PIX = 27; //seriously, why
+
+//the values that will actually be used.
+const float WIDTH_OFF_TEX = (SPRITE_WIDTH_PIX + WIDTH_SPACING_PIX) / IMAGE_WIDTH_PIX;
+const int HEIGHT_OFF_TEX = (SPRITE_HEIGHT_PIX + HEIGHT_SPACING_PIX) / IMAGE_HEIGHT_PIX;
+
+
+
 float randFloat(float l, float h)
 {
     float r = rand() / (float)RAND_MAX;
@@ -45,6 +61,12 @@ void ParticleRenderer::Init(ComponentManager* compMan)
 }
 
 void ParticleRenderer::gpuSetup(std::shared_ptr<Program> prog, int numP) {
+	//make this lookup table at setup to save render computation time
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 5; j++) {
+			SpriteRowColumnTable.push_back(make_pair(i, j));
+		}
+	}
 	for (int i = 0; i < ParticleRenderer::numUniqueBufObjs; i++) {
 		vertArrObj.push_back(0);
 		pointColors.emplace_back(vector<float>(numP * 3));
@@ -145,6 +167,25 @@ void ParticleRenderer::drawSand(float totalTime) {
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(Model));
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
 	glUniform3f(prog->getUniform("centerPos"), trans->GetPos().x, trans->GetPos().y, trans->GetPos().z);
+
+	//do the calculation for, based on the time, which row/column images should be used.
+	//over a period of 2s, so map [0-2) to [0-39], technically [0-40) first.
+	int spriteNum = floor(totalTime * 20); //explicit floor
+	//get the next and previous images, to potentially do some blending.
+	int spriteNumPrev = (spriteNum - 1) % 40;
+	if (spriteNumPrev == -1) spriteNumPrev = 39;
+	int spriteNumNext = (spriteNum + 1) % 40;
+	int spriteNums[3] = { spriteNumPrev, spriteNum, spriteNumNext };
+	int rows[3];
+	int cols[3];
+	//lookup the row and column of each.
+	for (int i = 0; i < 3; i++) {
+		rows[i] = SpriteRowColumnTable[spriteNums[i]].first;
+		cols[i] = SpriteRowColumnTable[spriteNums[i]].second;
+	}
+	glUniform3i(prog->getUniform("Row"), rows[0], rows[1], rows[2]);
+	glUniform3i(prog->getUniform("Column"), cols[0], cols[1], cols[2]);
+
 	vec3 campos = Camera::GetInstance(vec3(0, 1, 0)).GetPos();
 	glUniform3f(prog->getUniform("campos"), campos.x, campos.y, campos.z);
 

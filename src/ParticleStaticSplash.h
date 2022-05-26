@@ -37,6 +37,7 @@ public:
     static vector<vector<float>> pointColors;
     static vector<vector<float>> pointNormals;
     static vector<vector<float>> pointRotations;
+    static vector<pair<int, int>> SpriteRowColumnTable;
 
     constexpr static int numUniqueBufObjs = 7;
     static vector<unsigned> vertArrObj;
@@ -51,7 +52,7 @@ public:
     void setCamera(mat4 inC) { View = inC; }
     void setProjection(mat4 inP) { Projection = inP; }
 
-    constexpr static float originalPointSize = 15.0f;
+    constexpr static float originalPointSize = 5.0f;
     bool sorted = false; //particles are not sorted by default. Sort them if you are using transparent alpha values.
     const glm::vec3& getPos() { return trans->GetPos(); }
 private:
@@ -64,6 +65,8 @@ private:
     mat4 View;
     mat4 Projection;
 };
+
+
 
 class ParticleSorter {
 public:

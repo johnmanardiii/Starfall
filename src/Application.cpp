@@ -304,6 +304,10 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	sandProg->addAttribute("pNormal");
 	sandProg->addAttribute("pRotation");
 
+	sandProg->addUniform("Row");
+	sandProg->addUniform("Column");
+
+
 	GLuint SandLocation0 = glGetUniformLocation(sandProg->pid, "alphaTexture");
 	
 	glUseProgram(sandProg->pid);

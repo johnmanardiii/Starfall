@@ -16,6 +16,7 @@ uniform float totalTime;
 out vec3 partCol;
 out vec3 vertex_pos;
 
+
 //
 // GLSL textureless classic 3D noise "cnoise",
 // with an RSL-style periodic variant "pnoise".
@@ -232,10 +233,11 @@ void main()
 
 	vec3 globalWindForce = totalTime * vec3(1,0,0);
 	vec3 individualWindForce = totalTime * pRotation;
-	newPosition += globalWindForce + individualWindForce + (6 * totalTime);
+	newPosition += (6 * globalWindForce) + individualWindForce;
 	newPosition.y = heightCalc(newPosition.x, newPosition.z) - 4.0f;
 
 	gl_Position = P * V * vec4(newPosition, 1.0);
-	vertex_pos = (vec4(newPosition, 1.0)).xyz; 
+	vertex_pos = (vec4(newPosition, 1.0)).xyz;
+
 	partCol = pColor;
 }
