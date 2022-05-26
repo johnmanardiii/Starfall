@@ -31,19 +31,20 @@ BilinearInterpolation(float heights[], float x1, float x2, float y1, float y2, f
 float BilinearInterp(float heights[], float tx, float tz)
 {
 	float a = heights[0] * (1 - tx) + heights[1] * tx;
-	float b = heights[2] * (1 - tx) + heights[2] * tx;
+	float b = heights[2] * (1 - tx) + heights[3] * tx;
 	return a * (1 - tz) + b * tz;
 }
+
 float HeightCalc::GetHeight(float x, float z)
 {
 	// why negative x
-	// (((pos + 50.f) / 100.0f) * mapW) / 4.0f
+	// (((pos + 50.f) / 100.0f) * mapW) / 40.0f
 
 	// lower x and z values to use for bilinear
 	float imgX = (((-x + 50.0f) / 4000.0f) * mapW),
 		imgZ = (((z + 50.0f) / 4000.0f) * mapH);
-	int Lx = floor(imgX - 0.5f);
-	int	Lz = floor(imgZ - 0.5f);
+	int Lx = floor(imgX);
+	int	Lz = floor(imgZ);
 	float heights[4];
 	for (int x = 0; x < 2; x++)
 	{

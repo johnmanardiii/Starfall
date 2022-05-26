@@ -40,8 +40,8 @@ void main()
 
 	vec3 b = tpos.xyz + vec3(0.1f, 0.0f, 0.1f), 
 		c = tpos.xyz + vec3(0.1f, 0.0f, -0.1f);
-	vec2 bUV = texcoords + vec2(0.01f / 40., 0.01f / 40.),
-		cUV = texcoords + vec2(0.01f / 40., -0.01f / 40.);
+	vec2 bUV = texcoords + vec2(0.01f / 40., -0.01f / 40.),
+		cUV = texcoords + vec2(0.01f / 40., 0.01f / 40.);
 	tpos.y += height;
 	b.y += texture(tex, bUV/40.).r * 300.0f;
 	c.y += texture(tex, cUV/40.).r * 300.0f;
