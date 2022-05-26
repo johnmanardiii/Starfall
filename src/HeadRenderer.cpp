@@ -19,6 +19,8 @@ void HeadRenderer::Draw(float frameTime)
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
 	glUniform3fv(prog->getUniform("flashCol"), 1, &flashColor[0]);
 	glUniform1f(prog->getUniform("flashAmt"), flashAmt);
+	glUniform2fv(prog->getUniform("eye1Pos"), 1, &eye1Pos[0]);
+	glUniform1f(prog->getUniform("eye1Radius"), eye1Radius);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	model->draw(prog);

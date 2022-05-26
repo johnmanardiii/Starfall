@@ -274,6 +274,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	head_prog->addUniform("M");
 	head_prog->addUniform("flashAmt");
 	head_prog->addUniform("flashCol");
+	head_prog->addUniform("eye1Pos");
+	head_prog->addUniform("eye1Radius");
 	head_prog->addAttribute("vertPos");
 	head_prog->addAttribute("vertNor");
 	head_prog->addAttribute("vertTex");

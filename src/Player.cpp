@@ -66,9 +66,10 @@ Player::Player(vec3 pos) : pos (pos)
 
 void Player::Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans, 
     shared_ptr<PlayerTransform> head,shared_ptr<PlayerTransform> arm1,
-    shared_ptr<PlayerTransform> arm2)
+    shared_ptr<PlayerTransform> arm2, shared_ptr<HeadRenderer> headr)
 {
     pTransform = pTrans;
+    headRenderer = headr;
     trans = static_pointer_cast<Transform>(pTransform);
     // set child transforms
     headTrans = head;
@@ -174,6 +175,10 @@ void Player::AnimatePlayerModel(float frameTime)
 
     int thrust = movement->inputBuffer[W] - movement->inputBuffer[S];
     float goalForwardsRotation = thrust * 30.0f;
+    if (thrust < 0)
+    {
+        goalForwardsRotation *= 0;
+    }
     currentXRotation = exponential_growth(currentXRotation, goalForwardsRotation, .2 * 60.0f, frameTime);
     pTransform->SetLean(currentXRotation);
 }

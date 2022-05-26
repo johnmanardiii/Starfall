@@ -25,6 +25,8 @@ public:
 
 	void Draw(float frameTime);
 	void SetFlashAmt(float amt) { flashAmt = amt; }
+	vec2 eye1Pos = vec2(.1, .5);
+	float eye1Radius = .05;
 private:
 	shared_ptr<Shape> model;
 	GLuint texture;

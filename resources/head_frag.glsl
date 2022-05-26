@@ -7,12 +7,14 @@ in vec2 vertex_tex;
 uniform float flashAmt;
 uniform sampler2D tex;
 uniform vec3 flashCol;
+uniform vec2 eye1Pos;
+uniform float eye1Radius;
 
 vec3 draw_eyes(vec3 base_color)
 {
-	float radius = .1;
-	vec2 center = vec2(.2, .2);
-	vec3 eye_color = vec3(.28, .88, 1) * 1.2;
+	float radius = eye1Radius;
+	vec2 center = eye1Pos;
+	vec3 eye_color = vec3(.28, .88, 1) * 1.4;
 	// TODO: generalize this and remove if statement
 	if(distance(center, vertex_tex) < radius)
 	{
@@ -34,18 +36,9 @@ void main()
 	color.rgb = (1- flashAmt) * tcol + flashAmt * flashCol;
 	diffuse = clamp(diffuse, 0.1f, 1.0f);
 	color *= diffuse;
-	// color *= 1000;
 	
-	//color.rgb = draw_eyes(color.rgb);
+	color.rgb = draw_eyes(color.rgb);
 	// color.rgb = vec3(vertex_tex / 2, 0);
-	if(vertex_tex.y > .5)
-	{
-		color.rgb = vec3(1);
-	}
-	else
-	{
-		color.rgb = vec3(0);
-	}
-	// color.rgb = vec3(vertex_tex.y);
+	// color.rgb = vec3(vertex_tex, 0);
 	color.a = 1;
 }

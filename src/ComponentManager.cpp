@@ -56,8 +56,8 @@ void ComponentManager::Init(std::string resourceDirectory)
     // initialize body parts as separate objects
     shared_ptr<PlayerTransform> headTrans = make_shared<PlayerTransform>(player.pHeadName, transform);
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    renderer = make_shared<HeadRenderer>("LUNA/new/luna_head", "Luna", player.pHeadName);
-    std::vector<std::shared_ptr<Component>> headComps = { headTrans, renderer };
+    shared_ptr<HeadRenderer> hrenderer = make_shared<HeadRenderer>("LUNA/new/luna_head", "Luna", player.pHeadName);
+    std::vector<std::shared_ptr<Component>> headComps = { headTrans, hrenderer };
     AddGameObject(player.pHeadName, headComps);
 
     shared_ptr<PlayerTransform> arm1Trans = make_shared<PlayerTransform>(player.pArm1Name, transform);
@@ -72,7 +72,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     std::vector<std::shared_ptr<Component>> arm2Comps = { arm2Trans, renderer };
     AddGameObject(player.pArm2Name, arm2Comps);
 
-    player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans);
+    player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans, hrenderer);
 
     //initialize random starting attributes for particles. Generate a few batches of 100k particles.
     ParticleRenderer::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 100000);
