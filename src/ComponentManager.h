@@ -65,7 +65,7 @@ public:
     Player& GetPlayer() { return player; }
     LightComponent& GetLights() { return lightComponent; }
     GameState* GetGameState() { return &state; }
-    ParticleSorter partComponentSorter;
+    ParticleSorter partComponentSorter = ParticleSorter();
 private:
     //helper functions to differentiate parts of AddGameObject.
     pair<string, size_t> addToComponentList(const shared_ptr<Component>& comp);

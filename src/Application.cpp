@@ -227,7 +227,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/LUNA/LUNA_test_tex.png", "Luna");
 	loadTexture("/grass.jpg", "Grass");
 	loadTexture("/alpha.png", "Alpha");
-	loadTexture("/alpha.bmp", "SandPartTex");
+	loadTexture("/smoke_spritesheet.png", "SandPartTex");
 	loadTexture("/noiseTex.png", "noiseTex");
 	loadTexture("/sandShallow.jpg", "sandShallow");
 	loadTexture("/sandSteep.jpg", "sandSteep");

@@ -42,7 +42,6 @@ void ParticleRenderer::Init(ComponentManager* compMan)
 
 	//declare the particle renderer as cullable and set a reasonable culling radius
 	isCullable = true;
-	cullingRadius = 5;
 }
 
 void ParticleRenderer::gpuSetup(std::shared_ptr<Program> prog, int numP) {
@@ -151,8 +150,9 @@ void ParticleRenderer::drawSand(float totalTime) {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	int numToRender = 8;
-	glDrawArraysInstanced(GL_POINTS, (rand() % numP) - numToRender - 1, 1, numToRender);
+	
+	//instead of drawing the entire array, just start from a random location to get a random set of data to work with. numP should be less than the max particles allocated in gpusetup.
+	glDrawArraysInstanced(GL_POINTS, rand() % (20000 - numP), 1, numP);
 	glDisable(GL_BLEND);
 	glPointSize(originalPointSize);
 	prog->unbind();

@@ -14,14 +14,14 @@ class ComponentManager;
 class ParticleRenderer : public Renderer
 {
 public:
-    ParticleRenderer(std::string tex, std::string shaderName, std::string gameObjectName, int numParticles, int pSize, void(ParticleRenderer::*drawFunc)(float))
+    ParticleRenderer(std::string tex, std::string shaderName, std::string gameObjectName, int numParticles, float pSize, float cullRadius, void(ParticleRenderer::*drawFunc)(float))
         : Renderer(gameObjectName) {
         func = drawFunc;
         ShaderManager shaderMan = ShaderManager::GetInstance();
         prog = shaderMan.GetShader(shaderName);
         texture = shaderMan.GetTexture(tex);
-
         numP = numParticles;
+        cullingRadius = cullRadius;
         pointSize = pSize;
         View = glm::mat4(1.0);
         bufObjIndex = ParticleRenderer::currBufObjs % numUniqueBufObjs;

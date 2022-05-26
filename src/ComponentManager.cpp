@@ -73,7 +73,7 @@ void ComponentManager::Init(std::string resourceDirectory)
 
     player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans);
 
-    //initialize random starting attributes for particles. Generate a few batches of 100k particles.
+    //initialize random starting attributes for particles. Generate a few batches of 20k particles.
     ParticleRenderer::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 20000);
 
     // Initialize the GLSL program, just for the ground plane.
@@ -125,7 +125,7 @@ void ComponentManager::AddLineOfStars()
         string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
         string sphereShapeFileName = "Star Bit";
         shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", "Star", sphereName);
-        shared_ptr<Renderer> particles = make_shared<ParticleRenderer>("Alpha", "particle", sphereName, 20000, ParticleRenderer::originalPointSize, &ParticleRenderer::drawSplash);
+        shared_ptr<Renderer> particles = make_shared<ParticleRenderer>("Alpha", "particle", sphereName, 20000, ParticleRenderer::originalPointSize, 5, &ParticleRenderer::drawSplash);
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
         shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
         shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
@@ -146,15 +146,11 @@ void ComponentManager::AddLineOfStars()
 }
 
 void ComponentManager::AddBunchOfSandParticles() {
-    int numSandToSpawn = (rand() % 3) + 1; //1-8 stars spawning
+    int numSandToSpawn = (rand() % 3) + 1; //1-3 spawning
     RandomGenerator randTrans(-20, 20); //generate a position offset from the player's right-vector
-
-    float offsetRight = randTrans.GetFloat();    //get some number between -4 and 4
-    float distFactor = 60.0f; //how far away from the player, in world space units, do we start spawning star fragments
-    float spacing = 4.0f; //the distance between each star fragment, if multiple are spawned.
+    float offsetRight = randTrans.GetFloat(); //get some number
     vec3 playerGaze = normalize(player.GetForward()); //double check that this is normalized.
     vec3 playerRight = cross(playerGaze, vec3(0, 1, 0));
-
 
     //garbage-collect old sand particle effects.
     vector<string> toRemove;
@@ -167,13 +163,11 @@ void ComponentManager::AddBunchOfSandParticles() {
     for (const auto& name : toRemove) {
         RemoveGameObject(name);
     }
-    
-
     //start initializing stars.
     for (int i = 0; i < numSandToSpawn; ++i) {
         string SandName = "Sand" + to_string(state.TotalObjectsEverMade);
         
-        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 20000, 500, &ParticleRenderer::drawSand);
+        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 10, 500, FLT_MAX, &ParticleRenderer::drawSand);
         shared_ptr<Transform> transform = make_shared<Transform>(SandName);
 
         //where all the variables at the top come in.
@@ -193,7 +187,7 @@ void ComponentManager::AddBunchOfSandParticles() {
 }
 
 // Iterate through all of the component vectors. Usually call Update on all of them, although
-// Collision is dependent on other Collision objects, so the pattern is different.
+// there are some differences.
 //
 //What this does, is separate the game behavior into stages. You can be sure that if a component 
 //needs to access data from a different component type, all of those different component types are

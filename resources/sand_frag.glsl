@@ -13,7 +13,6 @@ uniform float totalTime;
 void main()
 {
 	float alpha = texture(alphaTexture, gl_PointCoord).g;
-	if (alpha < 0.7) discard;
 	vec3 color = vec3(0.761f, 0.698f, .502f);
     
 	//alpha fadeout with distance - this should match the implementation in height_frag.glsl
