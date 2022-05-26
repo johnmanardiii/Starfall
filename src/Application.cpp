@@ -335,7 +335,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	sandProg->addAttribute("pNormal");
 	sandProg->addAttribute("pRotation");
 
-	GLuint SandLocation0 = glGetUniformLocation(sandProg->pid, "Sand");
+	GLuint SandLocation0 = glGetUniformLocation(sandProg->pid, "alphaTexture");
 	
 	glUseProgram(sandProg->pid);
 	glUniform1i(SandLocation0, 0);
@@ -412,8 +412,27 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	heightProg->addUniform("campos");
 	heightProg->addUniform("lightDir");
 	heightProg->addUniform("time");
+
+
+	heightProg->addUniform("diffuseContrast");
+	heightProg->addUniform("shadowColor");
+	heightProg->addUniform("terrainColor");
+	heightProg->addUniform("sandStrength");
+	// rim 
+	heightProg->addUniform("rimStrength");
+	heightProg->addUniform("rimPower");
+	heightProg->addUniform("rimColor");
+	// ocean spec
+	heightProg->addUniform("oceanSpecularStrength");
+	heightProg->addUniform("oceanSpecularPower");
+	heightProg->addUniform("oceanSpecularColor");
+	// sand ripples
+	heightProg->addUniform("steepnessSharpnessPower");
+	heightProg->addUniform("specularHardness");
+
 	heightProg->addAttribute("vertPos");
 	heightProg->addAttribute("vertTex");
+
 	assert(glGetError() == GL_NO_ERROR);
 
 	TexLocation = glGetUniformLocation(heightProg->pid, "tex");
@@ -535,7 +554,7 @@ void Application::Init(std::string resourceDirectory)
 	CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
 	CHECKED_GL_CALL(glEnable(GL_BLEND));
 	CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-	glPointSize(5.0f);
+	glPointSize(15.0f);
 	InitImGui();
 	InitShaderManager(resourceDirectory);
 	// do ComponentManager's init here

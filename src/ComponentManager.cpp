@@ -75,7 +75,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans, hrenderer);
 
     //initialize random starting attributes for particles. Generate a few batches of 100k particles.
-    ParticleRenderer::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 100000);
+    ParticleRenderer::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 20000);
 
     // Initialize the GLSL program, just for the ground plane.
     auto prog = make_shared<Program>();
@@ -126,7 +126,7 @@ void ComponentManager::AddLineOfStars()
         string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
         string sphereShapeFileName = "Star Bit";
         shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", "Star", sphereName);
-        shared_ptr<Renderer> particles = make_shared<ParticleRenderer>("Alpha", "particle", sphereName, 100000, &ParticleRenderer::drawSplash);
+        shared_ptr<Renderer> particles = make_shared<ParticleRenderer>("Alpha", "particle", sphereName, 20000, &ParticleRenderer::drawSplash);
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
         shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
         shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
@@ -147,7 +147,7 @@ void ComponentManager::AddLineOfStars()
 }
 
 void ComponentManager::AddBunchOfSandParticles() {
-    int numSandToSpawn = (rand() % 8) + 1; //1-8 stars spawning
+    int numSandToSpawn = (rand() % 3) + 1; //1-8 stars spawning
     RandomGenerator randTrans(-20, 20); //generate a position offset from the player's right-vector
 
     float offsetRight = randTrans.GetFloat();    //get some number between -4 and 4
@@ -159,8 +159,8 @@ void ComponentManager::AddBunchOfSandParticles() {
 
     //garbage-collect old sand particle effects.
     vector<string> toRemove;
-    for (auto obj : objects) {
-        cout << obj.first << endl;
+    for (auto& obj : objects) {
+        //cout << obj.first << endl;
         if (obj.first.find("Sand") == 0) { //substring starts with
             toRemove.push_back(obj.first);
         }
@@ -174,7 +174,7 @@ void ComponentManager::AddBunchOfSandParticles() {
     for (int i = 0; i < numSandToSpawn; ++i) {
         string SandName = "Sand" + to_string(state.TotalObjectsEverMade);
         
-        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 100000, &ParticleRenderer::drawSand);
+        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 20000, &ParticleRenderer::drawSand);
         shared_ptr<Transform> transform = make_shared<Transform>(SandName);
 
         //where all the variables at the top come in.
@@ -248,17 +248,22 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     lightComponent.Update(frameTime, this);
 
     //finally update renderers/draw.
-
-
     for (auto& rend : components["Renderer"])
     {
-        if (!rend->IsActive) continue;
+        if (!rend->IsActive) continue; //if the component is active (isn't awaiting replacement in the component vector structure)
+        if (!static_pointer_cast<Renderer>(rend)->IsInViewFrustum(state, this, camera)){ //if the renderer component has culling enabled and is actually outside the view frustum.
+            continue;
+        }
+        //else
         rend->Update(frameTime, this);
     }
     //draw particles last because they are transparent.
     for (auto& part : components["Particle"])
     {
         if (!part->IsActive) continue;
+        if (!static_pointer_cast<Renderer>(part)->IsInViewFrustum(state, this, camera)) {
+            continue;
+        }
         part->Update(frameTime, this);
     }
 }

@@ -41,6 +41,10 @@ void ParticleRenderer::Init(ComponentManager* compMan)
     int index = obj.GetComponentLocation("Transform");
     trans = static_pointer_cast<Transform>(compMan->GetComponent("Transform", index));
     start = trans->GetPos();
+
+	//declare the particle renderer as cullable and set a reasonable culling radius
+	isCullable = true;
+	cullingRadius = 5;
 }
 
 void ParticleRenderer::gpuSetup(std::shared_ptr<Program> prog, int numP) {
