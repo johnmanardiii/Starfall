@@ -14,7 +14,7 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 		particle->IsActive = true;
 		collision->IsActive = false; // now it doesn't collide with anything.
 		transform->ApplyRotation(frameTime * 16, vec3(0, 0, 1));
-        transform->ApplyScale(vec3(0.96f));
+        transform->ApplyScale(vec3(0.80f));
 
 	}
 	
@@ -27,7 +27,11 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 	{   
         transform->ApplyScale(vec3(1.1f));
 		particle->IsActive = false;
-	} 
+	}
+	else if (timeElapsed > 0.3 * animSpeed)
+	{
+		rendererObject->IsActive = false;
+	}
 
 }
 

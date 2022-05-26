@@ -236,7 +236,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/LUNA/LUNA_test_tex.png", "Luna");
 	loadTexture("/grass.jpg", "Grass");
 	loadTexture("/alpha.png", "Alpha");
-	loadTexture("/alpha.bmp", "SandPartTex");
+	loadTexture("/smoke_spritesheet.png", "SandPartTex");
 	loadTexture("/noiseTex.png", "noiseTex");
 	loadTexture("/sandShallow.jpg", "sandShallow");
 	loadTexture("/sandSteep.jpg", "sandSteep");
@@ -334,6 +334,10 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	sandProg->addAttribute("pColor");
 	sandProg->addAttribute("pNormal");
 	sandProg->addAttribute("pRotation");
+
+	sandProg->addUniform("Row");
+	sandProg->addUniform("Column");
+
 
 	GLuint SandLocation0 = glGetUniformLocation(sandProg->pid, "alphaTexture");
 	
@@ -554,7 +558,7 @@ void Application::Init(std::string resourceDirectory)
 	CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
 	CHECKED_GL_CALL(glEnable(GL_BLEND));
 	CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-	glPointSize(15.0f);
+	glPointSize(ParticleRenderer::originalPointSize);
 	InitImGui();
 	InitShaderManager(resourceDirectory);
 	// do ComponentManager's init here

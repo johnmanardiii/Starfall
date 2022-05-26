@@ -31,9 +31,13 @@ using namespace std;
 
 class ComponentManager
 {
-    //a queue that is automatically sorted, with smaller elements at the top.
-    //using typedef to localize this long definition.
-    typedef priority_queue<size_t, vector<size_t>, std::greater<size_t>> OpenSlots;
+    //a queue that is automatically sorted, using internal storage class vector, with smaller elements at the top.
+    class OpenSlots : public priority_queue<size_t, vector<size_t>, std::greater<size_t>> { //inherit from priority queue to access protected members.
+    public:
+        void clear() { //access the raw vector container memory and clear it. This reduces the overhead of reallocating on a queue clear.
+            this->c.clear(); //no idea why this isn't a supported operation without inheritance, it seems very useful and more elegant than continuously popping
+        }
+    };
     
 public:
     ComponentManager();
@@ -48,6 +52,7 @@ public:
 
     //update components. Done once every render pass.
     void UpdateComponents(float frameTime, int width, int height);
+    
     //Make components, throw them in a vector<shared_ptr>> in any order, give it a name, and componentManager will manage it.
     void AddGameObject(string name, vector<shared_ptr<Component>> comps);
     //deactivate object's components, free up their space, and remove the GameObject abstraction, completing the delete.
@@ -60,14 +65,16 @@ public:
     Player& GetPlayer() { return player; }
     LightComponent& GetLights() { return lightComponent; }
     GameState* GetGameState() { return &state; }
-    
+    ParticleSorter partComponentSorter = ParticleSorter();
 private:
     //helper functions to differentiate parts of AddGameObject.
     pair<string, size_t> addToComponentList(const shared_ptr<Component>& comp);
     int getNextOpenSlot(OpenSlots& slots);
+    void recalculateOpenSlots(const std::string& componentVectorName);
     template<typename CONCRETE, typename ABSTRACT>
     void addHelper(shared_ptr<CONCRETE> comp, vector<shared_ptr<ABSTRACT>>& compList, int& index);
-
+    //sorts the named component vector and updates the corresponding OpenSlots and GameObjects accordingly.
+    void sort(std::string compName);
     //the objects
     unordered_map<string, GameObject> objects;
     

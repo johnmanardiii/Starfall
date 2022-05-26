@@ -24,6 +24,7 @@ public:
     string Name; //the name of the object.
     const unordered_map<string, size_t>& GetComponentLocations() { return components; }
     size_t GetComponentLocation(string comp) {return components[comp];}
+    void SetComponentLocation(string compName, size_t index) { components[compName] = index; }
 private:
     unordered_map<string, size_t> components; //component or int to point to component
 };

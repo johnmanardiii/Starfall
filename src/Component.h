@@ -24,7 +24,8 @@ public:
     //Components must have an update function, even if it does nothing
     virtual void Update(float frameTime, ComponentManager* compMan) = 0;
     virtual void Init(ComponentManager* compMan) = 0;
-    bool IsActive = true;
+    bool IsActive = true; //can turn this one on and off to pause updates
+    bool IsKilled = false; //only set this one if you are never going to turn it back on again. The component could be overwritten.
     std::string Name = "unitialized";
 private:
 };

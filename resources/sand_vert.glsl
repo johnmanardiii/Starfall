@@ -16,6 +16,7 @@ uniform float totalTime;
 out vec3 partCol;
 out vec3 vertex_pos;
 
+
 //
 // GLSL textureless classic 3D noise "cnoise",
 // with an RSL-style periodic variant "pnoise".
@@ -209,6 +210,25 @@ float rand(vec2 co){
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
+//this should match the implementation in height_vertex.glsl.
+float heightCalc(float x, float z)
+{
+	return z * 0.2f + sin(x / 20.0) * sin(z / 20.0) * 20.0 * cos(x / 20.) * cos(z / 15.);
+	// return z * .5;
+}
+
+vec3 calcNewPos(vec3 globalWindVec, vec3 individualWindVec){
+	float horizontalSpread = 10.0f;
+	vec3 newPosition = centerPos + vec3(horizontalSpread * pNormal.x,0,horizontalSpread * pNormal.z);
+	
+
+	vec3 globalWindForce = totalTime * vec3(1,0,0);
+	vec3 individualWindForce = totalTime * pRotation;
+	newPosition += (6 * globalWindForce) +  8 * individualWindForce;
+	newPosition.y = heightCalc(newPosition.x, newPosition.z) - 15.0f;
+	return newPosition;
+}
+
 void main()
 {
 	
@@ -218,16 +238,11 @@ void main()
 	M0[0] = vec4(1.0, 0.0, 0.0, 0.0);
 	M0[1] = vec4(0.0, 1.0, 0.0, 0.0);
 	M0[2] = vec4(0.0, 0.0, 1.0, 0.0);
-	vec3 newPosition = centerPos + pNormal * (0.1 - 16 * fract(totalTime * totalTime * totalTime * totalTime) * 1.0);
-
-	float horizontalSpread = 60.0f;
-	newPosition = centerPos + vec3(horizontalSpread * pNormal.x,-4.0f,horizontalSpread * pNormal.z);
-	vec3 globalWindDir = vec3(rand(centerPos.xy), 1, rand(centerPos.yz));
-	vec3 individualWindDir = vec3(turbulence(0.5 * pNormal + totalTime / 6.0), 60 * abs(turbulence(0.5 * pNormal + totalTime / 6.0)) - 20, turbulence(0.5 * pRotation + totalTime / 6.0));
-	newPosition += globalWindDir + individualWindDir + 6 * totalTime;
-
+	
+	vec3 newPosition = centerPos;
 
 	gl_Position = P * V * vec4(newPosition, 1.0);
-	vertex_pos = (vec4(newPosition, 1.0)).xyz; 
+	vertex_pos = (vec4(newPosition, 1.0)).xyz;
+
 	partCol = pColor;
 }

@@ -74,7 +74,7 @@ void ComponentManager::Init(std::string resourceDirectory)
 
     player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans, hrenderer);
 
-    //initialize random starting attributes for particles. Generate a few batches of 100k particles.
+    //initialize random starting attributes for particles. Generate a few batches of 20k particles.
     ParticleRenderer::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 20000);
 
     // Initialize the GLSL program, just for the ground plane.
@@ -126,7 +126,7 @@ void ComponentManager::AddLineOfStars()
         string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
         string sphereShapeFileName = "Star Bit";
         shared_ptr<Renderer> renderer = make_shared<StarRenderer>(sphereShapeFileName, "Rainbow", "Star", sphereName);
-        shared_ptr<Renderer> particles = make_shared<ParticleRenderer>("Alpha", "particle", sphereName, 20000, &ParticleRenderer::drawSplash);
+        shared_ptr<Renderer> particles = make_shared<ParticleRenderer>("Alpha", "particle", sphereName, 20000, ParticleRenderer::originalPointSize, 5, &ParticleRenderer::drawSplash);
         shared_ptr<Transform> transform = make_shared<Transform>(sphereName);
         shared_ptr<Collision> collision = make_shared<Collision>(sphereName, sphereShapeFileName);
         shared_ptr<Collect> collect = make_shared<Collect>(sphereName);
@@ -147,42 +147,23 @@ void ComponentManager::AddLineOfStars()
 }
 
 void ComponentManager::AddBunchOfSandParticles() {
-    int numSandToSpawn = (rand() % 3) + 1; //1-8 stars spawning
+    int numSandToSpawn = (rand() % 50) + 1; //1-X spawning
     RandomGenerator randTrans(-20, 20); //generate a position offset from the player's right-vector
-
-    float offsetRight = randTrans.GetFloat();    //get some number between -4 and 4
-    float distFactor = 60.0f; //how far away from the player, in world space units, do we start spawning star fragments
-    float spacing = 4.0f; //the distance between each star fragment, if multiple are spawned.
+    float offsetRight = randTrans.GetFloat(); //get some number
     vec3 playerGaze = normalize(player.GetForward()); //double check that this is normalized.
     vec3 playerRight = cross(playerGaze, vec3(0, 1, 0));
-
-
-    //garbage-collect old sand particle effects.
-    vector<string> toRemove;
-    for (auto& obj : objects) {
-        //cout << obj.first << endl;
-        if (obj.first.find("Sand") == 0) { //substring starts with
-            toRemove.push_back(obj.first);
-        }
-    }
-    for (const auto& name : toRemove) {
-        RemoveGameObject(name);
-    }
+    float distFactor = 20;
     
-
     //start initializing stars.
     for (int i = 0; i < numSandToSpawn; ++i) {
         string SandName = "Sand" + to_string(state.TotalObjectsEverMade);
         
-        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 20000, &ParticleRenderer::drawSand);
+        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 1, 4000, FLT_MAX, &ParticleRenderer::drawSand);
         shared_ptr<Transform> transform = make_shared<Transform>(SandName);
 
         //where all the variables at the top come in.
-        vec3 pos = player.GetPosition() + //the player's position                                                __
-            //playerGaze * (distFactor) +  //plus distFactor units in front of the player,        |               |  |
-            playerRight * offsetRight + //plus shifted to the left or right a random number     | P-> ----------|  | approximates the spawning location from player.
-            randTrans.GetVec3(); //plus some random noise.                                      |               |__|
-
+        vec3 pos = player.GetPosition() + //the player's position
+            playerGaze * (distFactor);
         //finally, calculate each spawned fragment's height at this position.
         transform->ApplyTranslation(vec3(pos.x, heightCalc(pos.x, pos.z), pos.z));
         transform->ApplyScale(vec3(0.02f));
@@ -194,7 +175,7 @@ void ComponentManager::AddBunchOfSandParticles() {
 }
 
 // Iterate through all of the component vectors. Usually call Update on all of them, although
-// Collision is dependent on other Collision objects, so the pattern is different.
+// there are some differences.
 //
 //What this does, is separate the game behavior into stages. You can be sure that if a component 
 //needs to access data from a different component type, all of those different component types are
@@ -208,11 +189,10 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         AddLineOfStars();
     }
     //re-add this when it looks good
-    //if (state.ShouldSpawnSand()) {
-    //    AddBunchOfSandParticles();
-    //}
-    //timer.start();
-    
+    if (state.ShouldSpawnSand()) {
+        AddBunchOfSandParticles();
+    }
+
     // update movements
     for (auto& move : components["Movement"])
     {
@@ -272,13 +252,32 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     for (auto& part : components["Particle"])
     {
         if (!part->IsActive) continue;
-        if (!static_pointer_cast<Renderer>(part)->IsInViewFrustum(state, this, camera)) {
-            continue;
-        }
         part->Update(frameTime, this);
+        
     }
-    //int parttime = timer.stop();
-    //cout << "mv: " << mvtime << " collide: " << colitime << " trans: " << transtime << " collect: " << coletime << " player: " << pcamlight << " render: " << rendtime << " particles: " << parttime << endl;
+    sort("Particle");
+    for (auto& part : components["Particle"])
+    {
+        auto& rend = static_pointer_cast<ParticleRenderer>(part);
+        if (rend->IsActive && rend->IsInViewFrustum(state, this, camera)) {
+            rend->Draw(frameTime);
+        }
+    }
+}
+
+void ComponentManager::sort(std::string compName)
+{
+    //sort transparent objects, according to their world position and the camera's position. This requires an update to a GameObject's Particle index!
+    std::sort(components[compName].begin(), components[compName].end(), partComponentSorter); //needs a comparator-like object for each component. Parameterize this if needed.
+    //there are now potentially corrupt GameObject indices to particle components. Use the unique name to resolve them.
+    for (int i = 0; i < components[compName].size(); i++) {
+        if (!components[compName][i]->IsKilled) {
+            objects[components[compName][i]->Name].SetComponentLocation(compName, i);
+        }
+    }
+    //now we need to resolve the fact that the open slots may have changed as well.
+    recalculateOpenSlots(compName);
+    //Then finally draw them, in order.
 }
 
 void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)
@@ -371,6 +370,22 @@ int ComponentManager::getNextOpenSlot(OpenSlots& slots) {
     }
 }
 
+//this accounts for the possibility that a killed particle system component could be swapped with an active particle system component during sorting.
+//Recalculates the open slots available for a given component vector.
+void ComponentManager::recalculateOpenSlots(const std::string& componentVectorName)
+{
+    OpenSlots& slots = componentOpenSlots[componentVectorName]; //we will be adjusting this
+    const vector<std::shared_ptr<Component>>& componentVector = components[componentVectorName]; //based on iterating through this
+    //clear the memory.
+    slots.clear();
+    //add all inactive slots back to the queue
+    for (size_t i = 0; i < componentVector.size(); i++) {
+        if (componentVector[i]->IsKilled) { 
+            slots.push(i); //isKilled is more restrictive then isActive. Only push if you are sure it's not being used.
+        }
+    }
+}
+
 void ComponentManager::RemoveGameObject(string name)
 {
     //make a copy, don't actually remove from map until its components are all gone
@@ -383,8 +398,8 @@ void ComponentManager::RemoveGameObject(string name)
 
         //free up for insertion. Do this by supplying the component's
         //indices for use by a new component, and marking the component as not in use.
-        
         GetComponent(name, index)->IsActive = false;
+        GetComponent(name, index)->IsKilled = true;
         componentOpenSlots[name].push(index);
         
     }//end processing component vector freeing

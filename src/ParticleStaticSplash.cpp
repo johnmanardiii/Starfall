@@ -1,6 +1,5 @@
 #include "ParticleStaticSplash.h"
 #include "ComponentManager.h"
-
 using namespace std;
 
 int ParticleRenderer::currBufObjs = 0;
@@ -13,6 +12,10 @@ vector<unsigned> ParticleRenderer::colBufObj = vector<unsigned>(numUniqueBufObjs
 vector<unsigned> ParticleRenderer::norBufObj = vector<unsigned>(numUniqueBufObjs);
 vector<unsigned> ParticleRenderer::rotBufObj = vector<unsigned>(numUniqueBufObjs);
 
+
+vector<pair<int, int>>  ParticleRenderer::SpriteRowColumnTable;
+
+
 float randFloat(float l, float h)
 {
     float r = rand() / (float)RAND_MAX;
@@ -22,11 +25,16 @@ float randFloat(float l, float h)
 
 void ParticleRenderer::Update(float frameTime, ComponentManager* compMan)
 {   
+	
     totalTime += frameTime;
+	this->frametime = frameTime;
+	if (totalTime > INT_MAX) {
+		compMan->RemoveGameObject(Name);
+		return;
+	}
     //reset the particle orientation to the camera's view matrix.
     setCamera(compMan->GetCamera().GetView());
     setProjection(compMan->GetCamera().GetPerspective());
-    Draw(frameTime);
 }
 
 void ParticleRenderer::Draw(float frameTime)
@@ -44,10 +52,15 @@ void ParticleRenderer::Init(ComponentManager* compMan)
 
 	//declare the particle renderer as cullable and set a reasonable culling radius
 	isCullable = true;
-	cullingRadius = 5;
 }
 
 void ParticleRenderer::gpuSetup(std::shared_ptr<Program> prog, int numP) {
+	//make this lookup table at setup to save render computation time
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 5; j++) {
+			SpriteRowColumnTable.push_back(make_pair(i, j));
+		}
+	}
 	for (int i = 0; i < ParticleRenderer::numUniqueBufObjs; i++) {
 		vertArrObj.push_back(0);
 		pointColors.emplace_back(vector<float>(numP * 3));
@@ -134,25 +147,71 @@ void ParticleRenderer::drawSplash(float totalTime) {
 
 void ParticleRenderer::drawSand(float totalTime) {
 	prog->bind();
+	glPointSize(pointSize);
 	glBindVertexArray(vertArrObj[bufObjIndex]);
 	glBindBuffer(GL_ARRAY_BUFFER, colBufObj[bufObjIndex]);
 	glBindBuffer(GL_ARRAY_BUFFER, norBufObj[bufObjIndex]);
 	glBindBuffer(GL_ARRAY_BUFFER, rotBufObj[bufObjIndex]);
-
+	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(Projection));
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(View));
-	mat4 Model = glm::translate(mat4(1.0f), trans->GetPos());
+	mat4 Model = trans->GetModelMat();
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(Model));
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
-	glUniform3f(prog->getUniform("centerPos"), trans->GetPos().x, trans->GetPos().y, trans->GetPos().z);
+
+	vec4 nearPlane = Camera::GetInstance(vec3()).getVFCPlanes()[4];
+	
+	trans->SetPos(Camera::GetInstance(vec3()).GetPos() + 45.0f * vec3(nearPlane) + vec3(0, 30, 0));
+	glUniform3fv(prog->getUniform("centerPos"), 1, glm::value_ptr(trans->GetPos()));
+
+	//do the calculation for, based on the time, which row/column images should be used.
+	//over a period of 2s, so map [0-2) to [0-39], technically [0-40) first.
+	int spriteNum = int(totalTime * 10.0f) % 40; //an extra frametime is added for update. Make sure it doesn't mess up indexing.
+	//get the next and previous images, to potentially do some blending.
+	int spriteNumPrev = (spriteNum - 1) % 40;
+	if (spriteNumPrev == -1) spriteNumPrev = 39;
+	int spriteNumNext = (spriteNum + 1) % 40;
+	int spriteNums[3] = { spriteNumPrev, spriteNum, spriteNumNext };
+	int rows[3];
+	int cols[3];
+	//lookup the row and column of each. Think abouyt adding all the above to lookup table as well
+	for (int i = 0; i < 3; i++) {
+		rows[i] = SpriteRowColumnTable[spriteNums[i]].first;
+		cols[i] = SpriteRowColumnTable[spriteNums[i]].second;
+	}
+	glUniform3iv(prog->getUniform("Row"), 1, rows);
+	glUniform3iv(prog->getUniform("Column"), 1, cols);
 	vec3 campos = Camera::GetInstance(vec3(0, 1, 0)).GetPos();
 	glUniform3f(prog->getUniform("campos"), campos.x, campos.y, campos.z);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDrawArraysInstanced(GL_POINTS, 0, 1, numP);
+	
+	//instead of drawing the entire array, just start from a random location to get a random set of data to work with. numP should be less than the max particles allocated in gpusetup.
+	glDrawArraysInstanced(GL_POINTS, startIndex, 1, numP);
 	glDisable(GL_BLEND);
+	glPointSize(originalPointSize);
 	prog->unbind();
+}
+
+void ParticleRenderer::drawSmoke(float totalTime) {
+	prog->bind();
+
+	prog->unbind();
+}
+
+vec3 ParticleRenderer::calcNewPos(vec3 globalWindVec, float frametime) {
+	constexpr float horizontalSpread = 10.0f;
+	vec3 offset = vec3(0, 0, 0);// vec3(horizontalSpread * pointRotations[bufObjIndex][startIndex], 0, horizontalSpread * pointRotations[bufObjIndex][startIndex + 2]);
+
+
+	vec3 globalWindForce = totalTime * globalWindVec;
+	vec3 individualWindForce = totalTime * vec3(pointRotations[bufObjIndex][startIndex], pointRotations[bufObjIndex][startIndex + 1], pointRotations[bufObjIndex][startIndex + 2]);
+	vec3 forward = Player::GetInstance(vec3(0)).GetForward();
+	float speed = Player::GetInstance(vec3(0)).GetCurrentSpeed();
+	offset += (1.0f * globalWindForce) + (1.0f * individualWindForce);
+	//newPosition.y = heightCalc(newPosition.x, newPosition.z) - 15.0f;
+	return offset * frametime;
 }

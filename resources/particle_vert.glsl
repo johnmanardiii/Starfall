@@ -218,7 +218,7 @@ void main()
 
     vec3 newPosition;
 
-    newPosition = centerPos + pNormal * (0.1 - 16 * pow(totalTime, 4.0f) * displacement);
+    newPosition = centerPos + pNormal * (3 * log(1 + totalTime) * displacement);
     //newPosition += pRotation;
 
 	// Billboarding: set the upper 3x3 to be the identity matrix
