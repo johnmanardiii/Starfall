@@ -65,7 +65,7 @@ public:
 
     //for now just do it every time you spawn star fragments.
     bool ShouldSpawnSand() {
-        if (spawnSandFrames >= randSand->GetFloat()) { 
+        if (spawnSandFrames >= 2) { 
             spawnSandFrames = 0;
             currentObjectCount++;
             return true;
