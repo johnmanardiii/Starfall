@@ -29,8 +29,8 @@ void main()
 	vec2 texcoords=vertTex;
 	float t=1/100.;
 	texcoords += vec2(-camoff.x, camoff.z)*t;
-	float height = texture(tex, texcoords/4.).r;
-	height *= 100.0;
+	float height = texture(tex, texcoords/40.).r;
+	height *= 300.0;
 
 
 	vec4 tpos =  vec4(vertPos, 1.0);
@@ -40,18 +40,16 @@ void main()
 
 	vec3 b = tpos.xyz + vec3(0.1f, 0.0f, 0.1f), 
 		c = tpos.xyz + vec3(0.1f, 0.0f, -0.1f);
-
+	vec2 bUV = texcoords + vec2(0.01f / 40., 0.01f / 40.),
+		cUV = texcoords + vec2(0.01f / 40., -0.01f / 40.);
 	tpos.y += height;
-	b.y += heightCalc(b.x, b.z);
-	c.y += heightCalc(c.x, c.z);
-	/*b.y += sin(b.x / 10.) * sin(b.z / 10.) * 10.0 * cos(b.x * 0.2) * cos(b.z * 0.1);
-	c.y += sin(c.x / 10.) * sin(c.z / 10.) * 10.0 * cos(c.x * 0.2) * cos(c.z * 0.1);*/
+	b.y += texture(tex, bUV/40.).r * 300.0f;
+	c.y += texture(tex, cUV/40.).r * 300.0f;
 	vec3 ab = (tpos.xyz - b);
 	ab = normalize(ab);
 	vec3 ac = (tpos.xyz - c);
 	ac = normalize(ac);
 	vec3 n = normalize(cross(ab,ac));
-	n = vec3(0, 1, 0);
 	gl_Position = P * V * tpos;
 	frag_pos = tpos.xyz;
 	frag_height = tpos.y;

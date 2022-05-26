@@ -7,8 +7,12 @@
 
 // https://helloacm.com
 inline float
-BilinearInterpolation(float q11, float q12, float q21, float q22, float x1, float x2, float y1, float y2, float x, float y)
+BilinearInterpolation(float heights[], float x1, float x2, float y1, float y2, float x, float y)
 {
+	float q11 = heights[0],
+		q12 = heights[1],
+		q21 = heights[2],
+		q22 = heights[3];
 	float x2x1, y2y1, x2x, y2y, yy1, xx1;
 	x2x1 = x2 - x1;
 	y2y1 = y2 - y1;
@@ -24,38 +28,39 @@ BilinearInterpolation(float q11, float q12, float q21, float q22, float x1, floa
 		);
 }
 
+float BilinearInterp(float heights[], float tx, float tz)
+{
+	float a = heights[0] * (1 - tx) + heights[1] * tx;
+	float b = heights[2] * (1 - tx) + heights[2] * tx;
+	return a * (1 - tz) + b * tz;
+}
 float HeightCalc::GetHeight(float x, float z)
 {
+	// why negative x
+	// (((pos + 50.f) / 100.0f) * mapW) / 4.0f
 
-	// ((pos / 100.0f) * mapW) / 3.0f
-	/*int ix = round(((x + 50.0f) / 300.0f) * mapW);
-	int	iz = round(((z + 50.0f) / 300.0f) * mapH);*/
-
-	int ix = round(((-x + 50.0f) / 400.0f) * mapW);
-	int	iz = round(((z + 50.0f) / 400.0f) * mapH);
-
-	float height = 0.0f;
-	int numSamples = 0;
-	// TODO: Bilinear filtering
-	for (int x = -1; x < 2; x++)
+	// lower x and z values to use for bilinear
+	float imgX = (((-x + 50.0f) / 4000.0f) * mapW),
+		imgZ = (((z + 50.0f) / 4000.0f) * mapH);
+	int Lx = floor(imgX - 0.5f);
+	int	Lz = floor(imgZ - 0.5f);
+	float heights[4];
+	for (int x = 0; x < 2; x++)
 	{
-		for (int z = -1; z < 2; z++)
+		for (int z = 0; z < 2; z++)
 		{
 			// if outside of buffer, skip the pixel
-			if (ix + x < 0 || ix + x >= mapW || iz + z < 0 || iz + z >= mapH)
+			if (Lx + x < 0 || Lx + x >= mapW || Lz + z < 0 || Lz + z >= mapH)
 			{
-				height += 0.0f;
+				heights[x + z * 2] = 0.0f;
 			}
 			else
 			{
-				height += (*heightMap)[ix + x][iz + z] * 100;
-				numSamples++;
+				heights[x + z * 2] = (*heightMap)[Lx + x][Lz + z] * 300;
 			}
 		}
 	}
-	if (numSamples == 0)
-		return 0.0f;
-	return (height / numSamples) + 2.0f;
+	return BilinearInterp(heights, imgX - Lx, imgZ - Lz) + 2.0f;
 }
 
 void HeightCalc::Init()

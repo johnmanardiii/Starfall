@@ -48,7 +48,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     //shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", player.pName, 100000, &ParticleRenderer::drawSand);
     shared_ptr<Movement> playerMovement = make_shared<PlayerMovement>(player.pName);
     std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer, playerMovement};
-    transform->SetPos(vec3(-158.842f, 1, 121.96f));
+    transform->SetPos(vec3(-2065.44f, 1, 1773.03f));
     transform->SetScale(vec3(.5));
     AddGameObject(player.pName, playerComps);
 
