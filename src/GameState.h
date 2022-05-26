@@ -1,9 +1,12 @@
 #pragma once
 #include <iostream>
 #include <iomanip>
-
+#include "RandomGenerator.h"
 class ComponentManager;
 using namespace std;
+
+
+
 class GameState {
 public:
     GameState(const int init, ComponentManager* man) :
@@ -15,7 +18,8 @@ public:
         spawnStarFrames(0),
         spawnSandFrames(0),
         cumulativeFrameTime(0),
-        TotalObjectsEverMade(init)
+        TotalObjectsEverMade(init),
+        randSand(make_unique<RandomGenerator>(1,3))
     {}
     const int GetInitialCount() const { return INITIAL_OBJECT_COUNT; }
     int GetCount() { return
@@ -61,7 +65,7 @@ public:
 
     //for now just do it every time you spawn star fragments.
     bool ShouldSpawnSand() {
-        if (spawnSandFrames >= 1) {
+        if (spawnSandFrames >= randSand->GetFloat()) { 
             spawnSandFrames = 0;
             currentObjectCount++;
             return true;
@@ -82,5 +86,5 @@ private:
     float cumulativeFrameTime;
     bool isGameEnded = false;
     int objectsNeeded = 50;
-    
+    std::unique_ptr<RandomGenerator> randSand;
 };

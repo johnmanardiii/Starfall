@@ -14,18 +14,6 @@ vector<unsigned> ParticleRenderer::rotBufObj = vector<unsigned>(numUniqueBufObjs
 
 
 vector<pair<int, int>>  ParticleRenderer::SpriteRowColumnTable;
-//constants used for texturing the specific sprite sheet.
-//total image width and height in pixels
-const int IMAGE_WIDTH_PIX = 1002, IMAGE_HEIGHT_PIX = 571; //truly horrible numbers
-//width and height of a single sprite in pixels
-const int SPRITE_WIDTH_PIX = 100, SPRITE_HEIGHT_PIX = 100;
-//horizontal and vertical spacing that exists inbetween each sprite
-const int WIDTH_SPACING_PIX = 28, HEIGHT_SPACING_PIX = 27; //seriously, why
-
-//the values that will actually be used.
-const float WIDTH_OFF_TEX = (SPRITE_WIDTH_PIX + WIDTH_SPACING_PIX) / IMAGE_WIDTH_PIX;
-const int HEIGHT_OFF_TEX = (SPRITE_HEIGHT_PIX + HEIGHT_SPACING_PIX) / IMAGE_HEIGHT_PIX;
-
 
 
 float randFloat(float l, float h)
@@ -37,7 +25,12 @@ float randFloat(float l, float h)
 
 void ParticleRenderer::Update(float frameTime, ComponentManager* compMan)
 {   
+	
     totalTime += frameTime;
+	if (totalTime > 4) {
+		compMan->RemoveGameObject(Name);
+		return;
+	}
     //reset the particle orientation to the camera's view matrix.
     setCamera(compMan->GetCamera().GetView());
     setProjection(compMan->GetCamera().GetPerspective());
@@ -163,14 +156,14 @@ void ParticleRenderer::drawSand(float totalTime) {
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(Projection));
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(View));
-	mat4 Model = glm::translate(mat4(1.0f), trans->GetPos());
+	mat4 Model = trans->GetModelMat();
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(Model));
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
 	glUniform3f(prog->getUniform("centerPos"), trans->GetPos().x, trans->GetPos().y, trans->GetPos().z);
 
 	//do the calculation for, based on the time, which row/column images should be used.
 	//over a period of 2s, so map [0-2) to [0-39], technically [0-40) first.
-	int spriteNum = floor(totalTime * 20); //explicit floor
+	int spriteNum = std::min(floor(totalTime * 10),39.0f); //an extra frametime is added for update. Make sure it doesn't mess up indexing.
 	//get the next and previous images, to potentially do some blending.
 	int spriteNumPrev = (spriteNum - 1) % 40;
 	if (spriteNumPrev == -1) spriteNumPrev = 39;
@@ -183,8 +176,8 @@ void ParticleRenderer::drawSand(float totalTime) {
 		rows[i] = SpriteRowColumnTable[spriteNums[i]].first;
 		cols[i] = SpriteRowColumnTable[spriteNums[i]].second;
 	}
-	glUniform3i(prog->getUniform("Row"), rows[0], rows[1], rows[2]);
-	glUniform3i(prog->getUniform("Column"), cols[0], cols[1], cols[2]);
+	glUniform3iv(prog->getUniform("Row"), 1, rows);
+	glUniform3iv(prog->getUniform("Column"), 1, cols);
 
 	vec3 campos = Camera::GetInstance(vec3(0, 1, 0)).GetPos();
 	glUniform3f(prog->getUniform("campos"), campos.x, campos.y, campos.z);

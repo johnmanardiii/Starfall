@@ -146,36 +146,23 @@ void ComponentManager::AddLineOfStars()
 }
 
 void ComponentManager::AddBunchOfSandParticles() {
-    int numSandToSpawn = (rand() % 3) + 1; //1-3 spawning
+    int numSandToSpawn = (rand() % 50) + 1; //1-X spawning
     RandomGenerator randTrans(-20, 20); //generate a position offset from the player's right-vector
     float offsetRight = randTrans.GetFloat(); //get some number
     vec3 playerGaze = normalize(player.GetForward()); //double check that this is normalized.
     vec3 playerRight = cross(playerGaze, vec3(0, 1, 0));
-
-    //garbage-collect old sand particle effects.
-    vector<string> toRemove;
-    for (auto& obj : objects) {
-        //cout << obj.first << endl;
-        if (obj.first.find("Sand") == 0) { //substring starts with
-            toRemove.push_back(obj.first);
-        }
-    }
-    for (const auto& name : toRemove) {
-        RemoveGameObject(name);
-    }
+    float distFactor = 20;
+    
     //start initializing stars.
     for (int i = 0; i < numSandToSpawn; ++i) {
         string SandName = "Sand" + to_string(state.TotalObjectsEverMade);
         
-        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 10, 500, FLT_MAX, &ParticleRenderer::drawSand);
+        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 1, 4000, FLT_MAX, &ParticleRenderer::drawSand);
         shared_ptr<Transform> transform = make_shared<Transform>(SandName);
 
         //where all the variables at the top come in.
-        vec3 pos = player.GetPosition() + //the player's position                                                __
-            //playerGaze * (distFactor) +  //plus distFactor units in front of the player,      |               |  |
-            playerRight * offsetRight + //plus shifted to the left or right a random number     | P-> ----------|  | approximates the spawning location from player.
-            randTrans.GetVec3(); //plus some random noise.                                      |               |__|
-
+        vec3 pos = player.GetPosition() + //the player's position
+            playerGaze * (distFactor);
         //finally, calculate each spawned fragment's height at this position.
         transform->ApplyTranslation(vec3(pos.x, heightCalc(pos.x, pos.z), pos.z));
         transform->ApplyScale(vec3(0.02f));
