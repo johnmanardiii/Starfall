@@ -23,20 +23,26 @@ void Camera::Update(float frameTime, int width, int height, ComponentManager* co
     CalcPerspective(frameTime, width, height, compMan);
     // look at the player
     vec3 target = compMan->GetPlayer().GetPosition();
-    float currentPlayerSpeed = compMan->GetPlayer().GetCurrentSpeed();
+    int currentPlayerSpeed = compMan->GetPlayer().movement->inputBuffer[W] - 
+        compMan->GetPlayer().movement->inputBuffer[S];
     float goalCamDist;
+    float goalCamHeight;
     if (currentPlayerSpeed >= 0)
     {
-        goalCamDist = glm::mix<float>(highestCamDistZ, lowestCamDistZ,
-            currentPlayerSpeed / compMan->GetPlayer().GetMaxSpeed());
+        goalCamDist = glm::mix<float>(lowestCamDistZ, highestCamDistZ,
+            (float)currentPlayerSpeed);
+        goalCamHeight = glm::mix<float>(minCamHeight, maxCamHeight,
+            (float)currentPlayerSpeed);
     }
     else
     {
         // don't have the camera try to go so far back 
         // because it looks really bad when it lags behind the player like this
         goalCamDist = backwardsCamDistZ;
+        goalCamHeight = maxCamHeight;
     }
     currentCamDistZ = exponential_growth(currentCamDistZ, goalCamDist, .035f * 60.0f, frameTime);
+    camDistHeight = exponential_growth(camDistHeight, goalCamHeight, .35f * 60.0f, frameTime);
     vec3 goal_pos = get_wanted_pos(compMan);
     pos = exponential_growth(pos, goal_pos, .07f * 60.0f, frameTime);
     // check to ensure that the camera keeps up with the player at least 3 units away
@@ -59,7 +65,12 @@ void Camera::Update(float frameTime, int width, int height, ComponentManager* co
 // Returns a point to interpolate to. Currently returns a point behind the player and above the player.
 glm::vec3 Camera::get_wanted_pos(ComponentManager* compMan)
 {
-    vec3 target_pos = compMan->GetPlayer().GetPosition() + currentCamDistZ * -compMan->GetPlayer().GetForward() +
+    float camDistZ = currentCamDistZ;
+    if (alt_pressed)
+    {
+        camDistZ *= -1;
+    }
+    vec3 target_pos = compMan->GetPlayer().GetPosition() + camDistZ * -compMan->GetPlayer().GetForward() +
         vec3(0, 1, 0) * camDistHeight;
     return target_pos;
 }

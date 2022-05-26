@@ -53,7 +53,7 @@ bool WindowManager::Init(int const width, int const height)
 	
 
 	// Create a windowed mode window and its OpenGL context.
-	windowHandle = glfwCreateWindow(width, height, "hello 3D", nullptr, nullptr);
+	windowHandle = glfwCreateWindow(width, height, "Starfall", nullptr, nullptr);
 	if (! windowHandle)
 	{
 		glfwTerminate();

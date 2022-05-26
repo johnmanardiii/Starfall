@@ -4,6 +4,7 @@
 #include "EulerTransform.h"
 #include "MonkeyMovement.h"
 #include "SkyboxRenderer.h"
+#include "HeadRenderer.h"
 
 ComponentManager::ComponentManager()
 {
@@ -44,7 +45,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     shared_ptr<EulerTransform> pTransform = make_shared<EulerTransform>(player.pName);
     shared_ptr<Transform> transform = pTransform;
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
+    shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/new/luna_body", "Luna", player.pName);
     //shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", player.pName, 100000, &ParticleRenderer::drawSand);
     shared_ptr<Movement> playerMovement = make_shared<PlayerMovement>(player.pName);
     std::vector<std::shared_ptr<Component>> playerComps = { transform, renderer, playerMovement};
@@ -53,25 +54,25 @@ void ComponentManager::Init(std::string resourceDirectory)
     AddGameObject(player.pName, playerComps);
 
     // initialize body parts as separate objects
-    shared_ptr<Transform> headTrans = make_shared<PlayerTransform>(player.pHeadName, transform);
+    shared_ptr<PlayerTransform> headTrans = make_shared<PlayerTransform>(player.pHeadName, transform);
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    renderer = make_shared<TextureRenderer>("LUNA/luna_head", "Luna", player.pHeadName);
-    std::vector<std::shared_ptr<Component>> headComps = { headTrans, renderer };
+    shared_ptr<HeadRenderer> hrenderer = make_shared<HeadRenderer>("LUNA/new/luna_head", "Luna", player.pHeadName);
+    std::vector<std::shared_ptr<Component>> headComps = { headTrans, hrenderer };
     AddGameObject(player.pHeadName, headComps);
 
-    shared_ptr<Transform> arm1Trans = make_shared<PlayerTransform>(player.pArm1Name, transform);
+    shared_ptr<PlayerTransform> arm1Trans = make_shared<PlayerTransform>(player.pArm1Name, transform);
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    renderer = make_shared<TextureRenderer>("LUNA/luna_arm", "Luna", player.pArm1Name);
+    renderer = make_shared<TextureRenderer>("LUNA/new/luna_arm_right", "Luna", player.pArm1Name);
     std::vector<std::shared_ptr<Component>> arm1Comps = { arm1Trans, renderer };
     AddGameObject(player.pArm1Name, arm1Comps);
 
-    shared_ptr<Transform> arm2Trans = make_shared<PlayerTransform>(player.pArm2Name, transform);
+    shared_ptr<PlayerTransform> arm2Trans = make_shared<PlayerTransform>(player.pArm2Name, transform);
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
-    renderer = make_shared<TextureRenderer>("LUNA/luna_arm2", "Luna", player.pArm2Name);
+    renderer = make_shared<TextureRenderer>("LUNA/new/luna_arm_left", "Luna", player.pArm2Name);
     std::vector<std::shared_ptr<Component>> arm2Comps = { arm2Trans, renderer };
     AddGameObject(player.pArm2Name, arm2Comps);
 
-    player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans);
+    player.Init(this, pTransform, headTrans, arm1Trans, arm2Trans, hrenderer);
 
     //initialize random starting attributes for particles. Generate a few batches of 20k particles.
     ParticleRenderer::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 20000);
@@ -181,6 +182,7 @@ void ComponentManager::AddBunchOfSandParticles() {
 //synchronized to the same frame. 
 void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 {
+    //Timer timer;
     //the first thing that should happen in every frame. Stores total time.
     state.IncTotalFrameTime(frameTime);
     if (state.ShouldSpawnStar()) {
@@ -197,27 +199,32 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         if (!move->IsActive) continue;
         move->Update(frameTime, this);
     }
+    //int mvtime = timer.stop();
     //resolve collisions.
+    //timer.start();
     for (auto& giver : components["Collision"])
     {
         if (!giver->IsActive) continue;  //don't collide with destroyed objects.
         giver->Update(frameTime, this);
     }
-
+    //int colitime = timer.stop();
+    //timer.start();
     // update transforms based on movements.
     for (auto& trans : components["Transform"])
     {
         if (!trans->IsActive) continue;
         trans->Update(frameTime, this);
     }
-
+    //int transtime = timer.stop();
+    //timer.start();
     // update flashing animation
     for (auto& collect : components["Collect"])
     {
         if (!collect->IsActive) continue;
         collect->Update(frameTime, this);
     }
-
+    //int coletime = timer.stop();
+    //timer.start();
     // update the player
     player.Update(frameTime, this);
     
@@ -226,8 +233,10 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 
     // update lights
     lightComponent.Update(frameTime, this);
-
+    //int pcamlight = timer.stop();
     //finally update renderers/draw.
+
+    //timer.start();
     for (auto& rend : components["Renderer"])
     {
         if (!rend->IsActive) continue; //if the component is active (isn't awaiting replacement in the component vector structure)
@@ -237,7 +246,9 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         //else
         rend->Update(frameTime, this);
     }
+    //int rendtime = timer.stop();
     //draw particles last because they are transparent.
+    //timer.start();
     for (auto& part : components["Particle"])
     {
         if (!part->IsActive) continue;
