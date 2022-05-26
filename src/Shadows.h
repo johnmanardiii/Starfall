@@ -10,7 +10,6 @@ private:
 	GLuint depthMapFBO;
 	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
 	GLuint depthMap;
-	shared_ptr<Program> prog = NULL;
 
 public:
 	Shadows() 
@@ -19,6 +18,7 @@ public:
 		prog = shaderMan.GetShader("ShadowDepth");
 	}
 	~Shadows();
+	shared_ptr<Program> prog = NULL;
 	void Shadows::RenderShadowPass();
 	void Shadows::InitializeShadowFBO();
 };

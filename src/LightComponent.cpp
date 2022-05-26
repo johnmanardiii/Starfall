@@ -24,6 +24,26 @@ void LightComponent::Update(float frameTime, ComponentManager* compMan)
 	moonDir = vec3(sunDir.x, sunDir.y, sunDir.z * -1.0f);
 }
 
+mat4 LightComponent::GetOrthoMatrix()
+{
+	mat4 ortho = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 100.0f);
+	return ortho;
+}
+
+mat4 LightComponent::GetLightView()
+{
+	/*
+	vec3 playerPos = componentManager->GetPlayer().GetPosition();
+	vec3 camPos = playerPos + vec3(0, 5, 0) + sunDir * vec3(10);
+	vec3 lookAt = camPos - sunDir;
+	return glm::lookAt(camPos, lookAt, vec3(0, 1, 0));*/
+	return mat4(1.0f);
+}
+
+
 void LightComponent::Init(ComponentManager* compMan)
 {
+	componentManager = compMan;
+	ShaderManager shaderMan = ShaderManager::GetInstance();
+	depthProg = shaderMan.GetShader("ShadowDepth");
 }

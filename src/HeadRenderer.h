@@ -24,6 +24,7 @@ public:
 	void Init(ComponentManager* compMan);
 
 	void Draw(float frameTime);
+	void DrawDepth();
 	void SetFlashAmt(float amt) { flashAmt = amt; }
 	vec2 eye1Pos = vec2(.07, .44);
 	float eye1Radius = .02;

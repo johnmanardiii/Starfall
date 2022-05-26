@@ -17,6 +17,7 @@
 #include "MatrixStack.h"
 // For Input enum
 #include "PlayerMovement.h"
+#include "Shadows.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -41,6 +42,7 @@ public:
 	AudioEngine audioEngine;
 	shared_ptr<PostProcessing> postProcessing;
 	shared_ptr<HUDRenderer> hudRenderer;
+	shared_ptr<Shadows> shadows;
 	
 	//callbacks
 	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

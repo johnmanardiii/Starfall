@@ -40,10 +40,11 @@ void Shadows::RenderShadowPass()
     //set up shadow shader and render the scene
     prog->bind();
     //TODO you will need to fix these
+    /*
     LO = SetOrthoMatrix(DepthProg);
     LV = SetLightView(DepthProg, g_light, lightLA, lightUp);
     drawScene(DepthProg, 0, 0);
-    DepthProg->unbind();
+    DepthProg->unbind();*/
 
     //set culling back to normal
     glCullFace(GL_BACK);

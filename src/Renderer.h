@@ -14,8 +14,13 @@ class Renderer : public Component
 {
 public:
 	virtual void Draw(float frameTime) = 0;
+	virtual void DrawDepth() = 0;
 	virtual void Init(ComponentManager*);
-	virtual void Update(float frameTime, ComponentManager* compMan) { Draw(frameTime); }
+	virtual void Update(float frameTime, ComponentManager* compMan) 
+	{ 
+		DrawDepth();
+		Draw(frameTime); 
+	}
 	virtual bool IsInViewFrustum(const GameState& state, ComponentManager* compMan, const Camera& camera);
 	bool isCullable = false; //objects will, by default, not be culled. Set this in a derived Init or Update.
 	

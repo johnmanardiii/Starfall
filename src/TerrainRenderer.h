@@ -9,6 +9,7 @@ class ComponentManager;
 #include <glm/gtc/type_ptr.hpp> //for value_ptr
 
 #include "Camera.h"
+#include "LightComponent.h"
 
 class TerrainRenderer : public Renderer
 {
@@ -29,6 +30,7 @@ public:
 	void Init(ComponentManager* compMan);
 	void UpdateUniforms();
 	void Draw(float frameTime);
+	void DrawDepth();
 private:
 	TerrainS terrain;
 	GLuint texture;

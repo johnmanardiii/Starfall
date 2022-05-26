@@ -35,3 +35,7 @@ void LunaBodyRenderer::Draw(float frameTime)
 	model->draw(prog, true);
 	prog->unbind();
 }
+
+void TextureRenderer::DrawDepth()
+{
+}
