@@ -50,6 +50,7 @@ public:
     void drawSand(float totalTime);
     void drawSmoke(float totalTime);
     vec3 calcNewPos(vec3 globalWindVec, float frametime);
+    pair<ivec3, ivec3> calcSpritePos(int spriteNum);
     static void gpuSetup(std::shared_ptr<Program> prog, int numP);
     void setCamera(mat4 inC) { View = inC; }
     void setProjection(mat4 inP) { Projection = inP; }

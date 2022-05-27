@@ -28,7 +28,7 @@ void ParticleRenderer::Update(float frameTime, ComponentManager* compMan)
 	
     totalTime += frameTime;
 	this->frametime = frameTime;
-	if (totalTime > INT_MAX) {
+	if (totalTime > 4) {
 		compMan->RemoveGameObject(Name);
 		return;
 	}
@@ -170,19 +170,10 @@ void ParticleRenderer::drawSand(float totalTime) {
 	//over a period of 2s, so map [0-2) to [0-39], technically [0-40) first.
 	int spriteNum = int(totalTime * 10.0f) % 40; //an extra frametime is added for update. Make sure it doesn't mess up indexing.
 	//get the next and previous images, to potentially do some blending.
-	int spriteNumPrev = (spriteNum - 1) % 40;
-	if (spriteNumPrev == -1) spriteNumPrev = 39;
-	int spriteNumNext = (spriteNum + 1) % 40;
-	int spriteNums[3] = { spriteNumPrev, spriteNum, spriteNumNext };
-	int rows[3];
-	int cols[3];
-	//lookup the row and column of each. Think abouyt adding all the above to lookup table as well
-	for (int i = 0; i < 3; i++) {
-		rows[i] = SpriteRowColumnTable[spriteNums[i]].first;
-		cols[i] = SpriteRowColumnTable[spriteNums[i]].second;
-	}
-	glUniform3iv(prog->getUniform("Row"), 1, rows);
-	glUniform3iv(prog->getUniform("Column"), 1, cols);
+	pair<ivec3, ivec3> coords = calcSpritePos(spriteNum);
+	glUniform3iv(prog->getUniform("Row"), 1, value_ptr(coords.first));
+	glUniform3iv(prog->getUniform("Column"), 1, value_ptr(coords.second));
+	//cout << "telling GPU to render current sprite image: " << coords.first.y << " - " << coords.second.y << endl;
 	vec3 campos = Camera::GetInstance(vec3(0, 1, 0)).GetPos();
 	glUniform3f(prog->getUniform("campos"), campos.x, campos.y, campos.z);
 
@@ -214,4 +205,16 @@ vec3 ParticleRenderer::calcNewPos(vec3 globalWindVec, float frametime) {
 	offset += (1.0f * globalWindForce) + (1.0f * individualWindForce);
 	//newPosition.y = heightCalc(newPosition.x, newPosition.z) - 15.0f;
 	return offset * frametime;
+}
+
+//given a number in range 0-39, output the texcoords that will be used for the previous, current, and next frames.
+pair<ivec3, ivec3> ParticleRenderer::calcSpritePos(int curr) {
+	int prev = (curr - 1) % 40;
+	if (prev == -1) prev = 39;
+	int next = (curr + 1) % 40;
+	
+	vec3 rows = ivec3(SpriteRowColumnTable[prev].first, SpriteRowColumnTable[curr].first, SpriteRowColumnTable[next].first);
+	vec3 cols = ivec3(SpriteRowColumnTable[prev].second, SpriteRowColumnTable[curr].second, SpriteRowColumnTable[next].second);
+	//lookup the row and column of each. Think about adding all the above to lookup table as well
+	return make_pair(rows, cols);
 }

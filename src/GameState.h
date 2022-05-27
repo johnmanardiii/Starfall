@@ -65,7 +65,7 @@ public:
 
     //for now just do it every time you spawn star fragments.
     bool ShouldSpawnSand() {
-        if (spawnSandFrames >= 2) { 
+        if (spawnSandFrames >= 4) { 
             spawnSandFrames = 0;
             currentObjectCount++;
             return true;

@@ -38,7 +38,7 @@ const float   WIDTH_SCALE = 1/IMAGE_WIDTH_PIX,
 vec2 selectSprite(int row, int col){
     vec2 texCoord = vec2(gl_PointCoord.x, gl_PointCoord.y); //this is the texture coordinate s[0,1] t[0,1].  - 22/571
     texCoord.x = (texCoord.x /8) + WIDTH_OFF_TEX * col;
-    texCoord.y = texCoord.y /5 + HEIGHT_OFF_TEX * row;
+    texCoord.y = (texCoord.y /5) + HEIGHT_OFF_TEX * row;
     return texCoord;
 }
 
@@ -52,20 +52,20 @@ vec2 selectSprite(int row, int col){
 void main()
 {
     //interpolate between next, current, and previous texture images.
-    vec2 texCoordPrev = selectSprite(Row.x,Column.x); 
+    //vec2 texCoordPrev = selectSprite(Row.x,Column.x); 
     vec2 texCoordCurr = selectSprite(Row.y,Column.y);
-    vec2 texCoordNext = selectSprite(Row.z,Column.z);
+    //vec2 texCoordNext = selectSprite(Row.z,Column.z);
     //Based on the total Time, we need to select a sprite.
 
-	float alphaPrev = texture(alphaTexture, texCoordPrev).g;
+	//float alphaPrev = texture(alphaTexture, texCoordPrev).g;
     float alphaCurr = texture(alphaTexture, texCoordCurr).g;
-    float alphaNext = texture(alphaTexture, texCoordNext).g;
+    //float alphaNext = texture(alphaTexture, texCoordNext).g;
 
     //4 second lifetime, meaning totalTime is [0-4), frame is [0-40)
     //one current frame lasts 0.4s.
-    float spriteTime = 2.5f * (mod(totalTime, 0.4)); //[0-1) 
+    //float spriteTime = 2.5f * (mod(totalTime, 0.4)); //[0-1) 
     //mix based on this information.
-    float alpha = alphaCurr / 2.0f;//(alphaPrev + alphaCurr + alphaNext)/3.0f; //mix(alphaCurr, alphaNext, totalTime);
+    float alpha = alphaCurr;//(alphaPrev + alphaCurr + alphaNext)/3.0f; //mix(alphaCurr, alphaNext, totalTime);
     
     //float alpha = alphaPrev + alphaCurr + alphaNext;
 	vec3 color = vec3(0.761f, 0.698f, .502f);
@@ -77,5 +77,5 @@ void main()
     len = clamp(len, 0, 1);
     float a = 1 - len;
 
-	outColor = vec4(color, alpha * a);
+	outColor = vec4(color, alpha);
 }
