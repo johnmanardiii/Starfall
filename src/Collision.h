@@ -26,7 +26,7 @@ public:
 private:
     glm::vec3 getCenterOfBBox();
     void collideWithPlayer(float frameTime, ComponentManager* compMan);
-    float maxDistance = 100;
+    float maxDistance = 70;
     bool hasBeenTouchedByPlayer = false;
     Shape shape;
     shared_ptr<Transform> transform;
