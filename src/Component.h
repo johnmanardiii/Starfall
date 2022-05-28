@@ -6,7 +6,7 @@ class Collision;
 class Movement;
 class Transform;
 class Collect;
-class TextureRenderer;
+class LunaBodyRenderer;
 class Movement;
 class PlayerMovement;
 class Player;

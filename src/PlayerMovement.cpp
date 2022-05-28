@@ -33,7 +33,7 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
     pos.y = (glm::max)(pos.y, heightCalc(pos.x, pos.z));
     trans->SetPos(pos);
     velocity -= velocity * SPEED_FALLOFF * frameTime;
-    cout << length(velocity) << "vel" << endl;
+    // cout << length(velocity) << "vel" << endl;
 }
 
 void PlayerMovement::UpdateRotation(float frameTime)

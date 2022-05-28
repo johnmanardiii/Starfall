@@ -42,7 +42,8 @@ void main()
 	vec3 lp=vec3(50, 30, 50);
 	vec3 ld = normalize(lp - vertex_pos);
 	float diffuse = dot(n,ld);
-	vec3 tcol= texture(tex, vertex_tex).rgb;
+	// vec3 tcol= texture(tex, texture_uvs).rgb;
+	vec3 tcol = vec3(1, 1, 1);	// this is the case since the head has weird UVs and needs its own individual tex.
 	color.rgb = (1- flashAmt) * tcol + flashAmt * flashCol;
 	diffuse = clamp(diffuse, 0.1f, 1.0f);
 	color *= diffuse;

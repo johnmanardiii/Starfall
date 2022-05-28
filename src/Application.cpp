@@ -233,7 +233,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	// load all textures
 	loadTexture("/cat.jpg", "Cat");
-	loadTexture("/LUNA/LUNA_test_tex.png", "Luna");
+	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_BaseColor.png", "Luna");
+	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Emissive.png", "Luna Emissive");
 	loadTexture("/grass.jpg", "Grass");
 	loadTexture("/alpha.png", "Alpha");
 	loadTexture("/alpha.bmp", "SandPartTex");
@@ -247,24 +248,27 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/rainbow.jpg", "Rainbow");
 
 	// used on Luna
-	auto prog = make_shared<Program>();
-	prog->setVerbose(true);
-	prog->setShaderNames(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag.glsl");
-	prog->Init();
-	prog->addUniform("P");
-	prog->addUniform("V");
-	prog->addUniform("M");
-	prog->addUniform("flashAmt");
-	prog->addUniform("flashCol");
-	prog->addAttribute("vertPos");
-	prog->addAttribute("vertNor");
-	prog->addAttribute("vertTex");
+	auto luna_body = make_shared<Program>();
+	luna_body->setVerbose(true);
+	luna_body->setShaderNames(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/luna_body_frag.glsl");
+	luna_body->Init();
+	luna_body->addUniform("P");
+	luna_body->addUniform("V");
+	luna_body->addUniform("M");
+	luna_body->addUniform("flashAmt");
+	luna_body->addUniform("flashCol");
+	luna_body->addAttribute("vertPos");
+	luna_body->addAttribute("vertNor");
+	luna_body->addAttribute("vertTex");
 
-	GLuint TexLocation = glGetUniformLocation(prog->pid, "tex");
-	glUseProgram(prog->pid);
+	GLuint TexLocation = glGetUniformLocation(luna_body->pid, "tex");
+	glUseProgram(luna_body->pid);
 	glUniform1i(TexLocation, 0);
+	TexLocation = glGetUniformLocation(luna_body->pid, "emissiveTex");
+	glUseProgram(luna_body->pid);
+	glUniform1i(TexLocation, 1);
 
-	shaderManager.SetShader("Texture", prog);
+	shaderManager.SetShader("Luna Body", luna_body);
 
 	auto head_prog = make_shared<Program>();
 	head_prog->setVerbose(true);
@@ -499,8 +503,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 
 	//the obj files you want to load. Add more to read them all.
-	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/new/luna_arm_right",
-		"LUNA/new/luna_arm_left", "LUNA/new/luna_body", "LUNA/new/luna_head", "unit_cube"};
+	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/new/lunaModelTextures/right_arm",
+		"LUNA/new/lunaModelTextures/left_arm", "LUNA/new/lunaModelTextures/body", "LUNA/new/lunaModelTextures/head", "unit_cube"};
 	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
