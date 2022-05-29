@@ -10,7 +10,6 @@ uniform vec3 campos;
 uniform vec3 lights[20];
 
 const float M_PI = 3.14159265;
-const float M_1_PI = 1.0f/M_PI;
 const float M_SQRT_2_PI = sqrt(2.0f / M_PI);
 
 float rand(vec2 co){
@@ -31,7 +30,7 @@ float diffuse(vec3 vertex_normal_n, vec3 lightDir){
 //GGX brdf. Takes results from a specular distribution function, a fresnel function, and a geometrix shadowing function,
 //as well as N dot L and N dot V.
 float f_combined(float spec_dist, float fresnel, float geom_shadow, float N_L, float N_V){
-    return clamp( (spec_dist * fresnel * geom_shadow) / (4 * N_L * N_V), 0, 1);
+    return clamp( (spec_dist * fresnel * geom_shadow) / (4 * N_L * N_V), 0.2, 1);
 }
 //GGX microfacet normal distribution function (NDF)
 float f_spec_dist(float roughness, float N_H){
@@ -59,10 +58,6 @@ float brdf(vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float rough){
     vec3 H = normalize(viewDir + lightDir);
     float N_H = md0(vertex_normal_n, H);
     float V_H = md0(viewDir,H);
-    float L_H = md0(lightDir,H);
-
-    float L_V = md0(lightDir,viewDir);
-    float R_V = md0(reflect(-lightDir, vertex_normal_n),viewDir);
 
     float roughness = rough * rough;
     float spec_dist = f_spec_dist(roughness, N_H);
@@ -70,8 +65,8 @@ float brdf(vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float rough){
     //return spec_dist;
     //return f_fresnel(spec_dist, N_L);
     //return f_geom_shadow(N_V, N_L, roughness);
-    return clamp(max(0,spec_dist) + max(0,f_fresnel(spec_dist, V_H)) + max(0,f_geom_shadow(N_V, N_L, roughness)), 0.2,1.1);
-    //return f_combined(spec_dist, f_fresnel(spec_dist, V_H), f_geom_shadow(N_V, N_L, roughness), N_L, N_V);
+    //return clamp(max(0,spec_dist) + max(0,f_fresnel(spec_dist, V_H)) + max(0,f_geom_shadow(N_V, N_L, roughness)), 0.2,1.1);
+    return f_combined(spec_dist, f_fresnel(spec_dist, V_H), f_geom_shadow(N_V, N_L, roughness), N_L, N_V);
 }
 
 void main()
