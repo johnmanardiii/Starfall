@@ -5,7 +5,7 @@
 
 #include "Component.h"
 #include "Renderer.h"
-#include "TextureRenderer.h"
+#include "LunaBodyRenderer.h"
 #include "GameObject.h"
 #include "EulerTransform.h"
 #include "PlayerMovement.h"

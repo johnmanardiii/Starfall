@@ -13,10 +13,11 @@ void main()
 	vec3 lp=vec3(50, 30, 50);
 	vec3 ld = normalize(lp - vertex_pos);
 	float diffuse = dot(n,ld);
-	vec3 tcol= texture(tex, vertex_tex).rgb;
+	vec3 tcol= texture(tex, vec2(vertex_tex.x, -vertex_tex.y)).rgb;
 	color.rgb = (1- flashAmt) * tcol + flashAmt * flashCol;
 	diffuse = clamp(diffuse, 0.1f, 1.0f);
 	color *= diffuse;
+	// color.rgb = vec3(vertex_tex, 0);
 	// color *= 1000;
 	color.a = 1;
 }
