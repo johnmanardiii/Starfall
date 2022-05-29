@@ -63,9 +63,9 @@ float brdf(vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float rough){
     float spec_dist = f_spec_dist(roughness, N_H);
     //if you want to test stuff, return individual floating point values here!
     //return spec_dist;
-    //return f_fresnel(spec_dist, N_L);
+    return f_fresnel(spec_dist, V_H);
     //return f_geom_shadow(N_V, N_L, roughness);
-    //return clamp(max(0,spec_dist) + max(0,f_fresnel(spec_dist, V_H)) + max(0,f_geom_shadow(N_V, N_L, roughness)), 0.2,1.1);
+    return clamp(max(0,spec_dist) + max(0,f_fresnel(spec_dist, V_H)) + max(0,f_geom_shadow(N_V, N_L, roughness)), 0.2,1.1);
     return f_combined(spec_dist, f_fresnel(spec_dist, V_H), f_geom_shadow(N_V, N_L, roughness), N_L, N_V);
 }
 
@@ -93,7 +93,7 @@ void main()
     float roughness = 0.1; //choose a value between (0 and 1] or use a texture. 
     
     vec3 lightDir = normalize(normalize(lightPos) - normalize(vertex_pos));
-    vec3 viewDir = normalize(campos - vertex_pos);
+    vec3 viewDir = normalize(normalize(campos) - normalize(vertex_pos));
     color = vec4(randCol * brdf(vertex_normal_n, lightDir, viewDir, roughness), a);
     //color = vec4(lightDir,a);
 }
