@@ -9,6 +9,7 @@ uniform mat4 M;
 
 uniform float totalTime;
 uniform vec3 centerPos;
+uniform vec3 lights[20];
 
 out vec3 vertex_pos;
 out vec3 vertex_normal_n;
