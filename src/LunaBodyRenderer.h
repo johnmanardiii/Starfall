@@ -19,6 +19,7 @@ public:
 		prog = shaderMan.GetShader("Luna Body");
 		texture = shaderMan.GetTexture(tex);
 		emissive_tex = shaderMan.GetTexture("Luna Emissive");
+		normal_tex = shaderMan.GetTexture("Luna Normal");
 		model = shaderMan.GetModel(mod);
 	}
 	void Update(float frameTime, ComponentManager& compMan) { Draw(frameTime); }
@@ -28,7 +29,7 @@ public:
 	void SetFlashAmt(float amt) { flashAmt = amt; }
 private:
 	shared_ptr<Shape> model;
-	GLuint texture, emissive_tex;
+	GLuint texture, emissive_tex, normal_tex;
 	float flashAmt = 0;
 	vec3 flashColor = vec3(1, 0, 1);
 };

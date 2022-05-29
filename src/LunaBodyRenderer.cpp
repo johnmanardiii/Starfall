@@ -23,6 +23,8 @@ void LunaBodyRenderer::Draw(float frameTime)
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, emissive_tex);
-	model->draw(prog);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, normal_tex);
+	model->draw(prog, true);
 	prog->unbind();
 }

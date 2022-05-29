@@ -34,6 +34,6 @@ void HeadRenderer::Draw(float frameTime)
 	glUniform1f(prog->getUniform("eyeOpenPct"), eyeOpenPct);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	model->draw(prog);
+	model->draw(prog, false);
 	prog->unbind();
 }

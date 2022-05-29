@@ -65,13 +65,22 @@ void Camera::Update(float frameTime, int width, int height, ComponentManager* co
 // Returns a point to interpolate to. Currently returns a point behind the player and above the player.
 glm::vec3 Camera::get_wanted_pos(ComponentManager* compMan)
 {
+    vec3 target_pos;
     float camDistZ = currentCamDistZ;
     if (alt_pressed)
     {
         camDistZ *= -1;
     }
-    vec3 target_pos = compMan->GetPlayer().GetPosition() + camDistZ * -compMan->GetPlayer().GetForward() +
-        vec3(0, 1, 0) * camDistHeight;
+    if (x_pressed)
+    {
+        target_pos = compMan->GetPlayer().GetPosition() + camDistZ * -compMan->GetPlayer().GetForward() * .5f +
+            vec3(0, 1, 0) * camDistHeight * .5f;
+    }
+    else
+    {
+        target_pos = compMan->GetPlayer().GetPosition() + camDistZ * -compMan->GetPlayer().GetForward() +
+            vec3(0, 1, 0) * camDistHeight;
+    }
     return target_pos;
 }
 
