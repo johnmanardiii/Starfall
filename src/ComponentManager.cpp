@@ -77,6 +77,9 @@ void ComponentManager::Init(std::string resourceDirectory)
     //initialize random starting attributes for particles. Generate a few batches of 20k particles.
     ParticleRenderer::gpuSetup(ShaderManager::GetInstance().GetShader("particle"), 20000);
 
+    //initialize starting lights.
+    state.InitLights();
+
     // Initialize the GLSL program, just for the ground plane.
     auto prog = make_shared<Program>();
     prog->setVerbose(true);
@@ -147,7 +150,7 @@ void ComponentManager::AddLineOfStars()
 }
 
 void ComponentManager::AddBunchOfSandParticles() {
-    int numSandToSpawn = (rand() % 50) + 1; //1-X spawning
+    int numSandToSpawn = 1;
     RandomGenerator randTrans(-20, 20); //generate a position offset from the player's right-vector
     float offsetRight = randTrans.GetFloat(); //get some number
     vec3 playerGaze = normalize(player.GetForward()); //double check that this is normalized.
@@ -158,7 +161,7 @@ void ComponentManager::AddBunchOfSandParticles() {
     for (int i = 0; i < numSandToSpawn; ++i) {
         string SandName = "Sand" + to_string(state.TotalObjectsEverMade);
         
-        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 1, 4000, FLT_MAX, &ParticleRenderer::drawSand);
+        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 1, 200, FLT_MAX, &ParticleRenderer::drawSand);
         shared_ptr<Transform> transform = make_shared<Transform>(SandName);
 
         //where all the variables at the top come in.

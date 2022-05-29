@@ -362,6 +362,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	starProg->addUniform("totalTime");
 	starProg->addUniform("centerPos");
 	starProg->addUniform("campos");
+	starProg->addUniform("lights");
 	starProg->addAttribute("vertPos");
 	starProg->addAttribute("vertNor");
 	starProg->addAttribute("vertTex");

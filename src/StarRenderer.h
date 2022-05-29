@@ -24,7 +24,7 @@ public:
     void Update(float frameTime, ComponentManager* compMan);
     void Init(ComponentManager* compMan);
     void Draw(float frameTime);
-
+    GameState* state;
     shared_ptr<Shape> model;
     float totalTime = 0;
     GLuint texture;

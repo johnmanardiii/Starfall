@@ -11,7 +11,7 @@ void StarRenderer::Init(ComponentManager* compMan)
 {
 	
     Renderer::Init(compMan);
-	
+	state = compMan->GetGameState();
 	isCullable = true; //set the star fragments as being available to be culled.
 	//GameObject& obj = compMan->GetGameObject(Name);
 	shared_ptr<Collision> col = static_pointer_cast<Collision>(compMan->GetComponent("Collision", compMan->GetGameObject(Name).GetComponentLocation("Collision")));
@@ -38,7 +38,8 @@ void StarRenderer::Draw(float frameTime)
 	glUniform3f(prog->getUniform("centerPos"), pos.x, pos.y, pos.z);
 	vec3 campos = cam.GetPos();
 	glUniform3f(prog->getUniform("campos"), campos.x, campos.y, campos.z);
-
+	
+	glUniform3fv(prog->getUniform("lights"), state->lights.size(), state->lights.data());
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);

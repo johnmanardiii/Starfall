@@ -7,206 +7,78 @@ in vec2 vertex_tex;
 uniform sampler2D starTexture;
 uniform vec3 centerPos;
 uniform vec3 campos;
-//
-// GLSL textureless classic 3D noise "cnoise",
-// with an RSL-style periodic variant "pnoise".
-// Author:  Stefan Gustavson (stefan.gustavson@liu.se)
-// Version: 2011-10-11
-//
-// Many thanks to Ian McEwan of Ashima Arts for the
-// ideas for permutation and gradient selection.
-//
-// Copyright (c) 2011 Stefan Gustavson. All rights reserved.
-// Distributed under the MIT license. See LICENSE file.
-// https://github.com/stegu/webgl-noise
-//
+uniform vec3 lights[20];
 
-vec3 mod289(vec3 x)
-{
-  return x - floor(x * (1.0 / 289.0)) * 289.0;
-}
-
-vec4 mod289(vec4 x)
-{
-  return x - floor(x * (1.0 / 289.0)) * 289.0;
-}
-
-vec4 permute(vec4 x)
-{
-  return mod289(((x*34.0)+10.0)*x);
-}
-
-vec4 taylorInvSqrt(vec4 r)
-{
-  return 1.79284291400159 - 0.85373472095314 * r;
-}
-
-vec3 fade(vec3 t) {
-  return t*t*t*(t*(t*6.0-15.0)+10.0);
-}
-
-// Classic Perlin noise
-float cnoise(vec3 P)
-{
-  vec3 Pi0 = floor(P); // Integer part for indexing
-  vec3 Pi1 = Pi0 + vec3(1.0); // Integer part + 1
-  Pi0 = mod289(Pi0);
-  Pi1 = mod289(Pi1);
-  vec3 Pf0 = fract(P); // Fractional part for interpolation
-  vec3 Pf1 = Pf0 - vec3(1.0); // Fractional part - 1.0
-  vec4 ix = vec4(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
-  vec4 iy = vec4(Pi0.yy, Pi1.yy);
-  vec4 iz0 = Pi0.zzzz;
-  vec4 iz1 = Pi1.zzzz;
-
-  vec4 ixy = permute(permute(ix) + iy);
-  vec4 ixy0 = permute(ixy + iz0);
-  vec4 ixy1 = permute(ixy + iz1);
-
-  vec4 gx0 = ixy0 * (1.0 / 7.0);
-  vec4 gy0 = fract(floor(gx0) * (1.0 / 7.0)) - 0.5;
-  gx0 = fract(gx0);
-  vec4 gz0 = vec4(0.5) - abs(gx0) - abs(gy0);
-  vec4 sz0 = step(gz0, vec4(0.0));
-  gx0 -= sz0 * (step(0.0, gx0) - 0.5);
-  gy0 -= sz0 * (step(0.0, gy0) - 0.5);
-
-  vec4 gx1 = ixy1 * (1.0 / 7.0);
-  vec4 gy1 = fract(floor(gx1) * (1.0 / 7.0)) - 0.5;
-  gx1 = fract(gx1);
-  vec4 gz1 = vec4(0.5) - abs(gx1) - abs(gy1);
-  vec4 sz1 = step(gz1, vec4(0.0));
-  gx1 -= sz1 * (step(0.0, gx1) - 0.5);
-  gy1 -= sz1 * (step(0.0, gy1) - 0.5);
-
-  vec3 g000 = vec3(gx0.x,gy0.x,gz0.x);
-  vec3 g100 = vec3(gx0.y,gy0.y,gz0.y);
-  vec3 g010 = vec3(gx0.z,gy0.z,gz0.z);
-  vec3 g110 = vec3(gx0.w,gy0.w,gz0.w);
-  vec3 g001 = vec3(gx1.x,gy1.x,gz1.x);
-  vec3 g101 = vec3(gx1.y,gy1.y,gz1.y);
-  vec3 g011 = vec3(gx1.z,gy1.z,gz1.z);
-  vec3 g111 = vec3(gx1.w,gy1.w,gz1.w);
-
-  vec4 norm0 = taylorInvSqrt(vec4(dot(g000, g000), dot(g010, g010), dot(g100, g100), dot(g110, g110)));
-  g000 *= norm0.x;
-  g010 *= norm0.y;
-  g100 *= norm0.z;
-  g110 *= norm0.w;
-  vec4 norm1 = taylorInvSqrt(vec4(dot(g001, g001), dot(g011, g011), dot(g101, g101), dot(g111, g111)));
-  g001 *= norm1.x;
-  g011 *= norm1.y;
-  g101 *= norm1.z;
-  g111 *= norm1.w;
-
-  float n000 = dot(g000, Pf0);
-  float n100 = dot(g100, vec3(Pf1.x, Pf0.yz));
-  float n010 = dot(g010, vec3(Pf0.x, Pf1.y, Pf0.z));
-  float n110 = dot(g110, vec3(Pf1.xy, Pf0.z));
-  float n001 = dot(g001, vec3(Pf0.xy, Pf1.z));
-  float n101 = dot(g101, vec3(Pf1.x, Pf0.y, Pf1.z));
-  float n011 = dot(g011, vec3(Pf0.x, Pf1.yz));
-  float n111 = dot(g111, Pf1);
-
-  vec3 fade_xyz = fade(Pf0);
-  vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
-  vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
-  float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x); 
-  return 2.2 * n_xyz;
-}
-
-// Classic Perlin noise, periodic variant
-float pnoise(vec3 P, vec3 rep)
-{
-  vec3 Pi0 = mod(floor(P), rep); // Integer part, modulo period
-  vec3 Pi1 = mod(Pi0 + vec3(1.0), rep); // Integer part + 1, mod period
-  Pi0 = mod289(Pi0);
-  Pi1 = mod289(Pi1);
-  vec3 Pf0 = fract(P); // Fractional part for interpolation
-  vec3 Pf1 = Pf0 - vec3(1.0); // Fractional part - 1.0
-  vec4 ix = vec4(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
-  vec4 iy = vec4(Pi0.yy, Pi1.yy);
-  vec4 iz0 = Pi0.zzzz;
-  vec4 iz1 = Pi1.zzzz;
-
-  vec4 ixy = permute(permute(ix) + iy);
-  vec4 ixy0 = permute(ixy + iz0);
-  vec4 ixy1 = permute(ixy + iz1);
-
-  vec4 gx0 = ixy0 * (1.0 / 7.0);
-  vec4 gy0 = fract(floor(gx0) * (1.0 / 7.0)) - 0.5;
-  gx0 = fract(gx0);
-  vec4 gz0 = vec4(0.5) - abs(gx0) - abs(gy0);
-  vec4 sz0 = step(gz0, vec4(0.0));
-  gx0 -= sz0 * (step(0.0, gx0) - 0.5);
-  gy0 -= sz0 * (step(0.0, gy0) - 0.5);
-
-  vec4 gx1 = ixy1 * (1.0 / 7.0);
-  vec4 gy1 = fract(floor(gx1) * (1.0 / 7.0)) - 0.5;
-  gx1 = fract(gx1);
-  vec4 gz1 = vec4(0.5) - abs(gx1) - abs(gy1);
-  vec4 sz1 = step(gz1, vec4(0.0));
-  gx1 -= sz1 * (step(0.0, gx1) - 0.5);
-  gy1 -= sz1 * (step(0.0, gy1) - 0.5);
-
-  vec3 g000 = vec3(gx0.x,gy0.x,gz0.x);
-  vec3 g100 = vec3(gx0.y,gy0.y,gz0.y);
-  vec3 g010 = vec3(gx0.z,gy0.z,gz0.z);
-  vec3 g110 = vec3(gx0.w,gy0.w,gz0.w);
-  vec3 g001 = vec3(gx1.x,gy1.x,gz1.x);
-  vec3 g101 = vec3(gx1.y,gy1.y,gz1.y);
-  vec3 g011 = vec3(gx1.z,gy1.z,gz1.z);
-  vec3 g111 = vec3(gx1.w,gy1.w,gz1.w);
-
-  vec4 norm0 = taylorInvSqrt(vec4(dot(g000, g000), dot(g010, g010), dot(g100, g100), dot(g110, g110)));
-  g000 *= norm0.x;
-  g010 *= norm0.y;
-  g100 *= norm0.z;
-  g110 *= norm0.w;
-  vec4 norm1 = taylorInvSqrt(vec4(dot(g001, g001), dot(g011, g011), dot(g101, g101), dot(g111, g111)));
-  g001 *= norm1.x;
-  g011 *= norm1.y;
-  g101 *= norm1.z;
-  g111 *= norm1.w;
-
-  float n000 = dot(g000, Pf0);
-  float n100 = dot(g100, vec3(Pf1.x, Pf0.yz));
-  float n010 = dot(g010, vec3(Pf0.x, Pf1.y, Pf0.z));
-  float n110 = dot(g110, vec3(Pf1.xy, Pf0.z));
-  float n001 = dot(g001, vec3(Pf0.xy, Pf1.z));
-  float n101 = dot(g101, vec3(Pf1.x, Pf0.y, Pf1.z));
-  float n011 = dot(g011, vec3(Pf0.x, Pf1.yz));
-  float n111 = dot(g111, Pf1);
-
-  vec3 fade_xyz = fade(Pf0);
-  vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
-  vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
-  float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x); 
-  return 2.2 * n_xyz;
-}
-
-
-float turbulence( vec3 p ) {
-    float w = 100.0;
-    float t = -.5;
-    for (float f = 1.0; f <= 10.0; f++){
-        float power = pow(2.0, f);
-        t += abs(pnoise(vec3(power * p), vec3(10.0)) / power);
-    }
-    return t;
-}
+const float M_PI = 3.14159265;
+const float M_1_PI = 1.0f/M_PI;
+const float M_SQRT_2_PI = sqrt(2.0f / M_PI);
 
 float rand(vec2 co){
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
+//utility function to prevent mistyping this common pattern.
+float square(float val){
+    return val * val;
+}
+//utility function to prevent mistyping this common pattern.
+float md0(vec3 v1, vec3 v2){
+    return max(0.0f,dot(v1,v2));
+}
+//simple phong diffuse calc.
+float diffuse(vec3 vertex_normal_n, vec3 lightDir){
+    return clamp(dot(vertex_normal_n, lightDir),0.4f,1.0f);
+}
+//GGX brdf. Takes results from a specular distribution function, a fresnel function, and a geometrix shadowing function,
+//as well as N dot L and N dot V.
+float f_combined(float spec_dist, float fresnel, float geom_shadow, float N_L, float N_V){
+    return clamp( (spec_dist * fresnel * geom_shadow) / (4 * N_L * N_V), 0, 1);
+}
+//GGX microfacet normal distribution function (NDF)
+float f_spec_dist(float roughness, float N_H){
+    float r_sq = square(roughness);
+    float d = ((N_H * r_sq - N_H) * N_H + 1);
+    return r_sq / (square(d) * M_PI);
+}
+//spherical-gaussian fresnel approximation
+float f_fresnel(float specular_color, float V_H){
+    float power = ((-5.55473 * V_H) - 6.98316) * V_H;
+    return specular_color + (1 - specular_color) * pow(2,power);
+}
+//Kelemen approximation of Cook-Torrance Geometric Shadowing Function (GSF).
+float f_geom_shadow(float N_V, float N_L, float roughness){
+    float k = square(roughness) * M_SQRT_2_PI;
+    float gH = N_V * k + (1-k);
+    return (square(gH) * N_L);
+}
+
+float brdf(vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float rough){
+    
+    float N_L = md0(vertex_normal_n, lightDir);
+    float N_V = md0(vertex_normal_n, viewDir);
+    
+    vec3 H = normalize(viewDir + lightDir);
+    float N_H = md0(vertex_normal_n, H);
+    float V_H = md0(viewDir,H);
+    float L_H = md0(lightDir,H);
+
+    float L_V = md0(lightDir,viewDir);
+    float R_V = md0(reflect(-lightDir, vertex_normal_n),viewDir);
+
+    float roughness = rough;
+    float spec_dist = f_spec_dist(roughness, N_H);
+    //if you want to test stuff, return individual floating point values here!
+    //return spec_dist;
+    //return f_fresnel(spec_dist, N_L);
+    //return f_geom_shadow(N_V, N_L, roughness);
+    return clamp(spec_dist + f_fresnel(spec_dist, V_H) + f_geom_shadow(N_V, N_L, roughness), 0,1.1);
+    //return f_combined(spec_dist, f_fresnel(spec_dist, V_H), f_geom_shadow(N_V, N_L, roughness), N_L, N_V);
+}
 
 void main()
 {
-    vec3 lightPos = vec3(50,30,50);
-    vec3 lightDir = normalize(lightPos - vertex_pos);
-    float diffuse = dot(vertex_normal_n, lightDir);
-    diffuse = clamp(diffuse, 0.4f, 1.0f);
-
+    vec3 lightPos = lights[0];
+    
+    
     vec3 tcol = texture(starTexture, vertex_tex).rgb;
 
     //alpha fadeout with distance - this should match the implementation in height_frag.glsl
@@ -217,12 +89,16 @@ void main()
     float a = 1 - len;
     
     //use this to make into specific colors.
-    //vec3 randCol = vec3(
-    //  abs(0.55f * rand(centerPos.xy)),
-    //  abs(0.55f * rand(centerPos.yz)),
-    //  abs(0.55f * rand(centerPos.xz)));
-    color = vec4(0.50 + (tcol * diffuse),a);
-    // feel free to turn this down Bob
-    // color.rgb = color.rgb * 2;
-    //color = vec4(centerPos, 1);
+    vec3 randCol = vec3(
+      abs(0.65f * rand(centerPos.xy)),
+      abs(0.65f * rand(centerPos.yz)),
+      abs(0.65f * rand(centerPos.xz)));
+
+    //for star fragments, fake roughness.
+    float roughness = 0.1; //choose a value between (0 and 1] or use a texture. 
+    
+    vec3 lightDir = normalize(normalize(lightPos) - normalize(vertex_pos));
+    vec3 viewDir = normalize(campos - vertex_pos);
+    color = vec4(tcol * brdf(vertex_normal_n, lightDir, viewDir, roughness), a);
+    //color = vec4(lightDir,a);
 }
