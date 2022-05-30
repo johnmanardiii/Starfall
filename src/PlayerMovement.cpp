@@ -46,7 +46,7 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
     // Reset Luna's position to the ground height
     //   if they're below the ground
     vec3 pos = trans->GetPos();
-    pos.y = (glm::max)(pos.y, heightCalc(pos.x, pos.z));
+    pos.y = (glm::max)(pos.y, HeightCalc::heightCalc(pos.x, pos.z));
     trans->SetPos(pos);
 
     // Lose a small amount of velocity (friction)
@@ -77,7 +77,7 @@ float PlayerMovement::GetSlopeDiff(float frameTime)
     vec3 pos = trans->GetPos();
     float currentH = pos.y,
         nextH = (std::max)(pos.y - (inputBuffer[LSHIFT] ? STRONG_GRAVITY_MULT : GRAVITY_MULT) * frameTime,
-            heightCalc(pos.x + forward.x, pos.z + forward.z));
+            HeightCalc::heightCalc(pos.x + forward.x, pos.z + forward.z));
     return nextH - currentH;
 }
 
@@ -86,9 +86,8 @@ void PlayerMovement::GroundCollision(float frameTime)
     // Get Luna's position and a point in the direction of Luna's velocity
     vec3 pos = trans->GetPos(),
         offPos = pos + velocity * frameTime;
-
     // Set the offset point on the ground if it was below the ground
-    offPos.y = (glm::max)(offPos.y, heightCalc(offPos.x, offPos.z));
+    offPos.y = (glm::max)(offPos.y, HeightCalc::heightCalc(offPos.x, offPos.z));
 
     // This is the slope vector. If the offset point was above the ground,
     //   this will just be in the same direction as Luna's velocity.
