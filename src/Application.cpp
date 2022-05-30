@@ -235,7 +235,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/cat.jpg", "Cat");
 	loadTexture("/LUNA/LUNA_test_tex.png", "Luna");
 	loadTexture("/grass.jpg", "Grass");
-	loadTexture("/alpha.png", "Alpha");
+	loadTexture("/alpha.bmp", "Alpha");
 	loadTexture("/smoke_spritesheet.png", "SandPartTex");
 	loadTexture("/noiseTex.png", "noiseTex");
 	loadTexture("/sandShallow.jpg", "sandShallow");
@@ -362,6 +362,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	starProg->addUniform("totalTime");
 	starProg->addUniform("centerPos");
 	starProg->addUniform("campos");
+	starProg->addUniform("lights");
 	starProg->addAttribute("vertPos");
 	starProg->addAttribute("vertNor");
 	starProg->addAttribute("vertTex");

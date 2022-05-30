@@ -52,3 +52,15 @@ bool GameState::ShouldSpawnSand() {
     }
     return false;
 }
+
+void GameState::InitLights() {
+    for (int i = 0; i < 20; i++) {
+        lights.push_back(0);
+        lights.push_back(FLT_MAX);
+        lights.push_back(FLT_MAX);
+    }
+}
+//warning, does nothing atm
+void GameState::UpdateLights() {
+    return;
+}
