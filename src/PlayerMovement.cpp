@@ -12,6 +12,7 @@ void PlayerMovement::SetInput(int index, bool value)
 
 void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
 {
+    // Rotate Luna first so forward direction is correct
     UpdateRotation(frameTime);
 
     // store result of W and S as speed
@@ -19,21 +20,37 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
 
     // TODO: add acceleration to input, and make luna lean forward and backward
     // based on acceleration rather than direct speed.
+
+    // Apply velocity in the direction Luna is facing
     vec3 dir = glm::rotate(trans->GetRot(), vec3(0, 0, -1));
     velocity +=  dir * speedInput * SPEED * frameTime;
-    // cout << "Speed: " << glm::length(velocity) << endl;
+
+    // Apply downward velocity
+    //   (gravity is accelleration, 
+    //   but its effect is adding downward velocity each frame)
     ApplyGravity(frameTime);
+
+    // If holding left shift add more downward veloctity (to gain extra speed)
     if (inputBuffer[LSHIFT])
     {
         velocity.y -= STRONG_GRAVITY_MULT * frameTime;
     }
+
+    // Sloped movement resolution
+    //   depends on whether shift is held or not
     GroundCollision(frameTime);
+
+    // Actually move Luna
     trans->ApplyTranslation(velocity * frameTime);
+
+    // Reset Luna's position to the ground height
+    //   if they're below the ground
     vec3 pos = trans->GetPos();
-    pos.y = (glm::max)(pos.y, heightCalc(pos.x, pos.z));
+    pos.y = (glm::max)(pos.y, HeightCalc::heightCalc(pos.x, pos.z));
     trans->SetPos(pos);
+
+    // Lose a small amount of velocity (friction)
     velocity -= velocity * SPEED_FALLOFF * frameTime;
-    //cout << length(velocity) << "vel" << endl;
 }
 
 void PlayerMovement::UpdateRotation(float frameTime)
@@ -60,26 +77,42 @@ float PlayerMovement::GetSlopeDiff(float frameTime)
     vec3 pos = trans->GetPos();
     float currentH = pos.y,
         nextH = (std::max)(pos.y - (inputBuffer[LSHIFT] ? STRONG_GRAVITY_MULT : GRAVITY_MULT) * frameTime,
-            heightCalc(pos.x + forward.x, pos.z + forward.z));
+            HeightCalc::heightCalc(pos.x + forward.x, pos.z + forward.z));
     return nextH - currentH;
 }
 
 void PlayerMovement::GroundCollision(float frameTime)
 {
+    // Get Luna's position and a point in the direction of Luna's velocity
     vec3 pos = trans->GetPos(),
         offPos = pos + velocity * frameTime;
-    offPos.y = (glm::max)(offPos.y, heightCalc(offPos.x, offPos.z));
+    // Set the offset point on the ground if it was below the ground
+    offPos.y = (glm::max)(offPos.y, HeightCalc::heightCalc(offPos.x, offPos.z));
+
+    // This is the slope vector. If the offset point was above the ground,
+    //   this will just be in the same direction as Luna's velocity.
+    //   If the offset point was below the ground, this vector will point
+    //   in the direction of the slope of the gound.
     vec3 slopeVec = offPos - pos;
+
+    // Return if Luna is not moving
     if (glm::length(slopeVec) < 0.001)
     {
         return;
     }
     slopeVec = glm::normalize(slopeVec);
+
+    // If left shift is held, project the velocity
+    //   onto the normalized slope vector
+    //   (This will redirect any extra downward velocity
+    //   in the direction of the slope).
     if (inputBuffer[LSHIFT])
     {
         // project velocity onto slope vector
         velocity = glm::dot(velocity, slopeVec) * slopeVec;
     }
+    // If left shit not held, redirect all velocity to the
+    //   direction of the slope
     else
     {
         velocity = slopeVec * glm::length(velocity);

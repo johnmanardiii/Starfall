@@ -32,7 +32,9 @@ public:
     bool IsGameEnded() { return isGameEnded; }
     bool ShouldSpawnSand();
     bool ShouldSpawnStar();
-
+    vector<float> lights; //for now place 20 lights (60 floats) at exact same position, sort of where moon starts.
+    void InitLights();
+    void UpdateLights(); 
     int TotalObjectsEverMade;
 private:
     ComponentManager* compMan;
@@ -48,3 +50,4 @@ private:
     bool isGameEnded = false;
     int objectsNeeded = 50;
 };
+

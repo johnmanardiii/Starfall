@@ -244,7 +244,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Emissive.png", "Luna Emissive");
 	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Normal.png", "Luna Normal");
 	loadTexture("/grass.jpg", "Grass");
-	loadTexture("/alpha.png", "Alpha");
+	loadTexture("/alpha.bmp", "Alpha");
 	loadTexture("/smoke_spritesheet.png", "SandPartTex");
 	loadTexture("/noiseTex.png", "noiseTex");
 	loadTexture("/sandShallow.jpg", "sandShallow");
@@ -379,6 +379,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	starProg->addUniform("totalTime");
 	starProg->addUniform("centerPos");
 	starProg->addUniform("campos");
+	starProg->addUniform("lights");
 	starProg->addAttribute("vertPos");
 	starProg->addAttribute("vertNor");
 	starProg->addAttribute("vertTex");
