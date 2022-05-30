@@ -21,7 +21,7 @@ float square(float val){
 }
 //utility function to prevent mistyping this common pattern.
 float md0(vec3 v1, vec3 v2){
-    return max(0.0f,dot(v1,v2));
+    return max(0.000001f,dot(v1,v2));
 }
 //simple phong diffuse calc.
 float diffuse(vec3 vertex_normal_n, vec3 lightDir){
@@ -30,7 +30,7 @@ float diffuse(vec3 vertex_normal_n, vec3 lightDir){
 //GGX brdf. Takes results from a specular distribution function, a fresnel function, and a geometrix shadowing function,
 //as well as N dot L and N dot V.
 float f_combined(float spec_dist, float fresnel, float geom_shadow, float N_L, float N_V){
-    return clamp( (spec_dist * fresnel * geom_shadow) / (4 * N_L * N_V), 0.2, 1);
+    return clamp( (spec_dist * clamp(fresnel,0,1) * geom_shadow) / (4 * N_L * N_V), 0.2, 1);
 }
 //GGX microfacet normal distribution function (NDF)
 float f_spec_dist(float roughness, float N_H){
@@ -43,6 +43,12 @@ float f_fresnel(float specular_color, float V_H){
     float power = ((-5.55473 * V_H) - 6.98316) * V_H;
     return specular_color + (1 - specular_color) * pow(2,power);
 }
+
+float f_fresnel_shlicks(float i_r, float V_H){
+    float R0 = pow((1 - i_r / 1 + i_r),2);
+    return R0 + (1 - R0) * pow((1 - V_H),5);
+}
+
 //Kelemen approximation of Cook-Torrance Geometric Shadowing Function (GSF).
 float f_geom_shadow(float N_V, float N_L, float roughness){
     float k = square(roughness) * M_SQRT_2_PI;
@@ -50,23 +56,24 @@ float f_geom_shadow(float N_V, float N_L, float roughness){
     return (square(gH) * N_L);
 }
 
-float brdf(vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float rough){
+float brdf(vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float rough, float i_r){
     
     float N_L = md0(vertex_normal_n, lightDir);
     float N_V = md0(vertex_normal_n, viewDir);
+    float V_L = md0(viewDir, lightDir);
     
     vec3 H = normalize(viewDir + lightDir);
     float N_H = md0(vertex_normal_n, H);
     float V_H = md0(viewDir,H);
-
+    float L_H = md0(lightDir, H);
     float roughness = rough * rough;
     float spec_dist = f_spec_dist(roughness, N_H);
     //if you want to test stuff, return individual floating point values here!
     //return spec_dist;
     //return f_fresnel(spec_dist, V_H);
     //return f_geom_shadow(N_V, N_L, roughness);
-    return clamp(max(0,spec_dist) + max(0,f_fresnel(spec_dist, V_H)) + max(0,f_geom_shadow(N_V, N_L, roughness)), 0.2,1.1);
-    //return f_combined(spec_dist, f_fresnel(spec_dist, V_H), f_geom_shadow(N_V, N_L, roughness), N_L, N_V);
+    //return clamp(max(0,spec_dist) + max(0,f_fresnel(spec_dist, L_H)) + max(0,f_geom_shadow(N_V, N_L, roughness)), 0.2,1.1);
+    return f_combined(spec_dist, f_fresnel_shlicks(i_r, V_H), f_geom_shadow(N_V, N_L, roughness), N_L, N_V);
 }
 
 void main()
@@ -91,9 +98,9 @@ void main()
 
     //for star fragments, fake roughness.
     float roughness = 0.4; //choose a value between (0 and 1] or use a texture. 
-    
+    float i_r = 1.5; //1-4. when in doubt use 1.5.
     vec3 lightDir = normalize(normalize(lightPos) - normalize(vertex_pos));
     vec3 viewDir = normalize(normalize(campos) - normalize(vertex_pos));
-    color = vec4(randCol * brdf(vertex_normal_n, lightDir, viewDir, roughness), a);
+    color = vec4(randCol * brdf(vertex_normal_n, lightDir, viewDir, roughness, i_r), a);
     //color = vec4(lightDir,a);
 }
