@@ -73,7 +73,7 @@ float brdf(vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float rough, float
     //return f_fresnel(spec_dist, V_H);
     //return f_geom_shadow(N_V, N_L, roughness);
     //return clamp(max(0,spec_dist) + max(0,f_fresnel(spec_dist, L_H)) + max(0,f_geom_shadow(N_V, N_L, roughness)), 0.2,1.1);
-    return f_combined(spec_dist, f_fresnel_shlicks(i_r, V_H), f_geom_shadow(N_V, N_L, roughness), N_L, N_V);
+    return f_combined(spec_dist, f_fresnel_shlicks(i_r, clamp(V_H,0.000001,1)), f_geom_shadow(N_V, N_L, roughness), N_L, N_V);
 }
 
 void main()
