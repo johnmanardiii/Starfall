@@ -5,14 +5,6 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-	if (key == GLFW_KEY_Z && action == GLFW_RELEASE)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
   
 	//player movement
 	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
@@ -116,10 +108,10 @@ void Application::InitTerrain() {
 	for (int x = 0; x < MESHSIZE; x++)
 		for (int z = 0; z < MESHSIZE; z++)
 		{
-			vertices[x * 4 + z * MESHSIZE * 4 + 0] = vec3(0.0, 0.0, 0.0) + vec3(x, 0, z);
-			vertices[x * 4 + z * MESHSIZE * 4 + 1] = vec3(1.0, 0.0, 0.0) + vec3(x, 0, z);
-			vertices[x * 4 + z * MESHSIZE * 4 + 2] = vec3(1.0, 0.0, 1.0) + vec3(x, 0, z);
-			vertices[x * 4 + z * MESHSIZE * 4 + 3] = vec3(0.0, 0.0, 1.0) + vec3(x, 0, z);
+			vertices[x * 4 + z * MESHSIZE * 4 + 0] = (vec3(0.0, 0.0, 0.0) + vec3(x, 0, z)) * 3.0f;
+			vertices[x * 4 + z * MESHSIZE * 4 + 1] = (vec3(1.0, 0.0, 0.0) + vec3(x, 0, z)) * 3.0f;
+			vertices[x * 4 + z * MESHSIZE * 4 + 2] = (vec3(1.0, 0.0, 1.0) + vec3(x, 0, z)) * 3.0f;
+			vertices[x * 4 + z * MESHSIZE * 4 + 3] = (vec3(0.0, 0.0, 1.0) + vec3(x, 0, z)) * 3.0f;
 		}
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * MESHSIZE * MESHSIZE * 4, vertices, GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
@@ -127,7 +119,7 @@ void Application::InitTerrain() {
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	//tex coords
-	float t = 1. / 100;
+	float t = 1. / (float) MESHSIZE;
 	vec2* tex = (vec2*)malloc(MESHSIZE * MESHSIZE * 4 * sizeof(vec2));
 	for (int x = 0; x < MESHSIZE; x++)
 		for (int y = 0; y < MESHSIZE; y++)
@@ -414,8 +406,10 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	heightProg->addUniform("P");
 	heightProg->addUniform("V");
 	heightProg->addUniform("M");
-	heightProg->addUniform("camoff");
+
+	// Camera/Player information
 	heightProg->addUniform("campos");
+	heightProg->addUniform("playerPos");
 	heightProg->addUniform("lightDir");
 	heightProg->addUniform("time");
 
@@ -607,6 +601,7 @@ void Application::render(float frameTime)
 	// render post-processing
 	if (renderPostProcessing && !renderLines)
     {
+		
     	// render post-processing
     	postProcessing->RenderPostProcessing();
     }

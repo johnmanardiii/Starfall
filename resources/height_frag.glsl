@@ -11,8 +11,8 @@ uniform sampler2D noiseTex;
 uniform sampler2D sandShallow;
 uniform sampler2D sandSteep;
 
-uniform vec3 camoff;
 uniform vec3 campos;
+uniform vec3 playerPos;
 uniform vec3 lightDir;
 uniform mat4 V;
 uniform float time;
@@ -119,13 +119,11 @@ vec3 SandRipples(vec2 texcoords, vec3 lightDir, vec3 view)
 void main()
 {
 	vec2 texcoords=frag_tex;
-	float t=1./100.;
-	texcoords -= vec2(camoff.x,camoff.z)*t;
 
-	float len = length(frag_pos.xz-campos.xz);
-	len-=41;
-	len/=8.;
+	float len = length(frag_pos.xz-playerPos.xz);
+	len = abs(len) / 150.0f;
 	len=clamp(len,0,1);
+	len = pow(len, 5.0f);
 	
 	// Sand normals
 	vec3 sandNormal = SandNormal(frag_norm, texcoords) * (1 - len);
@@ -144,5 +142,5 @@ void main()
 	
 	color.a=1-len;
 	//color.rgb = normalize(frag_norm);
-	
+	//color.a = 1;
 }
