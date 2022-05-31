@@ -7,7 +7,7 @@ in vec3 vertex_pos;
 
 uniform vec3 campos;
 uniform vec3 centerPos;
-
+uniform float alphaTime;
 uniform vec3 Row;
 uniform vec3 Column;
 
@@ -15,20 +15,7 @@ out vec4 outColor;
 
 uniform float totalTime;
 
-//constants used for texturing the specific sprite sheet.
-//total image width and height in pixels
-const float IMAGE_WIDTH_PIX = 1002, IMAGE_HEIGHT_PIX = 571; //truly horrible numbers
-//width and height of a single sprite in pixels
-const float SPRITE_WIDTH_PIX = 125, SPRITE_HEIGHT_PIX = 114;
-//horizontal and vertical spacing that exists inbetween each sprite
 
-
-//texture space offsets.
-const float WIDTH_OFF_TEX = (SPRITE_WIDTH_PIX) / IMAGE_WIDTH_PIX;
-const float HEIGHT_OFF_TEX = (SPRITE_HEIGHT_PIX) / IMAGE_HEIGHT_PIX;
-
-//given a row and a column representing the sprite image to render, convert
-//a gl_PointCoord to just map to the sprite image in the sheet to render.
 vec2 selectSprite(float row, float col){
     vec2 texCoord = vec2(gl_PointCoord.x, gl_PointCoord.y); //this is the texture coordinate s[0,1] t[0,1].  - 22/571
     texCoord.x = (texCoord.x /8) + col;
@@ -79,5 +66,5 @@ void main()
     else
         outColor = vec4(0,texCoordCurr.y,0,1);
     */
-    outColor = vec4(color, alpha * a);
+    outColor = vec4(color, alpha * a * alphaTime);
 }

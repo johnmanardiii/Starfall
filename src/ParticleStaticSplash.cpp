@@ -27,7 +27,7 @@ void ParticleRenderer::Update(float frameTime, ComponentManager* compMan)
 	
     totalTime += frameTime;
 	this->frametime = frameTime;
-	if (totalTime > 4) {
+	if (totalTime > LIFETIME) {
 		compMan->RemoveGameObject(Name);
 		return;
 	}
@@ -170,7 +170,18 @@ void ParticleRenderer::drawSand(float totalTime) {
 	mat4 Model = trans->GetModelMat();
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(Model));
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
-
+	float alphaTime = 0;
+	if (totalTime < 1) {
+		alphaTime = totalTime;
+	}
+	else if (totalTime < LIFETIME - 1) {
+		alphaTime = 1;
+	}
+	else {
+		alphaTime = LIFETIME - totalTime;
+	}
+	cout << alphaTime << endl;
+	glUniform1f(prog->getUniform("alphaTime"), alphaTime);
 	vec4 nearPlane = Camera::GetInstance(vec3()).getVFCPlanes()[4];
 	
 	trans->SetPos(Camera::GetInstance(vec3()).GetPos() + 15.0f * vec3(nearPlane) + vec3(0, 5, 0));
@@ -178,10 +189,10 @@ void ParticleRenderer::drawSand(float totalTime) {
 
 	//do the calculation for, based on the time, which row/column images should be used.
 	//over a period of 2s, so map [0-2) to [0-39], technically [0-40) first.
-	int spriteNum = int(totalTime * 10.0f) % 64; //an extra frametime is added for update. Make sure it doesn't mess up indexing.
+	int spriteNum = int(totalTime * 60.0f) % 64; //an extra frametime is added for update. Make sure it doesn't mess up indexing.
 	//get the next and previous images, to potentially do some blending.
 	pair<vec3, vec3> coords = calcSpritePos(spriteNum);
-
+	
 	glUniform3fv(prog->getUniform("Row"), 1, value_ptr(coords.first));
 	glUniform3fv(prog->getUniform("Column"), 1, value_ptr(coords.second));
 	//cout << "telling GPU to render current sprite image: " << coords.first.y << " - " << coords.second.y << endl;

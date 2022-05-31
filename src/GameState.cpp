@@ -43,9 +43,9 @@ void GameState::EndGame()
         cout << "YOU LOST! Did not collect enough star fragments, you are stranded." << endl;
     isGameEnded = true;
 }
-
+//when or what conditions to spawn sand particles
 bool GameState::ShouldSpawnSand() {
-    if (spawnSandFrames >= 4) {
+    if (spawnSandFrames >= 10) { 
         spawnSandFrames = 0;
         currentObjectCount++;
         return true;
