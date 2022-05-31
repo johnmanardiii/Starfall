@@ -8,8 +8,8 @@ in vec3 vertex_pos;
 uniform vec3 campos;
 uniform vec3 centerPos;
 
-uniform ivec3 Row;
-uniform ivec3 Column;
+uniform vec3 Row;
+uniform vec3 Column;
 
 out vec4 outColor;
 
@@ -19,26 +19,20 @@ uniform float totalTime;
 //total image width and height in pixels
 const float IMAGE_WIDTH_PIX = 1002, IMAGE_HEIGHT_PIX = 571; //truly horrible numbers
 //width and height of a single sprite in pixels
-const int SPRITE_WIDTH_PIX = 100, SPRITE_HEIGHT_PIX = 100;
+const float SPRITE_WIDTH_PIX = 125, SPRITE_HEIGHT_PIX = 114;
 //horizontal and vertical spacing that exists inbetween each sprite
-const int WIDTH_SPACING_PIX = 28, HEIGHT_SPACING_PIX = 27; //seriously, why? they don't even add up to the image size!
+
 
 //texture space offsets.
-const float WIDTH_OFF_TEX = (SPRITE_WIDTH_PIX + WIDTH_SPACING_PIX) / IMAGE_WIDTH_PIX;
-const float HEIGHT_OFF_TEX = (SPRITE_HEIGHT_PIX + HEIGHT_SPACING_PIX) / IMAGE_HEIGHT_PIX;
-
-//the scale to convert each to texture space;
-const float   WIDTH_SCALE = 1/IMAGE_WIDTH_PIX, 
-            HEIGHT_SCALE = 1/IMAGE_HEIGHT_PIX;
-
-
+const float WIDTH_OFF_TEX = (SPRITE_WIDTH_PIX) / IMAGE_WIDTH_PIX;
+const float HEIGHT_OFF_TEX = (SPRITE_HEIGHT_PIX) / IMAGE_HEIGHT_PIX;
 
 //given a row and a column representing the sprite image to render, convert
 //a gl_PointCoord to just map to the sprite image in the sheet to render.
-vec2 selectSprite(int row, int col){
+vec2 selectSprite(float row, float col){
     vec2 texCoord = vec2(gl_PointCoord.x, gl_PointCoord.y); //this is the texture coordinate s[0,1] t[0,1].  - 22/571
-    texCoord.x = (texCoord.x /8) + WIDTH_OFF_TEX * col;
-    texCoord.y = (texCoord.y /5) + HEIGHT_OFF_TEX * row;
+    texCoord.x = (texCoord.x /8) + col;
+    texCoord.y = (texCoord.y /8) + row;
     return texCoord;
 }
 
@@ -58,14 +52,11 @@ void main()
     //Based on the total Time, we need to select a sprite.
 
 	//float alphaPrev = texture(alphaTexture, texCoordPrev).g;
-    float alphaCurr = texture(alphaTexture, texCoordCurr).g;
+    float alphaCurr = texture(alphaTexture, texCoordCurr).a;
     //float alphaNext = texture(alphaTexture, texCoordNext).g;
 
-    //4 second lifetime, meaning totalTime is [0-4), frame is [0-40)
-    //one current frame lasts 0.4s.
-    //float spriteTime = 2.5f * (mod(totalTime, 0.4)); //[0-1) 
-    //mix based on this information.
-    float alpha = alphaCurr;//(alphaPrev + alphaCurr + alphaNext)/3.0f; //mix(alphaCurr, alphaNext, totalTime);
+    
+    float alpha = alphaCurr;
     
     //float alpha = alphaPrev + alphaCurr + alphaNext;
 	vec3 color = vec3(0.761f, 0.698f, .502f);
@@ -77,5 +68,16 @@ void main()
     len = clamp(len, 0, 1);
     float a = 1 - len;
 
-	outColor = vec4(color, alpha);
+    
+    /* debugging */
+    /*
+    if (gl_PointCoord.x < 0.5)
+	    outColor = vec4(texCoordCurr.x,0,0, 1);
+    
+    else if (texCoordCurr.y > 1)
+        outColor = vec4(1,1,1,1);
+    else
+        outColor = vec4(0,texCoordCurr.y,0,1);
+    */
+    outColor = vec4(color, alpha * a);
 }

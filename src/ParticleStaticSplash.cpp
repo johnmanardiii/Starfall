@@ -12,8 +12,7 @@ vector<unsigned> ParticleRenderer::colBufObj = vector<unsigned>(numUniqueBufObjs
 vector<unsigned> ParticleRenderer::norBufObj = vector<unsigned>(numUniqueBufObjs);
 vector<unsigned> ParticleRenderer::rotBufObj = vector<unsigned>(numUniqueBufObjs);
 
-
-vector<pair<int, int>>  ParticleRenderer::SpriteRowColumnTable;
+vector<pair<float, float>>  ParticleRenderer::SpriteRowColumnTable;
 
 
 float randFloat(float l, float h)
@@ -55,12 +54,23 @@ void ParticleRenderer::Init(ComponentManager* compMan)
 }
 
 void ParticleRenderer::gpuSetup(std::shared_ptr<Program> prog, int numP) {
+	//constants used for texturing the specific sprite sheet.
+//total image width and height in pixels
+	const float IMAGE_WIDTH_PIX = 1024, IMAGE_HEIGHT_PIX = 1024; //truly perfect numbers
+	//width and height of a single sprite in pixels
+	const float SPRITE_WIDTH_PIX = 128, SPRITE_HEIGHT_PIX = 128;
+	//horizontal and vertical spacing that exists inbetween each sprite
+	const float SPRITE_HORIZONTAL_SPACING = 0, SPRITE_VERTICAL_SPACING = 0;
+	//texture space offsets.
+	const float WIDTH_OFF_TEX = (SPRITE_WIDTH_PIX) / IMAGE_WIDTH_PIX;
+	const float HEIGHT_OFF_TEX = (SPRITE_HEIGHT_PIX) / IMAGE_HEIGHT_PIX;
+
 	//make this lookup table at setup to save render computation time
-	for (int i = 0; i < 8; i++) {
-		for (int j = 0; j < 5; j++) {
-			SpriteRowColumnTable.push_back(make_pair(i, j));
-		}
+	for (int rows = 0; rows < 8; rows++) {
+		for (int cols = 0; cols < 8; cols++)
+			SpriteRowColumnTable.push_back(make_pair(rows * HEIGHT_OFF_TEX, cols * WIDTH_OFF_TEX));
 	}
+	
 	for (int i = 0; i < ParticleRenderer::numUniqueBufObjs; i++) {
 		vertArrObj.push_back(0);
 		pointColors.emplace_back(vector<float>(numP * 3));
@@ -168,11 +178,12 @@ void ParticleRenderer::drawSand(float totalTime) {
 
 	//do the calculation for, based on the time, which row/column images should be used.
 	//over a period of 2s, so map [0-2) to [0-39], technically [0-40) first.
-	int spriteNum = int(totalTime * 10.0f) % 40; //an extra frametime is added for update. Make sure it doesn't mess up indexing.
+	int spriteNum = int(totalTime * 10.0f) % 64; //an extra frametime is added for update. Make sure it doesn't mess up indexing.
 	//get the next and previous images, to potentially do some blending.
-	pair<ivec3, ivec3> coords = calcSpritePos(spriteNum);
-	glUniform3iv(prog->getUniform("Row"), 1, value_ptr(coords.first));
-	glUniform3iv(prog->getUniform("Column"), 1, value_ptr(coords.second));
+	pair<vec3, vec3> coords = calcSpritePos(spriteNum);
+
+	glUniform3fv(prog->getUniform("Row"), 1, value_ptr(coords.first));
+	glUniform3fv(prog->getUniform("Column"), 1, value_ptr(coords.second));
 	//cout << "telling GPU to render current sprite image: " << coords.first.y << " - " << coords.second.y << endl;
 	vec3 campos = Camera::GetInstance(vec3(0, 1, 0)).GetPos();
 	glUniform3f(prog->getUniform("campos"), campos.x, campos.y, campos.z);
@@ -208,13 +219,13 @@ vec3 ParticleRenderer::calcNewPos(vec3 globalWindVec, float frametime) {
 }
 
 //given a number in range 0-39, output the texcoords that will be used for the previous, current, and next frames.
-pair<ivec3, ivec3> ParticleRenderer::calcSpritePos(int curr) {
-	int prev = (curr - 1) % 40;
-	if (prev == -1) prev = 39;
-	int next = (curr + 1) % 40;
+pair<vec3, vec3> ParticleRenderer::calcSpritePos(int curr) {
+	int prev = (curr - 1) % 64;
+	if (prev == -1) prev = 63;
+	int next = (curr + 1) % 64;
 	
-	vec3 rows = ivec3(SpriteRowColumnTable[prev].first, SpriteRowColumnTable[curr].first, SpriteRowColumnTable[next].first);
-	vec3 cols = ivec3(SpriteRowColumnTable[prev].second, SpriteRowColumnTable[curr].second, SpriteRowColumnTable[next].second);
+	vec3 rows = vec3(SpriteRowColumnTable[prev].first, SpriteRowColumnTable[curr].first, SpriteRowColumnTable[next].first);
+	vec3 cols = vec3(SpriteRowColumnTable[prev].second, SpriteRowColumnTable[curr].second, SpriteRowColumnTable[next].second);
 	//lookup the row and column of each. Think about adding all the above to lookup table as well
 	return make_pair(rows, cols);
 }

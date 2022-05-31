@@ -9,8 +9,6 @@
 
 class ComponentManager;
 
-
-
 class ParticleRenderer : public Renderer
 {
 public:
@@ -38,7 +36,7 @@ public:
     static vector<vector<float>> pointColors;
     static vector<vector<float>> pointNormals;
     static vector<vector<float>> pointRotations;
-    static vector<pair<int, int>> SpriteRowColumnTable;
+    static vector<pair<float, float>> SpriteRowColumnTable;
 
     constexpr static int numUniqueBufObjs = 7;
     static vector<unsigned> vertArrObj;
@@ -50,7 +48,7 @@ public:
     void drawSand(float totalTime);
     void drawSmoke(float totalTime);
     vec3 calcNewPos(vec3 globalWindVec, float frametime);
-    pair<ivec3, ivec3> calcSpritePos(int spriteNum);
+    pair<vec3, vec3> calcSpritePos(int spriteNum);
     static void gpuSetup(std::shared_ptr<Program> prog, int numP);
     void setCamera(mat4 inC) { View = inC; }
     void setProjection(mat4 inP) { Projection = inP; }
