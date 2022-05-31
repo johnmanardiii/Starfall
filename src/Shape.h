@@ -20,10 +20,12 @@ public:
 	void normalizeNorBuf();
 	void computeNormals();
 	void createShape(tinyobj::shape_t & shape);
-	void Init();
+	void Init(bool norMap);
 	void scale(glm::vec3 scaleFactor);
 	void measure();
-	void draw(const std::shared_ptr<Program> prog) const;
+	void draw(const std::shared_ptr<Program> prog, bool norMap) const;
+	void ComputeTex();
+	void ComputeTanBN();
 	glm::vec3 min;
 	glm::vec3 max;
 	
@@ -32,10 +34,14 @@ private:
 	std::vector<float> posBuf;
 	std::vector<float> norBuf;
 	std::vector<float> texBuf;
+	std::vector<float> tanBuf;
+	std::vector<float> BNBuf;
 	unsigned eleBufID;
 	unsigned posBufID;
 	unsigned norBufID;
 	unsigned texBufID;
+	unsigned tanBufID;
+	unsigned BNBufID;
    unsigned vaoID;
 };
 

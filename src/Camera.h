@@ -55,5 +55,6 @@ public:
     const mat4 GetPrevProj() const { return lastPerspective; }
     const std::array<glm::vec4,6>& getVFCPlanes() const { return planes; }
     bool alt_pressed = false;
+    bool x_pressed = false;
 };
 

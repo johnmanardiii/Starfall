@@ -86,7 +86,7 @@ void SkyboxRenderer::Draw(float frameTime)
 	glBindTexture(GL_TEXTURE_2D, cloudDistort);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, shaderMan.skyboxTexId);
-	model->draw(prog);
+	model->draw(prog, false);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 	prog->unbind();

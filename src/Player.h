@@ -5,7 +5,7 @@
 
 #include "Component.h"
 #include "Renderer.h"
-#include "TextureRenderer.h"
+#include "LunaBodyRenderer.h"
 #include "GameObject.h"
 #include "EulerTransform.h"
 #include "PlayerMovement.h"
@@ -33,7 +33,7 @@ private:
 	float currentRotationChange = 0.0f;
 	float currentZRotation = 0.0f;
 	float currentXRotation = 0.0f;
-	float radius = 1.0f;
+	float radius = 1.8f;
 	void AnimatePlayerModel(float frameTime);
 	void AddIdleOffset(float frameTime);
 	void SetManualRotations();

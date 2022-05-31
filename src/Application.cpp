@@ -75,6 +75,13 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 	if (key == GLFW_KEY_LEFT_ALT && action == GLFW_RELEASE) {
 		componentManager.GetCamera().alt_pressed = false;
 	}
+	if (key == GLFW_KEY_X && action == GLFW_PRESS) {
+		componentManager.GetCamera().x_pressed = true;
+	}
+
+	if (key == GLFW_KEY_X&& action == GLFW_RELEASE) {
+		componentManager.GetCamera().x_pressed = false;
+	}
 }
 
 void Application::mouseCallback(GLFWwindow* window, int button, int action, int mods)
@@ -215,7 +222,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 		glBindTexture(GL_TEXTURE_2D, tex);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
@@ -225,7 +232,9 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	// load all textures
 	loadTexture("/cat.jpg", "Cat");
-	loadTexture("/LUNA/LUNA_test_tex.png", "Luna");
+	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_BaseColor.png", "Luna");
+	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Emissive.png", "Luna Emissive");
+	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Normal.png", "Luna Normal");
 	loadTexture("/grass.jpg", "Grass");
 	loadTexture("/alpha.bmp", "Alpha");
 	loadTexture("/smoke_spritesheet.png", "SandPartTex");
@@ -239,24 +248,32 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/rainbow.jpg", "Rainbow");
 
 	// used on Luna
-	auto prog = make_shared<Program>();
-	prog->setVerbose(true);
-	prog->setShaderNames(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag.glsl");
-	prog->Init();
-	prog->addUniform("P");
-	prog->addUniform("V");
-	prog->addUniform("M");
-	prog->addUniform("flashAmt");
-	prog->addUniform("flashCol");
-	prog->addAttribute("vertPos");
-	prog->addAttribute("vertNor");
-	prog->addAttribute("vertTex");
+	auto luna_body = make_shared<Program>();
+	luna_body->setVerbose(true);
+	luna_body->setShaderNames(resourceDirectory + "/luna_body_vert.glsl", resourceDirectory + "/luna_body_frag.glsl");
+	luna_body->Init();
+	luna_body->addUniform("P");
+	luna_body->addUniform("V");
+	luna_body->addUniform("M");
+	luna_body->addUniform("flashAmt");
+	luna_body->addUniform("flashCol");
+	luna_body->addAttribute("vertPos");
+	luna_body->addAttribute("vertNor");
+	luna_body->addAttribute("vertTex");
+	luna_body->addAttribute("vertTan");
+	luna_body->addAttribute("vertBN");
 
-	GLuint TexLocation = glGetUniformLocation(prog->pid, "tex");
-	glUseProgram(prog->pid);
+	GLuint TexLocation = glGetUniformLocation(luna_body->pid, "tex");
+	glUseProgram(luna_body->pid);
 	glUniform1i(TexLocation, 0);
+	TexLocation = glGetUniformLocation(luna_body->pid, "emissiveTex");
+	glUseProgram(luna_body->pid);
+	glUniform1i(TexLocation, 1);
+	TexLocation = glGetUniformLocation(luna_body->pid, "normalTex");
+	glUseProgram(luna_body->pid);
+	glUniform1i(TexLocation, 2);
 
-	shaderManager.SetShader("Texture", prog);
+	shaderManager.SetShader("Luna Body", luna_body);
 
 	auto head_prog = make_shared<Program>();
 	head_prog->setVerbose(true);
@@ -499,8 +516,9 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 
 	//the obj files you want to load. Add more to read them all.
-	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/new/luna_arm_right",
-		"LUNA/new/luna_arm_left", "LUNA/new/luna_body", "LUNA/new/luna_head", "unit_cube"};
+	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/new/lunaModelTextures/right_arm",
+		"LUNA/new/lunaModelTextures/left_arm", "LUNA/new/lunaModelTextures/body", "LUNA/new/lunaModelTextures/head", "unit_cube"};
+	vector<bool> normalMapFlags = { false, false, false, true, true, true, false, false };	// not extensible, should be tied to the model but 1 week remaining.
 	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
@@ -522,7 +540,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 				shape->scale(explosionScaleFactor);
 			}
 			shape->computeNormals();
-			shape->Init();
+			shape->Init(normalMapFlags[i]);
 
 			shaderManager.SetModel(filenames[i], shape);
 		}
