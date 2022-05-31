@@ -4,7 +4,7 @@
 #include <iostream>
 
 const float TerrainRenderer::OFFSET_FROM_CENTER = 20.0f; 
-const float TerrainRenderer::TERRAIN_SIZE = 200.0f;
+const float TerrainRenderer::TERRAIN_SIZE = 300.0f;
 
 void TerrainRenderer::Init(ComponentManager* compMan)
 {
@@ -90,7 +90,9 @@ void TerrainRenderer::Draw(float frameTime)
 	mat4 inverted = glm::inverse(rotY);
 	sunDir = normalize(vec3(inverted[2]));
 
+	vec3 playerPos = Player::GetInstance(vec3()).GetPosition();
 	glUniform3fv(prog->getUniform("campos"), 1, &pos[0]);
+	glUniform3fv(prog->getUniform("playerPos"), 1, &playerPos[0]);
 	
 	glUniform1f(prog->getUniform("time"), glfwGetTime());
 	glBindVertexArray(terrain.VAOId);

@@ -43,9 +43,18 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
 
 void ComponentManager::Init(std::string resourceDirectory)
 {
+    // initialize skybox
+    string skyboxName = "Skybox";
+    shared_ptr<SkyboxRenderer> skyboxRenderer = make_shared<SkyboxRenderer>(skyboxName, "unit_cube");
+    shared_ptr<Transform> transform = make_shared<Transform>(skyboxName);
+    transform->SetPos(vec3(0, 0, 0));
+    transform->SetScale(vec3(100, 100, 100));
+    vector<shared_ptr<Component>> skyboxComps = { skyboxRenderer, transform };
+    AddGameObject(skyboxName, skyboxComps);
+
     // initialize the player
     shared_ptr<EulerTransform> pTransform = make_shared<EulerTransform>(player.pName);
-    shared_ptr<Transform> transform = pTransform;
+    transform = pTransform;
     //shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/luna_body", "Luna", player.pName);
     shared_ptr<Renderer> renderer = make_shared<TextureRenderer>("LUNA/new/luna_body", "Luna", player.pName);
     //shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", player.pName, 100000, &ParticleRenderer::drawSand);
@@ -97,14 +106,6 @@ void ComponentManager::Init(std::string resourceDirectory)
     RandomGenerator randTrans(-40, 40);
     RandomGenerator randScale(0.2, 2);
 
-    // initialize skybox
-    string skyboxName = "Skybox";
-    shared_ptr<SkyboxRenderer> skyboxRenderer = make_shared<SkyboxRenderer>(skyboxName, "unit_cube");
-    transform = make_shared<Transform>(skyboxName);
-    transform->SetPos(vec3(0, 0, 0));
-    transform->SetScale(vec3(100, 100, 100));
-    vector<shared_ptr<Component>> skyboxComps = { skyboxRenderer, transform };
-    AddGameObject(skyboxName, skyboxComps);
 
     string floorName = "Floor";
     renderer = make_shared<TerrainRenderer>("Cat", "Cat", floorName);
