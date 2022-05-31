@@ -1,6 +1,10 @@
  #include "TerrainRenderer.h"
 #include "imgui/imgui.h"
+#include "Player.h"
 #include <iostream>
+
+const float TerrainRenderer::OFFSET_FROM_CENTER = 20.0f; 
+const float TerrainRenderer::TERRAIN_SIZE = 200.0f;
 
 void TerrainRenderer::Init(ComponentManager* compMan)
 {
@@ -55,11 +59,23 @@ void TerrainRenderer::UpdateUniforms()
 	glUniform1f(prog->getUniform("specularHardness"), specularHardness);
 }
 
+void TerrainRenderer::UpdatePosition()
+{
+	Player player = Player::GetInstance(vec3(0, 0, 0));
+	quat rot = player.GetRotation();
+	trans->SetRot(rot);
+	vec3 offset = rot * vec3(-TERRAIN_SIZE / 2.0f, 0, -TERRAIN_SIZE + OFFSET_FROM_CENTER);
+	vec3 playerPos = player.GetPosition();
+	playerPos.y = -4;
+	trans->SetPos(playerPos + offset);
+}
+
 void TerrainRenderer::Draw(float frameTime)
 {
 	prog->bind();
 
 	UpdateUniforms();
+	UpdatePosition();
 	
 	Camera cam = Camera::GetInstance(vec3(0, 0, 0));
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &trans->GetModelMat()[0][0]);
@@ -67,20 +83,13 @@ void TerrainRenderer::Draw(float frameTime)
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &cam.GetView()[0][0]);
 
 	vec3 pos = cam.GetPos();
-	vec3 offset;
 	vec3 color_offset;
-	offset.y = 0;
-	offset.x = (int)pos.x;
-	offset.z = (int)pos.z;
-
-	//vec3 lightDir = normalize(vec3(1000, 0, 100)); // Hardcoded for now
 
 	// Sun direction
-	mat4 rotY = glm::rotate(mat4(1.0f), sunRotation, glm::vec3(1.0f, 0.0f, 0.0f));
+	mat4 rotY = glm::rotate(mat4(1.0f), sunRotation, vec3(1.0f, 0.0f, 0.0f));
 	mat4 inverted = glm::inverse(rotY);
-	sunDir = normalize(glm::vec3(inverted[2]));
+	sunDir = normalize(vec3(inverted[2]));
 
-	glUniform3fv(prog->getUniform("camoff"), 1, &offset[0]);
 	glUniform3fv(prog->getUniform("campos"), 1, &pos[0]);
 	
 	glUniform1f(prog->getUniform("time"), glfwGetTime());

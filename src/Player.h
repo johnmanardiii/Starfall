@@ -86,6 +86,7 @@ public:
 		shared_ptr<PlayerTransform> head, shared_ptr<PlayerTransform> arm1,
 		shared_ptr<PlayerTransform> arm2, shared_ptr<HeadRenderer> headr);
 	const vec3 GetPosition() { return pTransform->GetPos(); }
+	quat GetRotation() { return pTransform->GetRot(); }
   // Is GetRadius Needed?
 	float GetRadius() { return radius; }
 	static Player& GetInstance(vec3 pos) {

@@ -109,7 +109,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     string floorName = "Floor";
     renderer = make_shared<TerrainRenderer>("Cat", "Cat", floorName);
     transform = make_shared<Transform>(floorName);
-    transform->SetPos(vec3(50, 1, -50));
+    transform->SetPos(vec3(50, -4, -50));
     vector<shared_ptr<Component>> floorComps = { renderer, transform };
     AddGameObject(floorName, floorComps);
 
