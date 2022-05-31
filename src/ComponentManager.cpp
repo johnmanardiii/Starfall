@@ -6,6 +6,8 @@
 #include "SkyboxRenderer.h"
 #include "HeadRenderer.h"
 
+constexpr float ParticleRenderer::originalPointSize;
+
 ComponentManager::ComponentManager()
 {
     //specify what you want the components to be called here.
@@ -261,7 +263,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     sort("Particle");
     for (auto& part : components["Particle"])
     {
-        auto& rend = static_pointer_cast<ParticleRenderer>(part);
+        const auto& rend = static_pointer_cast<ParticleRenderer>(part);
         if (rend->IsActive && rend->IsInViewFrustum(state, this, camera)) {
             rend->Draw(frameTime);
         }
