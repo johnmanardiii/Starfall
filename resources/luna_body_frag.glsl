@@ -28,6 +28,6 @@ void main()
 	// emissive map
 	vec3 ecol= texture(emissiveTex, texture_uvs).rgb;
 	color.rgb += ecol * 8;
-	color.rgb = normal;
+	// color.rgb = normal;
 	color.a = 1;
 }

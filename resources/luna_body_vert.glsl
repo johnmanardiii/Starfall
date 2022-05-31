@@ -29,5 +29,6 @@ void main()
 	vec3 wBN = (M*vec4(vertBN, 0.0)).xyz;
 	TBN = transpose(mat3(wT, wBN, wN));
 	vec3 lp=vec3(50, 30, 50);
-	lTS = TBN * normalize(lp);
+
+	lTS = TBN * normalize(lp - vertex_pos);
 }
