@@ -8,7 +8,7 @@ void LightComponent::Update(float frameTime, ComponentManager* compMan)
 	{ 
 		timeLeft -= frameTime;
 		sunRotation = glm::mix(endSunRotation, startSunRotation, timeLeft / startTime);
-		//cout << "Time Left Until Moon Sets: " << timeLeft << '\r' << std::flush;
+		cout << "Time Left Until Moon Sets: " << timeLeft << '\r' << std::flush;
 	}
 	else {
 		compMan->GetGameState()->EndGame();

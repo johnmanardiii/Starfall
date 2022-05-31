@@ -180,7 +180,6 @@ void ParticleRenderer::drawSand(float totalTime) {
 	else {
 		alphaTime = LIFETIME - totalTime;
 	}
-	cout << alphaTime << endl;
 	glUniform1f(prog->getUniform("alphaTime"), alphaTime);
 	vec4 nearPlane = Camera::GetInstance(vec3()).getVFCPlanes()[4];
 	
