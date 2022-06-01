@@ -261,7 +261,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         part->Update(frameTime, this);
         
     }
-    sort("Particle");
+    //sort("Particle");
     for (auto& part : components["Particle"])
     {
         const auto& rend = static_pointer_cast<ParticleRenderer>(part);
@@ -273,8 +273,15 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 
 void ComponentManager::sort(std::string compName)
 {
+    vec3 s, t, sk;
+    vec4 p;
+    quat r;
+    glm::decompose(camera.GetView(), s, r, t, sk, p);
+    partComponentSorter.C = glm::toMat4(r);
     //sort transparent objects, according to their world position and the camera's position. This requires an update to a GameObject's Particle index!
-    std::sort(components[compName].begin(), components[compName].end(), partComponentSorter); //needs a comparator-like object for each component. Parameterize this if needed.
+    
+    std::sort(components[compName].begin(), components[compName].end(), [this](const shared_ptr<Component>& c1, const shared_ptr<Component>& c2) 
+        {return partComponentSorter(*static_pointer_cast<ParticleRenderer>(c1).get(), *static_pointer_cast<ParticleRenderer>(c2).get()); }); //needs a comparator-like object for each component. Parameterize this if needed.
     //there are now potentially corrupt GameObject indices to particle components. Use the unique name to resolve them.
     for (int i = 0; i < components[compName].size(); i++) {
         if (!components[compName][i]->IsKilled) {
