@@ -212,7 +212,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	
 	//this lambda does a general loadTexture. Can add more parameters to change its behavior if needed.
 	auto loadTexture = [this, resourceDirectory, &tex, &width, &height, &channels] //captures
-	(string filename, string managerIdentifer) { //parameters
+	(string filename, string managerIdentifer, bool filterMipMap = true) { //parameters
 		char filepath[1000];
 		string str = resourceDirectory + filename;
 		strcpy(filepath, str.c_str());
@@ -222,7 +222,14 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 		glBindTexture(GL_TEXTURE_2D, tex);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		if (filterMipMap)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		}
+		else
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		}
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
@@ -236,9 +243,9 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Emissive.png", "Luna Emissive");
 	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Normal.png", "Luna Normal");
 	loadTexture("/grass.jpg", "Grass");
-	loadTexture("/alpha.bmp", "Alpha");
+	loadTexture("/alpha.bmp", "Alpha", false);
 	loadTexture("/smoke_spritesheet.png", "SandPartTex");
-	loadTexture("/noiseTex.png", "noiseTex");
+	loadTexture("/noiseTex.png", "noiseTex", false);
 	loadTexture("/sandShallow.jpg", "sandShallow");
 	loadTexture("/sandSteep.jpg", "sandSteep");
 	loadTexture("/CloudNoise/cloud_BaseNoise.png", "cloudBaseNoise");
