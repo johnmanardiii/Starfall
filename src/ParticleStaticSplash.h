@@ -55,7 +55,7 @@ public:
     float LIFETIME = 10;
     constexpr static float originalPointSize = 5.0f;
     bool sorted = false; //particles are not sorted by default. Sort them if you are using transparent alpha values.
-    const glm::vec3& getPos() { return trans->GetPos(); }
+    const glm::vec3& getPos() const { return trans->GetPos(); }
     int bufObjIndex;
 private:
     void(ParticleRenderer::*func)(float totalTime);
@@ -72,14 +72,16 @@ private:
 
 class ParticleSorter {
 public:
-    bool operator()(const std::shared_ptr<Component>& c0, const std::shared_ptr<Component>& c1) const
+    bool operator()(const ParticleRenderer& c0, const ParticleRenderer& c1) const
     {
-        const glm::vec3& x0 = static_pointer_cast<ParticleRenderer>(c0)->getPos();
-        const glm::vec3& x1 = static_pointer_cast<ParticleRenderer>(c1)->getPos();
+        
+        const glm::vec3& x0 = c0.getPos();
+        const glm::vec3& x1 = c1.getPos();
+        
         // Particle positions in camera space
         vec4 x0w = C * vec4(x0.x, x0.y, x0.z, 1.0f);
         vec4 x1w = C * vec4(x1.x, x1.y, x1.z, 1.0f);
-        return x0w.z < x1w.z;
+        return  x0w.z < x1w.z;
     }
     mat4 C; // current camera matrix
 };

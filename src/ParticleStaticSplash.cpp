@@ -150,7 +150,9 @@ void ParticleRenderer::drawSplash(float totalTime) {
 	// Draw the points
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);
 	glDrawArraysInstanced(GL_POINTS, 0, 1, numP);
+	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	prog->unbind();
 }
@@ -200,9 +202,10 @@ void ParticleRenderer::drawSand(float totalTime) {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
+	glDepthMask(GL_FALSE);
 	//instead of drawing the entire array, just start from a random location to get a random set of data to work with. numP should be less than the max particles allocated in gpusetup.
 	glDrawArraysInstanced(GL_POINTS, startIndex, 1, numP);
+	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	glPointSize(originalPointSize);
 	prog->unbind();
@@ -210,7 +213,6 @@ void ParticleRenderer::drawSand(float totalTime) {
 
 void ParticleRenderer::drawSmoke(float totalTime) {
 	prog->bind();
-
 	prog->unbind();
 }
 
