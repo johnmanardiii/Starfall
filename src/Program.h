@@ -22,6 +22,7 @@ public:
 
 	void setShaderNames(const std::string &v, const std::string &f);
 	void setShaderNames(const std::string& v, const std::string& f, const std::string& g);
+	void setShaderNames(std::string& v, std::string& f, std::string tc = "", std::string te = "");
 	void setTransformFeedback(bool val) { usingTransformFeedback = val; }
 	virtual bool Init();
 	virtual void bind();
@@ -38,7 +39,8 @@ protected:
 	std::string vShaderName;
 	std::string fShaderName;
 	std::string gShaderName = "";
-
+	std::string teShaderName;
+	std::string tcShaderName;
 private:
 
 	std::map<std::string, GLint> attributes;

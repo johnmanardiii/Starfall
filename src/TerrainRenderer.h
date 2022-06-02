@@ -62,6 +62,6 @@ private:
 
 	static const float OFFSET_FROM_CENTER;
 	static const float TERRAIN_SIZE;
-	vec3 GetTerrainOffset();
+	static const float BASE_HEIGHT;
 	void UpdatePosition();
 };
