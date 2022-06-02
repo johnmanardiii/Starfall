@@ -4,13 +4,18 @@
 PlayerMovement::PlayerMovement(std::string name) : Movement(name) {}
 PlayerMovement::PlayerMovement(std::string name, vec3 vel) : Movement(name, vel) {}
 
+template<typename T>
+T exponential_growth(T actual, T goal, float factor, float frametime)
+{
+    return actual + (goal - actual) * factor * frametime;
+}
 
 void PlayerMovement::SetInput(int index, bool value)
 {
 	inputBuffer[index] = value;
 }
 
-void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
+/*void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
 {
     // Rotate Luna first so forward direction is correct
     UpdateRotation(frameTime);
@@ -51,6 +56,37 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
 
     // Lose a small amount of velocity (friction)
     velocity -= velocity * SPEED_FALLOFF * frameTime;
+}*/
+
+
+// flying movement prototype :)
+void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
+{
+    // Rotate Luna first so forward direction is correct
+    UpdateRotation(frameTime);
+
+    // store result of W and S as speed
+    float speedInput = inputBuffer[W] - inputBuffer[S];
+
+    // Apply velocity in the direction Luna is facing
+    vec3 dir = glm::rotate(trans->GetRot(), vec3(0, 0, -1));
+    velocity += dir * speedInput * SPEED * frameTime;
+
+    // Sloped movement resolution
+    //   depends on whether shift is held or not
+    GroundCollision(frameTime);
+
+    // Actually move Luna
+    trans->ApplyTranslation(velocity * frameTime);
+
+    // Reset Luna's position to the ground height
+    //   if they're below the ground
+    vec3 pos = trans->GetPos();
+    pos.y = (glm::max)(pos.y, HeightCalc::heightCalc(pos.x, pos.z));
+    trans->SetPos(pos);
+
+    // Lose a small amount of velocity (friction)
+    velocity -= velocity * SPEED_FALLOFF * frameTime;
 }
 
 void PlayerMovement::UpdateRotation(float frameTime)
@@ -58,7 +94,8 @@ void PlayerMovement::UpdateRotation(float frameTime)
 
     // store result of A and D as intended rotation
     float inputRotation = inputBuffer[3] - inputBuffer[1];
-    currentAngularSpeed = -inputRotation * glm::radians(rotationSpeed);
+    float rotationSpeedGoal = -inputRotation * glm::radians(rotationSpeed);
+    currentAngularSpeed = exponential_growth(currentAngularSpeed, rotationSpeedGoal, .08 * 60.0f, frameTime);
 
     // rotate the player's orientation around the y axis by the amount specified
     mat4 newRotation = glm::rotate(mat4(1), currentAngularSpeed * frameTime, vec3(0, 1, 0)) *

@@ -196,7 +196,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     }
     //re-add this when it looks good
     if (state.ShouldSpawnSand()) {
-        AddBunchOfSandParticles();
+        // AddBunchOfSandParticles();
     }
 
     // update movements

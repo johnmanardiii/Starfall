@@ -34,10 +34,11 @@ private:
 	float currentZRotation = 0.0f;
 	float currentXRotation = 0.0f;
 	float radius = 1.8f;
-	void AnimatePlayerModel(float frameTime);
 	void AddIdleOffset(float frameTime);
 	void SetManualRotations();
 	void SetAutomaticRotations(float frameTime);
+	void SetGroundAnimation(float frameTime);
+	void SetFlyingAnimation(float frameTime);
 	shared_ptr<Transform> trans = NULL;
 	shared_ptr<EulerTransform> pTransform;
 	shared_ptr<PlayerTransform> headTrans;
@@ -72,6 +73,7 @@ private:
 	quat lRot = glm::identity<quat>();
 	quat hRot = glm::identity<quat>();
 public:
+	bool isFlying = true;
 	const std::string pName = "player";
 	const std::string pArm1Name = "arm1";
 	const std::string pArm2Name = "arm2";

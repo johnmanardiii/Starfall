@@ -97,6 +97,48 @@ void Player::SetInput(int index, bool val)
 
 void Player::SetManualRotations()
 {
+    if (ImGui::CollapsingHeader("PlayerAnims")) {}
+    // Gradient
+    ImGui::DragFloat3("RightArmEulerOffset", (float*)&rightArmEulerOffset);
+    ImGui::DragFloat3("LeftArmEulerOffset", (float*)&leftArmEulerOffset);
+    ImGui::DragFloat3("HeadEulerOffset", (float*)&headEulerOffset);
+
+    ImGui::DragFloat2("Eye Position", (float*)&headRenderer->eye1Pos);
+    ImGui::DragFloat("Eye Radius", (float*)&headRenderer->eye1Radius);
+    ImGui::DragFloat("Eye open pct", (float*)&headRenderer->eyeOpenPct);
+
+    if (ImGui::Button("Set Right Arm Boost Forward"))
+    {
+        rRot = rBoostForwards;
+    }
+    if (ImGui::Button("Set Left Arm Boost Forward"))
+    {
+        lRot = lBoostForwards;
+    }
+
+    if (ImGui::Button("Set Right Arm Turn Out"))
+    {
+        rRot = rArmTurnOut;
+    }
+    if (ImGui::Button("Set Left Arm Turn Out"))
+    {
+        lRot = lArmTurnOut;
+    }
+
+    if (ImGui::Button("Set Right Arm Boost Backward"))
+    {
+        rRot = rBoostBackwards;
+    }
+    if (ImGui::Button("Set Left Arm Boost Backward"))
+    {
+        lRot = lBoostBackwards;
+    }
+
+    ImGui::DragFloat("Set Roll", (float*)&currentZRotation);
+    ImGui::DragFloat("Set Pitch", (float*)&currentXRotation);
+    pTransform->SetRoll(currentZRotation);
+    pTransform->SetPitch(currentXRotation);
+
     mat4 manualRightArmRotation = glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.x), vec3(1, 0, 0))
         * glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.y), vec3(0, 1, 0))
         * glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.z), vec3(0, 0, 1));
@@ -114,8 +156,9 @@ void Player::SetManualRotations()
     headTrans->SetBaseRotation(manualHeadRotation);
 }
 
-void Player::SetAutomaticRotations(float frameTime)
+void Player::SetGroundAnimation(float frameTime)
 {
+    // on ground movement
     int thrust = movement->inputBuffer[W] - movement->inputBuffer[S];
     int rTurn = movement->inputBuffer[A];
     int lTurn = movement->inputBuffer[D];
@@ -181,74 +224,44 @@ void Player::SetAutomaticRotations(float frameTime)
     }
     hRot = slerp(hRot, headGoal, .10f * 60.0f * frameTime);
     headTrans->SetBaseRotation(mat4(hRot));
-}
 
-void Player::AnimatePlayerModel(float frameTime)
-{
-    // if LUNA is still, have them float a bit above the ground. (gets reset upon move)
-    // TODO: Fix idle float calculations
-    //AddIdleOffset(frameTime);
-    SetAutomaticRotations(frameTime);
-    // SetManualRotations();
-    
-    
     // lerp LUNA to the rotation they are accelerating in (around their local z axis)
     float goalZRotation = -movement->GetAngularSpeed() * 15.0f;
     currentZRotation = exponential_growth(currentZRotation, goalZRotation, .02 * 60.0f, frameTime);
     pTransform->SetRoll(currentZRotation);
 
-    int thrust = movement->inputBuffer[W] - movement->inputBuffer[S];
     float goalForwardsRotation = thrust * 30.0f;
     if (thrust < 0)
     {
         goalForwardsRotation *= 0;
     }
     currentXRotation = exponential_growth(currentXRotation, goalForwardsRotation, .2 * 60.0f, frameTime);
-    pTransform->SetLean(currentXRotation);
+    pTransform->SetPitch(currentXRotation);
+}
+
+void Player::SetFlyingAnimation(float frameTime)
+{
+    // lerp LUNA to the rotation they are accelerating in (around their local z axis)
+    float goalZRotation = -movement->GetAngularSpeed() * 32.0f;
+    float lerpFactor = fabs(goalZRotation) > .1 ? .04 : .04;
+    currentZRotation = exponential_growth(currentZRotation, goalZRotation, lerpFactor * 60.0f, frameTime);
+    pTransform->SetRoll(currentZRotation);
+
+    float goalPitch = 63.0f;
+    currentXRotation = exponential_growth(currentXRotation, goalPitch, .2 * 60.0f, frameTime);
+    pTransform->SetPitch(currentXRotation);
+}
+
+void Player::SetAutomaticRotations(float frameTime)
+{
+    //SetGroundAnimation(frameTime);
+    SetFlyingAnimation(frameTime);
 }
 
 // animation code begins here:
 void Player::UpdatePlayerAnimations(float frameTime)
 {
-    // update the values on Imgui
-    if (ImGui::CollapsingHeader("PlayerAnims")) {}
-        // Gradient
-        ImGui::DragFloat3("RightArmEulerOffset", (float*)&rightArmEulerOffset);
-        ImGui::DragFloat3("LeftArmEulerOffset", (float*)&leftArmEulerOffset);
-        ImGui::DragFloat3("HeadEulerOffset", (float*)&headEulerOffset);
-
-        ImGui::DragFloat2("Eye Position", (float*)&headRenderer->eye1Pos);
-        ImGui::DragFloat("Eye Radius", (float*)&headRenderer->eye1Radius);
-        ImGui::DragFloat("Eye open pct", (float*)&headRenderer->eyeOpenPct);
-
-        if (ImGui::Button("Set Right Arm Boost Forward"))
-        {
-            rRot = rBoostForwards;
-        }
-        if (ImGui::Button("Set Left Arm Boost Forward"))
-        {
-            lRot = lBoostForwards;
-        }
-
-        if (ImGui::Button("Set Right Arm Turn Out"))
-        {
-            rRot = rArmTurnOut;
-        }
-        if (ImGui::Button("Set Left Arm Turn Out"))
-        {
-            lRot = lArmTurnOut;
-        }
-
-        if (ImGui::Button("Set Right Arm Boost Backward"))
-        {
-            rRot = rBoostBackwards;
-        }
-        if (ImGui::Button("Set Left Arm Boost Backward"))
-        {
-            lRot = lBoostBackwards;
-        }
-    // }
-
     // Animate player model based on input
-    AnimatePlayerModel(frameTime);
+    SetAutomaticRotations(frameTime);
+    // SetManualRotations();
 }

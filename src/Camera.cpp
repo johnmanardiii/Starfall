@@ -23,11 +23,21 @@ void Camera::Update(float frameTime, int width, int height, ComponentManager* co
     CalcPerspective(frameTime, width, height, compMan);
     // look at the player
     vec3 target = compMan->GetPlayer().GetPosition();
+    if (compMan->GetPlayer().isFlying)
+    {
+        // look ahead of the player if flying
+        target += compMan->GetPlayer().GetForward() * 16.0f;
+    }
     int currentPlayerSpeed = compMan->GetPlayer().movement->inputBuffer[W] - 
         compMan->GetPlayer().movement->inputBuffer[S];
     float goalCamDist;
     float goalCamHeight;
-    if (currentPlayerSpeed >= 0)
+    if (compMan->GetPlayer().isFlying)
+    {
+        goalCamDist = highestCamDistZ;
+        goalCamHeight = maxCamHeight;
+    }
+    else if (currentPlayerSpeed >= 0)   // treat a flying player as if they are always moving
     {
         goalCamDist = glm::mix<float>(lowestCamDistZ, highestCamDistZ,
             (float)currentPlayerSpeed);
@@ -74,12 +84,12 @@ glm::vec3 Camera::get_wanted_pos(ComponentManager* compMan)
     if (x_pressed)
     {
         target_pos = compMan->GetPlayer().GetPosition() + camDistZ * -compMan->GetPlayer().GetForward() * .2f +
-            vec3(0, 1, 0) * camDistHeight * .2f;
+            vec3(0, 1, 0) * camDistHeight * .4f;
     }
     else
     {
         target_pos = compMan->GetPlayer().GetPosition() + camDistZ * -compMan->GetPlayer().GetForward() +
-            vec3(0, 1, 0) * camDistHeight;
+            vec3(0, 1, 0) * camDistHeight * static_cast<float>(compMan->GetPlayer().isFlying ? 2.0 : 1.0);  // raise camera up if flying
     }
     return target_pos;
 }

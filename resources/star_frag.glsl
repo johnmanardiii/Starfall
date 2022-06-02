@@ -69,6 +69,14 @@ float brdf(vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float rough){
     //return f_combined(spec_dist, f_fresnel(spec_dist, V_H), f_geom_shadow(N_V, N_L, roughness), N_L, N_V);
 }
 
+// luminance function from: https://github.com/CesiumGS/cesium/blob/master/Source/Shaders/Builtin/Functions/luminance.glsl
+float luminance(vec3 rgb)
+{
+    // Algorithm from Chapter 10 of Graphics Shaders.
+    const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+    return dot(rgb, W);
+}
+
 void main()
 {
     vec3 lightPos = lights[0];
@@ -94,6 +102,7 @@ void main()
     
     vec3 lightDir = normalize(normalize(lightPos) - normalize(vertex_pos));
     vec3 viewDir = normalize(normalize(campos) - normalize(vertex_pos));
+    randCol /= luminance(randCol);
     color = vec4(randCol * brdf(vertex_normal_n, lightDir, viewDir, roughness), a);
     //color = vec4(lightDir,a);
 }
