@@ -4,6 +4,7 @@ in vec3 vertex_normal_n;
 in vec3 vertex_pos;
 in vec2 vertex_tex;
 
+uniform vec3 playerPos;
 uniform sampler2D starTexture;
 uniform vec3 centerPos;
 uniform vec3 campos;
@@ -88,12 +89,12 @@ void main()
     vec3 tcol = texture(starTexture, vertex_tex).rgb;
 
     //alpha fadeout with distance - this should match the implementation in height_frag.glsl
-    float len = length(vertex_pos.xz - campos.xz);
-    len -= 41;
-    len /= 8.0f;
-    len = clamp(len, 0, 1);
+    float len = length(vertex_pos.xz-playerPos.xz);
+	len = abs(len) / 150.0f;
+	len=clamp(len,0,1);
+	len = pow(len, 5.0f);
     float a = 1 - len;
-    
+
     //use this to make into specific colors.
     vec3 randCol = vec3(
       abs(0.85f * rand(centerPos.xy)),

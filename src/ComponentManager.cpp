@@ -122,7 +122,7 @@ void ComponentManager::AddLineOfStars()
     RandomGenerator randTrans(-10, 10); //generate a position offset from the player's right-vector
     
     float offsetRight = randTrans.GetFloat();    //get some number between -4 and 4
-    float distFactor = 40.0f; //how far away from the player, in world space units, do we start spawning star fragments
+    float distFactor = 150.0f; //how far away from the player, in world space units, do we start spawning star fragments
     float spacing = 4.0f; //the distance between each star fragment, if multiple are spawned.
     vec3 playerGaze = normalize(player.GetForward()); //double check that this is normalized.
     vec3 playerRight = cross(playerGaze, vec3(0, 1, 0));

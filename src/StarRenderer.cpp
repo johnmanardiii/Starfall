@@ -36,6 +36,7 @@ void StarRenderer::Draw(float frameTime)
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
 	vec3 pos = trans->GetPos();
 	glUniform3f(prog->getUniform("centerPos"), pos.x, pos.y, pos.z);
+	glUniform3fv(prog->getUniform("playerPos"), 1, glm::value_ptr(Player::GetInstance(vec3()).GetPosition()));
 	vec3 campos = cam.GetPos();
 	glUniform3f(prog->getUniform("campos"), campos.x, campos.y, campos.z);
 	

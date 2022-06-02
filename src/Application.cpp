@@ -378,6 +378,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	starProg->addUniform("starTexture");
 	starProg->addUniform("totalTime");
 	starProg->addUniform("centerPos");
+	starProg->addUniform("playerPos");
 	starProg->addUniform("campos");
 	starProg->addUniform("lights");
 	starProg->addAttribute("vertPos");
