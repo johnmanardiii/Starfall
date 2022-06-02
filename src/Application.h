@@ -46,7 +46,7 @@ public:
 	void mouseMovementCallback(GLFWwindow* window, double posX, double posY);
 	void resizeCallback(GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); }
 
-#define MESHSIZE 100
+#define MESHSIZE 50
 	//initialization
 	void InitImGui();
 	void InitTerrain();

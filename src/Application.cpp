@@ -115,10 +115,10 @@ void Application::InitTerrain() {
 	for (int x = 0; x < MESHSIZE; x++)
 		for (int z = 0; z < MESHSIZE; z++)
 		{
-			vertices[x * 4 + z * MESHSIZE * 4 + 0] = (vec3(0.0, 0.0, 0.0) + vec3(x, 0, z)) * 3.0f;
-			vertices[x * 4 + z * MESHSIZE * 4 + 1] = (vec3(1.0, 0.0, 0.0) + vec3(x, 0, z)) * 3.0f;
-			vertices[x * 4 + z * MESHSIZE * 4 + 2] = (vec3(1.0, 0.0, 1.0) + vec3(x, 0, z)) * 3.0f;
-			vertices[x * 4 + z * MESHSIZE * 4 + 3] = (vec3(0.0, 0.0, 1.0) + vec3(x, 0, z)) * 3.0f;
+			vertices[x * 4 + z * MESHSIZE * 4 + 0] = (vec3(0.0, 0.0, 0.0) + vec3(x, 0, z)) * 6.0f;
+			vertices[x * 4 + z * MESHSIZE * 4 + 1] = (vec3(1.0, 0.0, 0.0) + vec3(x, 0, z)) * 6.0f;
+			vertices[x * 4 + z * MESHSIZE * 4 + 2] = (vec3(1.0, 0.0, 1.0) + vec3(x, 0, z)) * 6.0f;
+			vertices[x * 4 + z * MESHSIZE * 4 + 3] = (vec3(0.0, 0.0, 1.0) + vec3(x, 0, z)) * 6.0f;
 		}
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * MESHSIZE * MESHSIZE * 4, vertices, GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
@@ -419,7 +419,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	// Terrain Shader
 	auto heightProg = make_shared<Program>();
 	heightProg->setVerbose(true);
-	heightProg->setShaderNames(resourceDirectory + "/height_vertex.glsl", resourceDirectory + "/height_frag.glsl");
+	heightProg->setShaderNames(resourceDirectory + "/height_vertex.glsl", resourceDirectory + "/height_frag.glsl",
+		resourceDirectory + "/terrain_tesscontrol.glsl", resourceDirectory + "/terrain_tesseval.glsl");
 	if (!heightProg->Init())
 
 	{
@@ -430,6 +431,9 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	heightProg->addUniform("P");
 	heightProg->addUniform("V");
 	heightProg->addUniform("M");
+
+	//Terrain info
+	heightProg->addUniform("baseHeight");
 
 	// Camera/Player information
 	heightProg->addUniform("campos");
