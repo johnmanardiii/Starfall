@@ -164,7 +164,7 @@ void ComponentManager::AddBunchOfSandParticles() {
     for (int i = 0; i < numSandToSpawn; ++i) {
         string SandName = "Sand" + to_string(state.TotalObjectsEverMade);
         
-        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 1, 200, FLT_MAX, &ParticleRenderer::drawSand);
+        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 1, 80000, FLT_MAX, &ParticleRenderer::drawSand);
         shared_ptr<Transform> transform = make_shared<Transform>(SandName);
 
         //where all the variables at the top come in.
@@ -196,7 +196,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     }
     //re-add this when it looks good
     if (state.ShouldSpawnSand()) {
-        AddBunchOfSandParticles();
+        //AddBunchOfSandParticles();
     }
 
     // update movements

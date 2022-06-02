@@ -185,7 +185,7 @@ void ParticleRenderer::drawSand(float totalTime) {
 	glUniform1f(prog->getUniform("alphaTime"), alphaTime);
 	vec4 nearPlane = Camera::GetInstance(vec3()).getVFCPlanes()[4];
 	
-	trans->SetPos(Camera::GetInstance(vec3()).GetPos() + 15.0f * vec3(nearPlane) + vec3(0, 5, 0));
+	trans->SetPos(Camera::GetInstance(vec3()).GetPos() + 1.f * vec3(nearPlane));
 	glUniform3fv(prog->getUniform("centerPos"), 1, glm::value_ptr(trans->GetPos()));
 
 	//do the calculation for, based on the time, which row/column images should be used.
