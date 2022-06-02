@@ -74,6 +74,7 @@ private:
 	quat hRot = glm::identity<quat>();
 public:
 	bool isFlying = true;
+	const float baseFlyingPitch = 80.0f;
 	const std::string pName = "player";
 	const std::string pArm1Name = "arm1";
 	const std::string pArm2Name = "arm2";
@@ -82,6 +83,7 @@ public:
 	void Update(float frameTime, ComponentManager* compMan);
 	void SetInput(int index, bool val);
 	vec3 GetForward();
+	vec3 GetRight();
 	float GetCurrentSpeed() { return movement->GetSpeed(); }
 	float GetMaxSpeed() { return movement->GetMaxSpeed(); }
 	void Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
@@ -91,6 +93,7 @@ public:
 	quat GetRotation() { return pTransform->GetRot(); }
   // Is GetRadius Needed?
 	float GetRadius() { return radius; }
+	float GetPitch() { return currentXRotation; }
 	static Player& GetInstance(vec3 pos) {
 		static Player instance(pos);
 		return instance;

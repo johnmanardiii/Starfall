@@ -54,7 +54,7 @@ void Camera::Update(float frameTime, int width, int height, ComponentManager* co
     currentCamDistZ = exponential_growth(currentCamDistZ, goalCamDist, .035f * 60.0f, frameTime);
     camDistHeight = exponential_growth(camDistHeight, goalCamHeight, .35f * 60.0f, frameTime);
     vec3 goal_pos = get_wanted_pos(compMan);
-    pos = exponential_growth(pos, goal_pos, .07f * 60.0f, frameTime);
+    pos = exponential_growth(pos, goal_pos, .02f * 60.0f, frameTime);
     // check to ensure that the camera keeps up with the player at least 3 units away
     // from its intended position
     if (distance(pos, goal_pos) > max_lerp_distance)
@@ -88,8 +88,9 @@ glm::vec3 Camera::get_wanted_pos(ComponentManager* compMan)
     }
     else
     {
-        target_pos = compMan->GetPlayer().GetPosition() + camDistZ * -compMan->GetPlayer().GetForward() +
+        vec3 offset = camDistZ * -compMan->GetPlayer().GetForward() +
             vec3(0, 1, 0) * camDistHeight * static_cast<float>(compMan->GetPlayer().isFlying ? 2.0 : 1.0);  // raise camera up if flying
+        target_pos = compMan->GetPlayer().GetPosition() + vec3((glm::rotate(mat4(1), glm::radians(compMan->GetPlayer().GetPitch() - compMan->GetPlayer().baseFlyingPitch) * .4f, compMan->GetPlayer().GetRight()) * vec4(offset, 0)));
     }
     return target_pos;
 }

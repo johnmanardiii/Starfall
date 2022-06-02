@@ -32,6 +32,11 @@ vec3 Player::GetForward()
     return pTransform->GetForward();
 }
 
+vec3 Player::GetRight()
+{
+    return pTransform->GetRight();
+}
+
 void Player::AddIdleOffset(float frameTime)
 {
     float goalOffset = 0.0f;
@@ -247,8 +252,10 @@ void Player::SetFlyingAnimation(float frameTime)
     currentZRotation = exponential_growth(currentZRotation, goalZRotation, lerpFactor * 60.0f, frameTime);
     pTransform->SetRoll(currentZRotation);
 
-    float goalPitch = 63.0f;
-    currentXRotation = exponential_growth(currentXRotation, goalPitch, .2 * 60.0f, frameTime);
+    int thrust = movement->inputBuffer[W] - movement->inputBuffer[S];
+    float goalPitch = baseFlyingPitch;
+    goalPitch += 50.0 * static_cast<float>(thrust);
+    currentXRotation = exponential_growth(currentXRotation, goalPitch, .05 * 60.0f, frameTime);
     pTransform->SetPitch(currentXRotation);
 }
 

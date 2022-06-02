@@ -67,9 +67,11 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
 
     // store result of W and S as speed
     float speedInput = inputBuffer[W] - inputBuffer[S];
+    speedInput = 1.0f;
 
     // Apply velocity in the direction Luna is facing
     vec3 dir = glm::rotate(trans->GetRot(), vec3(0, 0, -1));
+    dir = glm::rotate(mat4(1), glm::radians(compMan->GetPlayer().GetPitch() - compMan->GetPlayer().baseFlyingPitch), compMan->GetPlayer().GetRight()) * vec4(dir, 1);
     velocity += dir * speedInput * SPEED * frameTime;
 
     // Sloped movement resolution
