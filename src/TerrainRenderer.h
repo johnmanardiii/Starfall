@@ -18,6 +18,7 @@ public:
 	{
 		ShaderManager shaderMan = ShaderManager::GetInstance();
 		prog = shaderMan.GetShader("Height");
+		depthProg = shaderMan.GetShader("TerrainDepth");
 		texture = shaderMan.GetTexture(tex);
 		heightTexture = shaderMan.GetTexture(heightTex);
 		noiseTexture = shaderMan.GetTexture("noiseTex");
@@ -38,6 +39,7 @@ private:
 	GLuint noiseTexture;
 	GLuint shallowTexture;
 	GLuint steepTexture;
+	shared_ptr<Program> depthProg = 0;
 
 	vec3 sunDir = vec3(0.6, 0.01, -0.806);
 	float sunRotation = 0;

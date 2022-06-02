@@ -92,6 +92,19 @@ void TerrainRenderer::Draw(float frameTime)
 
 	vec3 pos = cam.GetPos();
 	vec3 color_offset;
+	offset.y = 0;
+	offset.x = (int)pos.x;
+	offset.z = (int)pos.z;
+
+	LightComponent lightC = LightComponent::GetInstance(vec3(0));
+	shared_ptr<Program> dprog = lightC.depthProg;
+	mat4 ortho = lightC.GetOrthoMatrix();
+	mat4 LV = lightC.GetLightView();
+	mat4 LS = ortho * LV;
+
+	glUniformMatrix4fv(prog->getUniform("LS"), 1, GL_FALSE, &LS[0][0]);
+
+	//vec3 lightDir = normalize(vec3(1000, 0, 100)); // Hardcoded for now
 
 	// Sun direction
 	mat4 rotY = glm::rotate(mat4(1.0f), sunRotation, vec3(1.0f, 0.0f, 0.0f));
@@ -118,6 +131,8 @@ void TerrainRenderer::Draw(float frameTime)
 	glBindTexture(GL_TEXTURE_2D, shallowTexture);
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, steepTexture);
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, lightC.depthMap);
 
 	glPatchParameteri(GL_PATCH_VERTICES, 3);
 	glDrawElements(GL_PATCHES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
@@ -127,15 +142,15 @@ void TerrainRenderer::Draw(float frameTime)
 
 void TerrainRenderer::DrawDepth()
 {
-	/*
-	LightComponent lightComp = LightComponent::GetInstance(vec3(0));
-	shared_ptr<Program> depthProg = lightComp.depthProg;
-	mat4 ortho = lightComp.GetOrthoMatrix();
-	mat4 lv = lightComp.GetLightView();
+	// send over PVM matrices
+	Camera cam = Camera::GetInstance(vec3(0));
+	LightComponent lightC = LightComponent::GetInstance(vec3(0));
+	mat4 ortho = lightC.GetOrthoMatrix();
+	mat4 LV = lightC.GetLightView();
+	mat4 M = trans->GetModelMat();
 
 	depthProg->bind();
 
-	Camera cam = Camera::GetInstance(vec3(0, 0, 0));
 	glUniformMatrix4fv(depthProg->getUniform("M"), 1, GL_FALSE, &trans->GetModelMat()[0][0]);
 
 	vec3 pos = cam.GetPos();
@@ -145,34 +160,21 @@ void TerrainRenderer::DrawDepth()
 	offset.x = (int)pos.x;
 	offset.z = (int)pos.z;
 
-	//vec3 lightDir = normalize(vec3(1000, 0, 100)); // Hardcoded for now
-
 	// Sun direction
 	mat4 rotY = glm::rotate(mat4(1.0f), sunRotation, glm::vec3(1.0f, 0.0f, 0.0f));
 	mat4 inverted = glm::inverse(rotY);
 	sunDir = normalize(glm::vec3(inverted[2]));
 
-	glUniform3fv(prog->getUniform("camoff"), 1, &offset[0]);
-	glUniform3fv(prog->getUniform("campos"), 1, &pos[0]);
+	glUniform3fv(depthProg->getUniform("camoff"), 1, &offset[0]);
+	glUniformMatrix4fv(depthProg->getUniform("LP"), 1, GL_FALSE, &ortho[0][0]);
+	glUniformMatrix4fv(depthProg->getUniform("LV"), 1, GL_FALSE, &LV[0][0]);
+	glUniform1i(depthProg->getUniform("castShadows"), 0);
 
-	glUniform1f(prog->getUniform("time"), glfwGetTime());
 	glBindVertexArray(terrain.VAOId);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain.IndexBuff);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, heightTexture);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, noiseTexture);
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, shallowTexture);
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, steepTexture);
 
 	glDrawElements(GL_TRIANGLES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
-	depthProg->unbind();*/
-
-
+	depthProg->unbind();
 }

@@ -18,7 +18,7 @@ public:
 	virtual void Init(ComponentManager*);
 	virtual void Update(float frameTime, ComponentManager* compMan) 
 	{ 
-		DrawDepth();
+		
 		Draw(frameTime); 
 	}
 	virtual bool IsInViewFrustum(const GameState& state, ComponentManager* compMan, const Camera& camera);

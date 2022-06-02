@@ -9,6 +9,7 @@ class ComponentManager;
 #include <glm/gtc/type_ptr.hpp> //for value_ptr
 
 #include "Camera.h"
+#include "LightComponent.h"
 
 class HeadRenderer : public Renderer
 {
