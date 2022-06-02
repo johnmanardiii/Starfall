@@ -9,6 +9,8 @@ uniform vec3 centerPos;
 uniform vec3 campos;
 uniform vec3 lights[20];
 
+uniform mat4 M;
+
 const float M_PI = 3.14159265;
 const float M_SQRT_2_PI = sqrt(2.0f / M_PI);
 
@@ -21,7 +23,7 @@ float square(float val){
 }
 //utility function to prevent mistyping this common pattern.
 float md0(vec3 v1, vec3 v2){
-    return max(0.0f,dot(v1,v2));
+    return clamp(dot(v1,v2),0.001,1.0);
 }
 //simple phong diffuse calc.
 float diffuse(vec3 vertex_normal_n, vec3 lightDir){
@@ -43,6 +45,15 @@ float f_fresnel(float specular_color, float V_H){
     float power = ((-5.55473 * V_H) - 6.98316) * V_H;
     return specular_color + (1 - specular_color) * pow(2,power);
 }
+
+float f_fresnel_shlicks(float V_H, vec3 vertex_normal_n, vec3 viewDir, float bias, float scale, float shn){
+    if(dot(-viewDir, vertex_normal_n) < 0){
+        return 0;
+    }
+    float r = max(0, min(1, bias + scale * pow((1.0 + dot(-viewDir,vertex_normal_n)),shn)));
+    return r;
+}
+
 //Kelemen approximation of Cook-Torrance Geometric Shadowing Function (GSF).
 float f_geom_shadow(float N_V, float N_L, float roughness){
     float k = square(roughness) * M_SQRT_2_PI;
@@ -50,7 +61,7 @@ float f_geom_shadow(float N_V, float N_L, float roughness){
     return (square(gH) * N_L);
 }
 
-float brdf(vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float rough){
+vec3 brdf(vec3 albedo, vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float rough, float bias, float scale, float shn){
     
     float N_L = md0(vertex_normal_n, lightDir);
     float N_V = md0(vertex_normal_n, viewDir);
@@ -58,20 +69,20 @@ float brdf(vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float rough){
     vec3 H = normalize(viewDir + lightDir);
     float N_H = md0(vertex_normal_n, H);
     float V_H = md0(viewDir,H);
-
+    float V_L = dot(vertex_normal_n, lightDir);
+    
+    
     float roughness = rough * rough;
     float spec_dist = f_spec_dist(roughness, N_H);
-    //if you want to test stuff, return individual floating point values here!
-    //return spec_dist;
-    //return f_fresnel(spec_dist, V_H);
-    //return f_geom_shadow(N_V, N_L, roughness);
-    return clamp(max(0,spec_dist) + max(0,f_fresnel(spec_dist, V_H)) + max(0,f_geom_shadow(N_V, N_L, roughness)), 0.2,1.1);
-    //return f_combined(spec_dist, f_fresnel(spec_dist, V_H), f_geom_shadow(N_V, N_L, roughness), N_L, N_V);
+    float geom_shadow = f_geom_shadow(N_V,N_L, roughness);
+    float fresnel = f_fresnel_shlicks(V_H, vertex_normal_n, -H, bias, scale, shn);
+
+    return albedo * max(0.1,(spec_dist + geom_shadow + fresnel));
 }
 
 void main()
 {
-    vec3 lightPos = lights[0];
+    vec3 lightPos = (M * vec4(lights[0],1.0f)).xyz;
     
     
     vec3 tcol = texture(starTexture, vertex_tex).rgb;
@@ -94,6 +105,8 @@ void main()
     
     vec3 lightDir = normalize(normalize(lightPos) - normalize(vertex_pos));
     vec3 viewDir = normalize(normalize(campos) - normalize(vertex_pos));
-    color = vec4(randCol * brdf(vertex_normal_n, lightDir, viewDir, roughness), a);
+    //bias is a flat adjustment, scale is a linear adjustment, and shn is an exponential adjustment.
+    float bias = 0.0, scale = 0.1, shn = 6.0;
+    color = vec4(brdf(randCol, vertex_normal_n, lightDir, viewDir, roughness, bias, scale, shn), a);
     //color = vec4(lightDir,a);
 }
