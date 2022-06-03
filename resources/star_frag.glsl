@@ -47,7 +47,7 @@ float f_fresnel(float specular_color, float V_H){
     return specular_color + (1 - specular_color) * pow(2,power);
 }
 
-float f_fresnel_shlicks(float V_H, vec3 vertex_normal_n, vec3 viewDir, float bias, float scale, float shn){
+float f_fresnel_schlicks(float V_H, vec3 vertex_normal_n, vec3 viewDir, float bias, float scale, float shn){
     if(dot(-viewDir, vertex_normal_n) < 0){
         return 0;
     }
@@ -76,7 +76,7 @@ vec3 brdf(vec3 albedo, vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float 
     float roughness = rough * rough;
     float spec_dist = f_spec_dist(roughness, N_H);
     float geom_shadow = f_geom_shadow(N_V,N_L, roughness);
-    float fresnel = f_fresnel_shlicks(V_H, vertex_normal_n, -H, bias, scale, shn);
+    float fresnel = f_fresnel_schlicks(V_H, vertex_normal_n, -H, bias, scale, shn);
 
     return albedo * max(0.1,(spec_dist + geom_shadow + fresnel));
 }
