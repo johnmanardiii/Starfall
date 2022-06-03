@@ -5,6 +5,7 @@
 
 const float TerrainRenderer::OFFSET_FROM_CENTER = 20.0f; 
 const float TerrainRenderer::TERRAIN_SIZE = 300.0f;
+const float TerrainRenderer::BASE_HEIGHT = -4.0f;
 
 void TerrainRenderer::Init(ComponentManager* compMan)
 {
@@ -66,7 +67,7 @@ void TerrainRenderer::UpdatePosition()
 	trans->SetRot(rot);
 	vec3 offset = rot * vec3(-TERRAIN_SIZE / 2.0f, 0, -TERRAIN_SIZE + OFFSET_FROM_CENTER);
 	vec3 playerPos = player.GetPosition();
-	playerPos.y = -4;
+	playerPos.y = BASE_HEIGHT;
 	trans->SetPos(playerPos + offset);
 }
 
@@ -93,6 +94,7 @@ void TerrainRenderer::Draw(float frameTime)
 	vec3 playerPos = Player::GetInstance(vec3()).GetPosition();
 	glUniform3fv(prog->getUniform("campos"), 1, &pos[0]);
 	glUniform3fv(prog->getUniform("playerPos"), 1, &playerPos[0]);
+	glUniform1f(prog->getUniform("baseHeight"), BASE_HEIGHT);
 	
 	glUniform1f(prog->getUniform("time"), glfwGetTime());
 	glBindVertexArray(terrain.VAOId);
@@ -110,7 +112,8 @@ void TerrainRenderer::Draw(float frameTime)
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, steepTexture);
 
-	glDrawElements(GL_TRIANGLES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	glDrawElements(GL_PATCHES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
 	prog->unbind();
 	glDisable(GL_BLEND);
 }
