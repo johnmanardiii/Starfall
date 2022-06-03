@@ -31,13 +31,14 @@ void AudioEngine::Init(string resourceDir)
     CHECK_MA(ma_engine_init(NULL, engine.get()));
 
     InitSoundFromFile("tomorrow.mp3");
+    InitSoundFromFile("collect_majortriad.mp3");
 }
 
 void AudioEngine::Play(string soundFileName)
 {
     // commented out music for sanity purposes
-    //ma_result result = ma_sound_start(sounds[soundFileName].get());
-    //check(result);
+    ma_result result = ma_sound_start(sounds[soundFileName].get());
+    check(result);
 }
 
 void AudioEngine::Cleanup()

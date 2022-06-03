@@ -16,6 +16,7 @@
 #include "GameState.h"
 #include "HeightCalc.h"
 #include "LightComponent.h"
+#include "Audio.h"
 
 #include <glm/gtx/quaternion.hpp>
 #include <string>
@@ -44,7 +45,7 @@ public:
     //from the name, gets a way to access all the object's data members.
     GameObject GetGameObject(string name);
     //anything the component manager needs to do BEFORE frame-by-frame operations
-    void Init(std::string resourceDirectory);
+    void Init(std::string resourceDirectory, AudioEngine* audioPtr);
     
     void AddLineOfStars();
 
@@ -65,6 +66,7 @@ public:
     Player& GetPlayer() { return player; }
     LightComponent& GetLights() { return lightComponent; }
     GameState* GetGameState() { return &state; }
+    AudioEngine* Audio() { return audio; }
     ParticleSorter partComponentSorter = ParticleSorter();
 private:
     //helper functions to differentiate parts of AddGameObject.
@@ -87,6 +89,7 @@ private:
     //one camera for now
     Camera& camera = Camera::GetInstance(vec3(0,1,0));
     Player& player = Player::GetInstance(vec3(0, 1, 0));
+    AudioEngine* audio;
     LightComponent& lightComponent = LightComponent::GetInstance(vec3(10, 0, 10));
 };
 

@@ -41,7 +41,7 @@ shared_ptr<Component> ComponentManager::GetComponent(string compName, int index)
     return it->second[index];
 }
 
-void ComponentManager::Init(std::string resourceDirectory)
+void ComponentManager::Init(std::string resourceDirectory, AudioEngine* audioPtr)
 {
     // initialize skybox
     string skyboxName = "Skybox";
@@ -114,6 +114,7 @@ void ComponentManager::Init(std::string resourceDirectory)
     vector<shared_ptr<Component>> floorComps = { renderer, transform };
     AddGameObject(floorName, floorComps);
 
+    audio = audioPtr;
 }
 
 void ComponentManager::AddLineOfStars()
