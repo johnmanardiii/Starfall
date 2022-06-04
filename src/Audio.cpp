@@ -36,8 +36,8 @@ void AudioEngine::Init(string resourceDir)
     engine = make_unique<ma_engine>();
     CHECK_MA(ma_engine_init(NULL, engine.get()));
 
-    InitSoundFromFile("tomorrow.mp3", to_string(0));
-    for (int i = 1; i < 21; i++) {
+    InitSoundFromFile("tomorrow.mp3");
+    for (int i = 0; i < 100; i++) {
         InitSoundFromFile("collect_majortriad.mp3", to_string(i));
     }
     
@@ -46,27 +46,24 @@ void AudioEngine::Init(string resourceDir)
 void AudioEngine::Play(string soundFileName)
 {
     // commented out music for sanity purposes
-    ma_result result = ma_sound_start(sounds[soundFileName + to_string(0)].get());
+    ma_result result = ma_sound_start(sounds[soundFileName].get());
     check(result);
 }
 
 void AudioEngine::PlayClocked(string soundFileName) {
-    soundsPlaying = 0;
-    for (pair<const string, unique_ptr<ma_sound>>& sound : sounds){
-        if (ma_sound_is_playing(sound.second.get())) {
-            soundsPlaying++;
-        }
+    //engine_get_time returns time in PCM frames. convert to seconds.
+    float currTime = ma_engine_get_time(engine.get()) / static_cast<float>(ma_engine_get_sample_rate(engine.get()));
+    if (lastTime == 0 || currTime - lastTime > pitchAdjustPeriod) { //either first time, or within 1s.
+        halfSteps = 0; //more than the pitchAdjustPeriod has passed, start from the base pitch.
     }
-    if (soundsPlaying == sounds.size()) {
-        //ma_sound_stop(sounds[soundIndex].get());
-        soundsPlaying--; //just play the last one again
-    }
-    string soundIndex = soundFileName + to_string(soundsPlaying);
-    ma_sound_set_pitch(sounds[soundIndex].get(), static_cast<float>(pow(2,(soundsPlaying-1)/12.0f)));
-    if (!ma_sound_is_playing(sounds[soundIndex].get())) {
-        ma_result result = ma_sound_start(sounds[soundIndex].get());
-        check(result);
-    }
+    
+    int index = 1 + (soundsPlayed++ % (sounds.size() - 1));
+    cout << "index: " << index << endl;
+    ma_sound_set_pitch(sounds[soundFileName + to_string(index)].get(), static_cast<float>(pow(2, (halfSteps) / 12.0f)));
+    ma_result result = ma_sound_start(sounds[soundFileName + to_string(index)].get());
+    halfSteps++; //the next one is played a half-step higher.
+    
+    lastTime = currTime;
 }
 
 void AudioEngine::Cleanup()
