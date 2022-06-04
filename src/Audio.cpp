@@ -62,6 +62,7 @@ void AudioEngine::PlayClocked(string soundFileName) {
         soundsPlaying--; //just play the last one again
     }
     string soundIndex = soundFileName + to_string(soundsPlaying);
+    ma_sound_set_pitch(sounds[soundIndex].get(), static_cast<float>(pow(2,(soundsPlaying-1)/12.0f)));
     ma_result result = ma_sound_start(sounds[soundIndex].get());
     check(result);
 }
