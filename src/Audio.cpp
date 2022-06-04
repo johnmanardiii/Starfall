@@ -53,7 +53,7 @@ void AudioEngine::Play(string soundFileName)
 void AudioEngine::PlayClocked(string soundFileName) {
     //engine_get_time returns time in PCM frames. convert to seconds.
     float currTime = ma_engine_get_time(engine.get()) / static_cast<float>(ma_engine_get_sample_rate(engine.get()));
-    if (lastTime == 0 || currTime - lastTime > pitchAdjustPeriod) { //either first time, or within 1s.
+    if (lastTime == 0 || currTime - lastTime > pitchAdjustPeriod) {
         halfSteps = 0; //more than the pitchAdjustPeriod has passed, start from the base pitch.
     }
     
