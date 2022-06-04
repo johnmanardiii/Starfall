@@ -17,7 +17,7 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
         transform->ApplyScale(vec3(0.80f));
 
 		//play sound a single time.
-		compMan->Audio()->Play("collect_majortriad.mp3");
+		compMan->Audio()->PlayClocked("collect_majortriad.mp3");
 	}
 	
 	//delete after 6s

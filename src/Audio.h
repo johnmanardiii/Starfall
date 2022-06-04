@@ -3,17 +3,24 @@
 #include <iostream>
 #include <unordered_map>
 #include "miniaudio.h"
+#include <string>
+
+using std::string;
 
 class AudioEngine {
 public:
-    void Init(std::string resourceDir);
-    void InitSoundFromFile(std::string soundFilename);
-    void Play(std::string soundFileName);
+    void Init(string resourceDir);
+    void InitSoundFromFile(string filename);
+    void InitSoundFromFile(string soundFilename, string id);
+    void Play(string soundFileName);
+    void PlayClocked(string soundFileName);
     void Cleanup();
 private:
     void check(ma_result result);
+    int soundsPlaying;
+    
     
     std::unique_ptr<ma_engine> engine;
-    std::unordered_map<std::string, std::unique_ptr<ma_sound>> sounds;
-    std::string resourceDir;
+    std::unordered_map<string, std::unique_ptr<ma_sound>> sounds;
+    string resourceDir;
 };
