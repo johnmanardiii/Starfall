@@ -55,14 +55,13 @@ void AudioEngine::PlayClocked(string soundFileName) {
     float currTime = ma_engine_get_time(engine.get()) / static_cast<float>(ma_engine_get_sample_rate(engine.get()));
     if (lastTime == 0 || currTime - lastTime > pitchAdjustPeriod) {
         halfSteps = 0; //more than the pitchAdjustPeriod has passed, start from the base pitch.
-    }
-    
-    int index = 1 + (soundsPlayed++ % (sounds.size() - 1));
-    cout << "index: " << index << endl;
+    } 
+    int index = 1 + (soundsPlayed % (sounds.size() - 2));
+
     ma_sound_set_pitch(sounds[soundFileName + to_string(index)].get(), static_cast<float>(pow(2, (halfSteps) / 12.0f)));
     ma_result result = ma_sound_start(sounds[soundFileName + to_string(index)].get());
     halfSteps++; //the next one is played a half-step higher.
-    
+    soundsPlayed++;
     lastTime = currTime;
 }
 
