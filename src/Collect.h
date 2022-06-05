@@ -18,6 +18,7 @@ public:
 private:
 	float timeElapsed = 0;
 	float animSpeed = 0;
+	bool playOnce = true;
 	shared_ptr<StarRenderer> rendererObject;
     shared_ptr<Collision> collision;
 	shared_ptr<Transform> transform;

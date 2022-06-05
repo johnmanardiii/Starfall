@@ -16,6 +16,11 @@ void Collect::Update(float frameTime, ComponentManager* compMan)
 		transform->ApplyRotation(frameTime * 16, vec3(0, 0, 1));
         transform->ApplyScale(vec3(0.80f));
 
+		//play sound a single time.
+		if (playOnce) {
+			compMan->Audio()->PlayClocked("collect_majortriad.mp3");
+			playOnce = false;
+		}
 	}
 	
 	//delete after 6s

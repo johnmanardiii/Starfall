@@ -588,7 +588,7 @@ void Application::Init(std::string resourceDirectory)
 	InitImGui();
 	InitShaderManager(resourceDirectory);
 	// do ComponentManager's init here
-	componentManager.Init(resourceDirectory);
+	componentManager.Init(resourceDirectory, &audioEngine);
 	audioEngine.Init(resourceDirectory);
 	audioEngine.Play("tomorrow.mp3");
 
