@@ -183,9 +183,7 @@ void ParticleRenderer::drawSand(float totalTime) {
 		alphaTime = LIFETIME - totalTime;
 	}
 	glUniform1f(prog->getUniform("alphaTime"), alphaTime);
-	vec4 nearPlane = Camera::GetInstance(vec3()).getVFCPlanes()[4];
 	
-	trans->SetPos(Camera::GetInstance(vec3()).GetPos() + 1.f * vec3(nearPlane));
 	glUniform3fv(prog->getUniform("centerPos"), 1, glm::value_ptr(trans->GetPos()));
 
 	//do the calculation for, based on the time, which row/column images should be used.
@@ -238,6 +236,6 @@ pair<vec3, vec3> ParticleRenderer::calcSpritePos(int curr) {
 	
 	vec3 rows = vec3(SpriteRowColumnTable[prev].first, SpriteRowColumnTable[curr].first, SpriteRowColumnTable[next].first);
 	vec3 cols = vec3(SpriteRowColumnTable[prev].second, SpriteRowColumnTable[curr].second, SpriteRowColumnTable[next].second);
-	//lookup the row and column of each. Think about adding all the above to lookup table as well
+	//lookup the row and column of each.
 	return make_pair(rows, cols);
 }

@@ -52,9 +52,8 @@ public:
     static void gpuSetup(std::shared_ptr<Program> prog, int numP);
     void setCamera(mat4 inC) { View = inC; }
     void setProjection(mat4 inP) { Projection = inP; }
-    float LIFETIME = 10;
+    float LIFETIME = 3;
     constexpr static float originalPointSize = 5.0f;
-    bool sorted = false; //particles are not sorted by default. Sort them if you are using transparent alpha values.
     const glm::vec3& getPos() const { return trans->GetPos(); }
     int bufObjIndex;
 private:
