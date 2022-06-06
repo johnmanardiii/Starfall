@@ -45,7 +45,7 @@ void GameState::EndGame()
 }
 //when or what conditions to spawn sand particles
 bool GameState::ShouldSpawnSand() {
-    if (spawnSandFrames >= 0.2) { 
+    if (spawnSandFrames >= 0.0) { 
         spawnSandFrames = 0;
         currentObjectCount++;
         return true;

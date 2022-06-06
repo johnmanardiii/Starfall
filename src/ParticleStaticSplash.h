@@ -55,6 +55,8 @@ public:
     constexpr static float originalPointSize = 5.0f;
     const glm::vec3& getPos() const { return trans->GetPos(); }
     int bufObjIndex;
+    float initialPlayerSpeed;
+    vec3 initialPlayerDirection;
 private:
     void(ParticleRenderer::*func)(float totalTime);
     GLuint texture;

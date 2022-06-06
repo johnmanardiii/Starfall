@@ -345,6 +345,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	sandProg->addUniform("totalTime");
 	sandProg->addUniform("alphaTime");
 	sandProg->addUniform("centerPos");
+	sandProg->addUniform("playerSpeed");
+	sandProg->addUniform("playerDirection");
 	sandProg->addUniform("campos");
 	sandProg->addUniform("alphaTexture");
 	sandProg->addUniform("alphaMult");

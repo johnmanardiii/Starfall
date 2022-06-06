@@ -169,8 +169,9 @@ void ComponentManager::AddBunchOfSandParticles() {
         shared_ptr<Transform> transform = make_shared<Transform>(SandName);
 
         //where all the variables at the top come in.
-        vec3 pos = player.GetPosition() + //the player's position
-            playerGaze * (distFactor);
+        vec3 pos = player.GetPosition(); //the player's position
+        particles->initialPlayerSpeed = player.GetCurrentSpeed();
+        particles->initialPlayerDirection = player.GetForward();
         //finally, calculate each spawned fragment's height at this position.
         transform->ApplyTranslation(vec3(pos.x, HeightCalc::heightCalc(pos.x, pos.z), pos.z));
         transform->ApplyScale(vec3(0.02f));

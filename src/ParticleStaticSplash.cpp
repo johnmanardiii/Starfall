@@ -169,8 +169,8 @@ void ParticleRenderer::drawSand(float totalTime) {
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(Projection));
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(View));
-	mat4 Model = trans->GetModelMat();
-	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(Model));
+	glUniform1f(prog->getUniform("playerSpeed"), initialPlayerSpeed);
+	glUniform3fv(prog->getUniform("playerDirection"),1, glm::value_ptr(initialPlayerDirection));
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
 	float alphaTime = 0;
 	if (totalTime < 1) {
@@ -206,11 +206,6 @@ void ParticleRenderer::drawSand(float totalTime) {
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	glPointSize(originalPointSize);
-	prog->unbind();
-}
-
-void ParticleRenderer::drawSmoke(float totalTime) {
-	prog->bind();
 	prog->unbind();
 }
 
