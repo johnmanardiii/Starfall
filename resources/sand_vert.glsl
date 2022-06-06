@@ -241,7 +241,7 @@ void main()
 	M0[1] = vec4(0.0, 1.0, 0.0, 0.0);
 	M0[2] = vec4(0.0, 0.0, 1.0, 0.0);
 	
-	vec3 newPosition = centerPos + (-playerDirection * totalTime * playerSpeed);
+	vec3 newPosition = centerPos + (-playerDirection * totalTime * playerSpeed) * pRotation * 10;
 
 	gl_Position = P * V * vec4(newPosition, 1.0);
 	vertex_pos = (vec4(newPosition, 1.0)).xyz;

@@ -32,6 +32,11 @@ vec3 Player::GetForward()
     return pTransform->GetForward();
 }
 
+vec3 Player::GetVelocity()
+{
+    return normalize(movement->GetVel());
+}
+
 void Player::AddIdleOffset(float frameTime)
 {
     float goalOffset = 0.0f;

@@ -80,6 +80,7 @@ public:
 	void Update(float frameTime, ComponentManager* compMan);
 	void SetInput(int index, bool val);
 	vec3 GetForward();
+	vec3 GetVelocity();
 	float GetCurrentSpeed() { return movement->GetSpeed(); }
 	float GetMaxSpeed() { return movement->GetMaxSpeed(); }
 	void Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
