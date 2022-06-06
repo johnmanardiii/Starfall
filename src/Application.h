@@ -10,6 +10,7 @@
 #include "EventManager.h"
 #include "Audio.h"
 #include "PostProcessing.h"
+#include "HUDRenderer.h"
 
 #include "Program.h"
 #include "Shape.h"
@@ -39,6 +40,7 @@ public:
 	WindowManager* windowManager = nullptr;
 	AudioEngine audioEngine;
 	shared_ptr<PostProcessing> postProcessing;
+	shared_ptr<HUDRenderer> hudRenderer;
 	
 	//callbacks
 	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
