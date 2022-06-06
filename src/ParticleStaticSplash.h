@@ -46,7 +46,6 @@ public:
 
     void drawSplash(float totalTime);
     void drawSand(float totalTime);
-    void drawSmoke(float totalTime);
     vec3 calcNewPos(vec3 globalWindVec, float frametime);
     pair<vec3, vec3> calcSpritePos(int spriteNum);
     static void gpuSetup(std::shared_ptr<Program> prog, int numP);
