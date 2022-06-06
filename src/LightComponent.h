@@ -23,7 +23,7 @@ public:
 	void DebugDrawDepthTexture();
 	void initQuad();
 	// Sun rotation around x axis
-	float sunRotation = 0;
+	float sunRotation = 8.5;
 	vec3 sunDir = vec3(0, 0, 1);
 	vec3 moonDir = vec3(0, 0, -1);
 	mat4 LightComponent::GetOrthoMatrix();
@@ -45,7 +45,7 @@ private:
 	GLuint quad_vertexbuffer = 0;
 
 	// debug
-	float o = 1;
+	float o = 25.0f;
 	vec3 lightPos = vec3(0, 10, 0);
 	float scale = 30;
 };
