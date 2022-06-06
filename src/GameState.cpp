@@ -45,7 +45,8 @@ void GameState::EndGame()
 }
 //when or what conditions to spawn sand particles
 bool GameState::ShouldSpawnSand() {
-    if (spawnSandFrames >= 0.0) { 
+    auto& player = Player::GetInstance(vec3());
+    if (player.GetCurrentSpeedAsPct() > 0.8) {
         spawnSandFrames = 0;
         currentObjectCount++;
         return true;

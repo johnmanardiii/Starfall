@@ -8,9 +8,10 @@ in vec3 vertex_pos;
 uniform vec3 campos;
 uniform vec3 centerPos;
 uniform float alphaTime;
+uniform float alphaSpeed;
 uniform vec3 Row;
 uniform vec3 Column;
-
+uniform float playerSpeed;
 out vec4 outColor;
 
 uniform float totalTime;
@@ -29,7 +30,7 @@ vec2 selectSprite(float row, float col){
 //    float w2 = 3 - (w1 + w3);
 //    return ((v1 * w1) + (v2 * w2) + (v3 + w3))/3.0f;
 //}
-
+const float oneThird = 0.33333;
 void main()
 {
     //interpolate between next, current, and previous texture images.
@@ -66,5 +67,6 @@ void main()
     else
         outColor = vec4(0,texCoordCurr.y,0,1);
     */
-    outColor = vec4(color, alpha * a * alphaTime);
+    
+    outColor = vec4(color, alpha * a * alphaTime * alphaSpeed * 0.8);
 }

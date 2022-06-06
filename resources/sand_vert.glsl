@@ -243,7 +243,7 @@ void main()
 	
 	vec3 newPosition = centerPos + (-playerDirection * totalTime * playerSpeed) * pRotation * 10;
 
-	gl_Position = P * V * vec4(newPosition, 1.0);
+	gl_Position = P * V * vec4(newPosition - vec3(0,1,0), 1.0);
 	vertex_pos = (vec4(newPosition, 1.0)).xyz;
 
 	partCol = pColor;

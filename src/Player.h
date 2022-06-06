@@ -82,6 +82,7 @@ public:
 	vec3 GetForward();
 	vec3 GetVelocity();
 	float GetCurrentSpeed() { return movement->GetSpeed(); }
+	float GetCurrentSpeedAsPct() { return movement->GetSpeed() / 35; }
 	float GetMaxSpeed() { return movement->GetMaxSpeed(); }
 	void Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
 		shared_ptr<PlayerTransform> head, shared_ptr<PlayerTransform> arm1,

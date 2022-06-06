@@ -350,6 +350,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	sandProg->addUniform("campos");
 	sandProg->addUniform("alphaTexture");
 	sandProg->addUniform("alphaMult");
+	sandProg->addUniform("alphaSpeed");
 	sandProg->addAttribute("pColor");
 	sandProg->addAttribute("pNormal");
 	sandProg->addAttribute("pRotation");
