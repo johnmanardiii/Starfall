@@ -47,7 +47,7 @@ void main()
     float alpha = alphaCurr;
     
     //float alpha = alphaPrev + alphaCurr + alphaNext;
-	vec3 color = vec3(0.761f, 0.698f, .502f);
+	vec3 color = vec3(0.56f, 0.36f, .76f);
     
 	//alpha fadeout with distance - this should match the implementation in height_frag.glsl
     float len = length(vertex_pos.xz - campos.xz);

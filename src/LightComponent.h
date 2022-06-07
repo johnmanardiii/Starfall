@@ -36,10 +36,10 @@ public:
 	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
 	GLuint depthMap;
 private:
-	float startSunRotation = 0.65;
-	float endSunRotation = -0.4;
-	float timeLeft = 60;
-	float startTime = 60;
+	float startSunRotation = 0.68;
+	float endSunRotation = -0.3;
+	float timeLeft = 70;
+	float startTime = 70;
 	ComponentManager* componentManager;
 	GLuint quad_VertexArrayID = 0;
 	GLuint quad_vertexbuffer = 0;
