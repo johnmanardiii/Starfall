@@ -1,6 +1,7 @@
 #include "HeadRenderer.h"
 #include "LightComponent.h"
 
+#include "ComponentManager.h"
 #include <iostream>
 
 void HeadRenderer::Init(ComponentManager* compMan)
@@ -36,6 +37,7 @@ void HeadRenderer::Draw(float frameTime)
 	glUniform2fv(prog->getUniform("eye1Pos"), 1, &eye1Pos[0]);
 	glUniform1f(prog->getUniform("eye1Radius"), eye1Radius);
 	glUniform1f(prog->getUniform("eyeOpenPct"), eyeOpenPct);
+	glUniform3fv(prog->getUniform("camPos"), 1, &cm->GetCamera().GetPos()[0]);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	model->draw(prog, false);

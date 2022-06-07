@@ -46,13 +46,6 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
-	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
-		postProcessing->RenderRadialBlur(true);
-	}
-	if (key == GLFW_KEY_B && action == GLFW_RELEASE) {
-		postProcessing->RenderRadialBlur(false);
-	}
-
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 		renderPostProcessing = false;
 	}
@@ -242,11 +235,13 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_BaseColor.png", "Luna");
 	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Emissive.png", "Luna Emissive");
 	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Normal.png", "Luna Normal");
+	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Roughness.png", "Luna Roughness");
+	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Metallic.png", "Luna Metal");
 	loadTexture("/grass.jpg", "Grass");
 	loadTexture("/alpha.bmp", "Alpha", false);
 	loadTexture("/smoke_spritesheet.png", "SandPartTex");
 	loadTexture("/noiseTex.png", "noiseTex", false);
-	loadTexture("/sandShallow.png", "sandShallow");
+	loadTexture("/sandShallow.jpg", "sandShallow");
 	loadTexture("/sandSteep.jpg", "sandSteep");
 	loadTexture("/CloudNoise/cloud_BaseNoise.png", "cloudBaseNoise");
 	loadTexture("/CloudNoise/cloud_NoiseTexture.png", "cloudNoise");
@@ -281,6 +276,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	luna_body->addUniform("M");
 	luna_body->addUniform("flashAmt");
 	luna_body->addUniform("flashCol");
+	luna_body->addUniform("camPos");
 	luna_body->addAttribute("vertPos");
 	luna_body->addAttribute("vertNor");
 	luna_body->addAttribute("vertTex");
@@ -296,6 +292,12 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	TexLocation = glGetUniformLocation(luna_body->pid, "normalTex");
 	glUseProgram(luna_body->pid);
 	glUniform1i(TexLocation, 2);
+	TexLocation = glGetUniformLocation(luna_body->pid, "roughness");
+	glUseProgram(luna_body->pid);
+	glUniform1i(TexLocation, 3);
+	TexLocation = glGetUniformLocation(luna_body->pid, "metal");
+	glUseProgram(luna_body->pid);
+	glUniform1i(TexLocation, 4);
 
 	shaderManager.SetShader("Luna Body", luna_body);
 
@@ -312,6 +314,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	head_prog->addUniform("eye1Radius");
 	head_prog->addUniform("eyeOpenPct");
 	head_prog->addUniform("lightDir");
+	head_prog->addUniform("camPos");
 	head_prog->addAttribute("vertPos");
 	head_prog->addAttribute("vertNor");
 	head_prog->addAttribute("vertTex");
@@ -506,7 +509,6 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	// sand ripples
 	heightProg->addUniform("steepnessSharpnessPower");
 	heightProg->addUniform("specularHardness");
-	heightProg->addUniform("sandRipplesStrength");
 
 	heightProg->addAttribute("vertPos");
 	heightProg->addAttribute("vertTex");
@@ -665,7 +667,7 @@ void Application::Init(std::string resourceDirectory)
 	// do ComponentManager's init here
 	componentManager.Init(resourceDirectory, &audioEngine);
 	audioEngine.Init(resourceDirectory);
-	audioEngine.Play("Climbing the Ginso Tree.mp3");
+	audioEngine.Play("tomorrow.mp3");
 
 	postProcessing = make_shared<PostProcessing>(windowManager, &componentManager.GetCamera());
 	hudRenderer = make_shared<HUDRenderer>();
@@ -709,8 +711,9 @@ void Application::render(float frameTime)
 	// render post-processing
 	if (renderPostProcessing && !renderLines)
     {
+		float goalBlur = componentManager.GetGameState()->ShouldSpawnSand() ? .5 : 0.0;
     	// render post-processing
-    	postProcessing->RenderPostProcessing();
+    	postProcessing->RenderPostProcessing(frameTime, goalBlur);
     }
 	// render HUD
 	hudRenderer->RenderHUD(width, height, componentManager.GetGameState());

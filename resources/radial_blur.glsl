@@ -4,6 +4,7 @@ out vec4 color;
 in vec2 TexCoord;
 
 uniform sampler2D screenTexture;
+uniform float blurAmount;
 
 const int num_blur_samples = 20;    // this might be too much, when we get to performance I should check this out.
 const float start_step_size = 0.0;
@@ -11,10 +12,16 @@ const float max_step_size = 10.0;
 
 void main()
 {
+    if(blurAmount < .01)
+    {
+        color = texture(screenTexture, TexCoord);
+        return;
+    }
     vec2 outwardsVec = normalize(TexCoord - vec2(.5)) / textureSize(screenTexture, 0);  // pixel that samples one pixel outwards
     float step_size = mix(start_step_size, max_step_size,
         clamp((distance(vec2(.5), TexCoord) / .7071) - .2, 0, 1));   // increase blur step size by dist from center.
     outwardsVec *= step_size;
+    outwardsVec *= blurAmount;
     // Get the initial color at this pixel.    
     vec4 blurred_color = texture(screenTexture, TexCoord);
     vec4 original_color = blurred_color;

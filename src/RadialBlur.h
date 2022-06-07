@@ -18,10 +18,12 @@ private:
 	std::shared_ptr<Program> radialBlurProg;
 	void InitializeShaders();
 	void InitializeFramebuffers(int width, int height);
+	float blurAmount = 0.0;
 public:
 	RadialBlur(PostProcessing* _pp);
 	~RadialBlur();
 	const GLuint GetRadialBlurTex() const { return blurTex; }
 	void RenderRadialBlur();
 	void OnResizeWindow();
+	void SetBlurAmount(float amount);
 };

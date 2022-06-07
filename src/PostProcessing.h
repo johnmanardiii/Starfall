@@ -20,7 +20,6 @@ class PostProcessing
 {
 private:
 	int width, height;
-	bool renderRadialBlur = false;
 	WindowManager* windowManager;
 	Camera* camera;
 	GLuint base_fbo;
@@ -36,6 +35,7 @@ private:
 	void InitializeFramebuffers();
 	void InitializeShaders();
 	void DeleteTexturesFramebuffers();
+	float currentBlur = 0.0;
 public:
 	PostProcessing(WindowManager* wm, Camera* cam);
 	~PostProcessing();
@@ -47,8 +47,8 @@ public:
 	const GLuint GetMotionBlurTex() const { return mb->GetMotionBlurTex(); }
 	const GLuint GetDepthTexture() const { return base_depth; }
 	const GLuint GetLastProcessedScreen() const { return last_processed_screen; }
+	void SetBlurAmount(float amount) { rb->SetBlurAmount(amount); }
 	void SetUpFrameBuffers();
-	void RenderPostProcessing();
-	void RenderRadialBlur(bool shouldRender);
+	void RenderPostProcessing(float frameTime, float goalBlur);
 	void SetLastProcessedScreen(GLuint tex);
 };
