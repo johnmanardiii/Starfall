@@ -34,3 +34,27 @@ void DroneRenderer::Draw(float frameTime)
 	}
 	prog->unbind();
 }
+
+void DroneRenderer::DrawDepth()
+{
+	// send over PVM matrices
+	Camera cam = Camera::GetInstance(vec3(0, 1, 0));
+	LightComponent lightC = LightComponent::GetInstance(vec3(0));
+	shared_ptr<Program> dprog = lightC.depthProg;
+	mat4 ortho = lightC.GetOrthoMatrix();
+	mat4 LV = lightC.GetLightView();
+	mat4 M = trans->GetModelMat();
+
+	dprog->bind();
+	glUniformMatrix4fv(dprog->getUniform("LP"), 1, GL_FALSE, &ortho[0][0]);
+	glUniformMatrix4fv(dprog->getUniform("LV"), 1, GL_FALSE, &LV[0][0]);
+	glUniform1i(dprog->getUniform("castShadows"), 1);
+	vector<mat4> MMatrices = drone_manager->GetModelMatrices();
+	for (int i = 0; i < MMatrices.size(); i++)
+	{
+		M = MMatrices[i];
+		glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+		model->draw(prog, true);
+	}
+	dprog->unbind();
+}

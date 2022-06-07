@@ -24,6 +24,8 @@ public:
 	void Init(ComponentManager* compMan);
 	void Draw(float frameTime);
 	void UpdateUniforms();
+	void DrawDepth() {}
+
 private:
 	shared_ptr<Shape> model;
 	vec3 dayTopColor = vec3(0.03, 0.10, 0.41);

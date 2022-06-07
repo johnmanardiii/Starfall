@@ -119,6 +119,7 @@ void ComponentManager::Init(std::string resourceDirectory, AudioEngine* audioPtr
     AddGameObject(floorName, floorComps);
 
     audio = audioPtr;
+    lightComponent.Init(this);
 }
 
 void ComponentManager::InitDroneManager(std::string resourceDirectory)
@@ -274,6 +275,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 
     //timer.start();
     //the rest must be done sequentially, due to opengl global state.
+    /*
     for (auto& rend : components["Renderer"])
     {
         if (!rend->IsActive) continue; //if the component is active (isn't awaiting replacement in the component vector structure)
@@ -282,23 +284,11 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         }
         //else
         rend->Update(frameTime, this);
-    }
+    }*/
     //int rendtime = timer.stop();
     //draw particles last because they are transparent.
     //timer.start();
-    for (auto& part : components["Particle"])
-    {
-        if (!part->IsActive) continue;
-        part->Update(frameTime, this);
-    }
-    //sort("Particle");
-    for (auto& part : components["Particle"])
-    {
-        const auto& rend = static_pointer_cast<ParticleRenderer>(part);
-        if (rend->IsActive && rend->IsInViewFrustum(state, this, camera)) {
-            rend->Draw(frameTime);
-        }
-    }
+
 }
 
 void ComponentManager::sort(std::string compName)
@@ -321,6 +311,48 @@ void ComponentManager::sort(std::string compName)
     //now we need to resolve the fact that the open slots may have changed as well.
     recalculateOpenSlots(compName);
     //Then finally draw them, in order.
+}
+
+void ComponentManager::RenderToDepth()
+{
+    //render to depth
+    for (auto& rend : components["Renderer"])
+    {
+        if (!rend->IsActive) continue; //if the component is active (isn't awaiting replacement in the component vector structure)
+        //if (!static_pointer_cast<Renderer>(rend)->IsInViewFrustum(state, this, camera)) { //if the renderer component has culling enabled and is actually outside the view frustum.
+        //    continue;
+        //}
+        //else
+        static_pointer_cast<Renderer>(rend)->DrawDepth();
+    }
+}
+
+void ComponentManager::Render(float frameTime)
+{
+    //finally update renderers/draw.
+    for (auto& rend : components["Renderer"])
+    {
+        if (!rend->IsActive) continue; //if the component is active (isn't awaiting replacement in the component vector structure)
+        if (!static_pointer_cast<Renderer>(rend)->IsInViewFrustum(state, this, camera)) { //if the renderer component has culling enabled and is actually outside the view frustum.
+            continue;
+        }
+        else
+        rend->Update(frameTime, this);
+    }
+
+    for (auto& part : components["Particle"])
+    {
+        if (!part->IsActive) continue;
+        part->Update(frameTime, this);
+    }
+    //sort("Particle");
+    for (auto& part : components["Particle"])
+    {
+        const auto& rend = static_pointer_cast<ParticleRenderer>(part);
+        if (rend->IsActive && rend->IsInViewFrustum(state, this, camera)) {
+            rend->Draw(frameTime);
+        }
+    }
 }
 
 void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> comps)

@@ -9,6 +9,7 @@ class ComponentManager;
 #include <glm/gtc/type_ptr.hpp> //for value_ptr
 
 #include "Camera.h"
+#include "LightComponent.h"
 
 class TerrainRenderer : public Renderer
 {
@@ -17,6 +18,7 @@ public:
 	{
 		ShaderManager shaderMan = ShaderManager::GetInstance();
 		prog = shaderMan.GetShader("Height");
+		depthProg = shaderMan.GetShader("TerrainDepth");
 		texture = shaderMan.GetTexture(tex);
 		heightTexture = shaderMan.GetTexture(heightTex);
 		noiseTexture = shaderMan.GetTexture("noiseTex");
@@ -29,6 +31,7 @@ public:
 	void Init(ComponentManager* compMan);
 	void UpdateUniforms();
 	void Draw(float frameTime);
+	void DrawDepth();
 private:
 	TerrainS terrain;
 	GLuint texture;
@@ -36,6 +39,7 @@ private:
 	GLuint noiseTexture;
 	GLuint shallowTexture;
 	GLuint steepTexture;
+	shared_ptr<Program> depthProg = 0;
 
 	vec3 sunDir = vec3(0.6, 0.01, -0.806);
 	float sunRotation = 0;
@@ -45,6 +49,7 @@ private:
 	vec3 shadowColor = vec3(0.33, 0.25, 0.60);
 	vec3 terrainColor = vec3(0.76, 0.61, 1.0);
 	float sandStrength = 0.08;
+	vec3 shadowCastColor = vec3(0.23, 0.61, 0.23);
 
 	// rim 
 	float rimStrength = 0.176;

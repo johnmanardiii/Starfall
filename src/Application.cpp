@@ -492,12 +492,13 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	heightProg->addUniform("playerPos");
 	heightProg->addUniform("lightDir");
 	heightProg->addUniform("time");
-
+	heightProg->addUniform("LS");
 
 	heightProg->addUniform("diffuseContrast");
 	heightProg->addUniform("shadowColor");
 	heightProg->addUniform("terrainColor");
 	heightProg->addUniform("sandStrength");
+	heightProg->addUniform("shadowCastColor");
 	// rim 
 	heightProg->addUniform("rimStrength");
 	heightProg->addUniform("rimPower");
@@ -509,6 +510,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	// sand ripples
 	heightProg->addUniform("steepnessSharpnessPower");
 	heightProg->addUniform("specularHardness");
+	heightProg->addUniform("sandRipplesStrength");
+
 
 	heightProg->addAttribute("vertPos");
 	heightProg->addAttribute("vertTex");
@@ -520,6 +523,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	GLuint TexLocation3 = glGetUniformLocation(heightProg->pid, "noiseTex");
 	GLuint TexLocation4 = glGetUniformLocation(heightProg->pid, "sandShallow");
 	GLuint TexLocation5 = glGetUniformLocation(heightProg->pid, "sandSteep");
+	GLuint TexLocation6 = glGetUniformLocation(heightProg->pid, "shadowDepth");
 
 	glUseProgram(heightProg->pid);
 	glUniform1i(TexLocation, 0);
@@ -527,6 +531,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	glUniform1i(TexLocation3, 2);
 	glUniform1i(TexLocation4, 3);
 	glUniform1i(TexLocation5, 4);
+	glUniform1i(TexLocation6, 5);
 
 	assert(glGetError() == GL_NO_ERROR);
 
@@ -582,7 +587,6 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	HUDprog->setVerbose(true);
 	HUDprog->setShaderNames(resourceDirectory + "/hud_vert.glsl", resourceDirectory + "/hud_frag.glsl");
 	if (!HUDprog->Init())
-
 	{
 		std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
 		exit(1);
@@ -594,6 +598,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	HUDprog->addAttribute("vertPos");
 	HUDprog->addAttribute("vertTex");
 
+
 	TexLocation = glGetUniformLocation(HUDprog->pid, "Texture0");
 
 	glUseProgram(HUDprog->pid);
@@ -602,6 +607,69 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	assert(glGetError() == GL_NO_ERROR);
 	shaderManager.SetShader("HUD", HUDprog);
 
+	// Shadow Depth
+	auto shadowDepthProg = make_shared<Program>();
+	shadowDepthProg->setVerbose(true);
+	shadowDepthProg->setShaderNames(resourceDirectory + "/shadow_depth_vert.glsl", resourceDirectory + "/shadow_depth_frag.glsl");
+	if (!shadowDepthProg->Init())
+	{
+		std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+		exit(1);
+	}
+
+	shadowDepthProg->addUniform("LP");
+	shadowDepthProg->addUniform("LV");
+	shadowDepthProg->addUniform("M");
+	shadowDepthProg->addUniform("castShadows");
+	shadowDepthProg->addAttribute("vertPos");
+
+	assert(glGetError() == GL_NO_ERROR);
+	shaderManager.SetShader("ShadowDepth", shadowDepthProg);
+
+	// Terrain Depth
+	auto terrainDepthProg = make_shared<Program>();
+	terrainDepthProg->setVerbose(true);
+	terrainDepthProg->setShaderNames(resourceDirectory + "/terrain_depth_vert.glsl", resourceDirectory + "/shadow_depth_frag.glsl",
+		resourceDirectory + "/terrain_depth_tesscontrol.glsl", resourceDirectory + "/terrain_depth_tesseval.glsl");
+	if (!terrainDepthProg->Init())
+	{
+		std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+		exit(1);
+	}
+	terrainDepthProg->addUniform("LP");
+	terrainDepthProg->addUniform("LV");
+	terrainDepthProg->addUniform("M");
+	terrainDepthProg->addUniform("camoff");
+	terrainDepthProg->addUniform("castShadows");
+	terrainDepthProg->addAttribute("vertPos");
+	//Terrain info
+	terrainDepthProg->addUniform("baseHeight");
+	// Camera/Player information
+	terrainDepthProg->addUniform("campos");
+	terrainDepthProg->addUniform("playerPos");
+
+
+	assert(glGetError() == GL_NO_ERROR);
+	shaderManager.SetShader("TerrainDepth", terrainDepthProg);
+
+	// Texture Debug
+	auto textureDebugProg = make_shared<Program>();
+	textureDebugProg->setVerbose(true);
+	textureDebugProg->setShaderNames(resourceDirectory + "/pass_vert.glsl", resourceDirectory + "/pass_texfrag.glsl");
+	if (!textureDebugProg->Init())
+	{
+		std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+		exit(1);
+	}
+	textureDebugProg->addUniform("texBuf");
+	textureDebugProg->addAttribute("vertPos");
+
+	TexLocation = glGetUniformLocation(textureDebugProg->pid, "texBuf");
+	glUseProgram(textureDebugProg->pid);
+	glUniform1i(TexLocation, 1);
+
+	assert(glGetError() == GL_NO_ERROR);
+	shaderManager.SetShader("TextureDebug", textureDebugProg);
 
 	//the obj files you want to load. Add more to read them all.
 	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/new/lunaModelTextures/right_arm",
@@ -691,13 +759,20 @@ void Application::render(float frameTime)
 	// Get current frame buffer size.
 	int width, height;
 	glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
-	glViewport(0, 0, width, height);
+	
 
 	// Clear framebuffer.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	componentManager.UpdateComponents(frameTime, width, height);
+
+	// Render depth for shadows
+	LightComponent::GetInstance(vec3(0)).SetupRenderShadows();
+	componentManager.RenderToDepth();
+
 
 	// clear all framebuffers + bind base one
+	glViewport(0, 0, width, height);
 	postProcessing->SetUpFrameBuffers();
 
 	if (renderLines || !renderPostProcessing)
@@ -705,8 +780,10 @@ void Application::render(float frameTime)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, width, height);
 	}
-	componentManager.UpdateComponents(frameTime, width, height);
+
 	hudRenderer->Update(frameTime, componentManager.GetGameState());
+	
+	componentManager.Render(frameTime);
 
 	// render post-processing
 	if (renderPostProcessing && !renderLines)
@@ -717,6 +794,8 @@ void Application::render(float frameTime)
     }
 	// render HUD
 	hudRenderer->RenderHUD(width, height, componentManager.GetGameState());
+	//LightComponent::GetInstance(vec3(0)).DebugDrawDepthTexture();
+
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
