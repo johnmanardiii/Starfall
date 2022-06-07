@@ -251,7 +251,9 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/CloudNoise/cloud_BaseNoise.png", "cloudBaseNoise");
 	loadTexture("/CloudNoise/cloud_NoiseTexture.png", "cloudNoise");
 	loadTexture("/CloudNoise/cloud_Distort.png", "cloudDistort");
-
+	loadTexture("/drone_rockie/Robot_Rockie_BaseColor.png", "droneBase");
+	loadTexture("/drone_rockie/Robot_Rockie_Emissive.png", "droneEmiss");
+	loadTexture("/drone_rockie/Robot_Rockie_Normal.png", "droneNormal");
 	loadTexture("/rainbow.jpg", "Rainbow");
 
 	// used on Luna
@@ -331,6 +333,33 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	shaderManager.SetShader("particle", partProg);
 
+	auto droneProg = make_shared<Program>();
+	droneProg->setVerbose(true);
+	droneProg->setShaderNames(
+		resourceDirectory + "/drone_vertex.glsl",
+		resourceDirectory + "/drone_frag.glsl"
+	);
+	droneProg->Init();
+	droneProg->addUniform("P");
+	droneProg->addUniform("M");
+	droneProg->addUniform("V");
+	droneProg->addAttribute("vertPos");
+	droneProg->addAttribute("vertNor");
+	droneProg->addAttribute("vertTex");
+	droneProg->addAttribute("vertTan");
+	droneProg->addAttribute("vertBN");
+
+	TexLocation = glGetUniformLocation(droneProg->pid, "tex");
+	glUseProgram(droneProg->pid);
+	glUniform1i(TexLocation, 0);
+	TexLocation = glGetUniformLocation(droneProg->pid, "emissiveTex");
+	glUseProgram(droneProg->pid);
+	glUniform1i(TexLocation, 1);
+	TexLocation = glGetUniformLocation(droneProg->pid, "normalTex");
+	glUseProgram(droneProg->pid);
+	glUniform1i(TexLocation, 2);
+
+	shaderManager.SetShader("drone", droneProg);
 
 	//used for sand
 	auto sandProg = make_shared<Program>();
@@ -529,8 +558,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 
 	//the obj files you want to load. Add more to read them all.
 	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/new/lunaModelTextures/right_arm",
-		"LUNA/new/lunaModelTextures/left_arm", "LUNA/new/lunaModelTextures/body", "LUNA/new/lunaModelTextures/head", "unit_cube"};
-	vector<bool> normalMapFlags = { false, false, false, true, true, true, false, false };	// not extensible, should be tied to the model but 1 week remaining.
+		"LUNA/new/lunaModelTextures/left_arm", "LUNA/new/lunaModelTextures/body", "LUNA/new/lunaModelTextures/head", "unit_cube", "drone_rockie/Robot_Rockie"};
+	vector<bool> normalMapFlags = { false, false, false, true, true, true, false, false, true};	// not extensible, should be tied to the model but 1 week remaining.
 	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());

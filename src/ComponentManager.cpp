@@ -5,6 +5,8 @@
 #include "MonkeyMovement.h"
 #include "SkyboxRenderer.h"
 #include "HeadRenderer.h"
+#include "DroneRenderer.h"
+#include "DroneManager.h"
 
 constexpr float ParticleRenderer::originalPointSize;
 
@@ -17,6 +19,7 @@ ComponentManager::ComponentManager()
     components["Renderer"];
     components["Collect"];
     components["Particle"];
+    components["DroneManager"];
 }
 
 GameObject ComponentManager::GetGameObject(string name)
@@ -91,6 +94,7 @@ void ComponentManager::Init(std::string resourceDirectory, AudioEngine* audioPtr
     //initialize starting lights.
     state.InitLights();
 
+    InitDroneManager(resourceDirectory);
     // Initialize the GLSL program, just for the ground plane.
     auto prog = make_shared<Program>();
     prog->setVerbose(true);
@@ -115,6 +119,22 @@ void ComponentManager::Init(std::string resourceDirectory, AudioEngine* audioPtr
     AddGameObject(floorName, floorComps);
 
     audio = audioPtr;
+}
+
+void ComponentManager::InitDroneManager(std::string resourceDirectory)
+{
+    string managerName = "Drone Manager";
+    shared_ptr<Renderer> renderer = make_shared<DroneRenderer>("drone_rockie/Robot_Rockie", 
+        "droneBase", "droneEmiss", "droneNormal", managerName);
+    shared_ptr<Transform> transform = make_shared<Transform>(managerName);
+    shared_ptr<DroneManager> manager = make_shared<DroneManager>(managerName);
+    //where all the variables at the top come in.
+    vec3 pos = vec3(0.0f);
+
+    //finally, calculate each spawned fragment's height at this position.
+    transform->ApplyTranslation(vec3(0.0f, HeightCalc::heightCalc(0.0f, 0.0f), 0.0f));
+    vector<shared_ptr<Component>> managerComps = { renderer, transform, manager };
+    AddGameObject(managerName, managerComps);
 }
 
 void ComponentManager::AddLineOfStars()
@@ -230,6 +250,13 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         if (!collect->IsActive) continue;
         collect->Update(frameTime, this);
     }
+
+    for (auto& droneManager : components["DroneManager"])
+    {
+        if (!droneManager->IsActive) continue;
+        droneManager->Update(frameTime, this);
+    }
+
     //int coletime = timer.stop();
     //timer.start();
     // update the player
@@ -341,6 +368,9 @@ pair<string, size_t> ComponentManager::addToComponentList(const shared_ptr<Compo
     }
     else if (nullptr != (ptr = dynamic_pointer_cast<Collect>(comp))) {
         compType = "Collect";
+    }
+    else if (nullptr != (ptr = dynamic_pointer_cast<DroneManager>(comp))) {
+        compType = "DroneManager";
     }
     
     //TODO the other concrete types. Format should be pretty much identical.
