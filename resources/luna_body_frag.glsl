@@ -97,7 +97,7 @@ void main()
 	//color *= dCoeff + spec;
     float roughness = texture(roughness, texture_uvs).r; //choose a value between (0 and 1] or use a texture. 
     float bias = 0.0, scale = 0.1;
-    float shn = texture(metal, texture_uvs).r;
+    float shn = 12 * texture(metal, texture_uvs).r;
     color.rgb = brdf(tcol, normal, lTS, vTS, roughness, bias, scale, shn);
     color.r = min(color.r, 1.0);
     color.g = min(color.g, 1.0);

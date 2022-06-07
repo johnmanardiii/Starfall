@@ -74,7 +74,7 @@ vec3 brdf(vec3 albedo, vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float 
     float roughness = rough * rough;
     float spec_dist = f_spec_dist(roughness, N_H);
     float geom_shadow = f_geom_shadow(N_V,N_L, roughness);
-    float fresnel = f_fresnel_schlicks(V_H, vertex_normal_n, -H, bias, scale, shn);
+    float fresnel = 0;//f_fresnel_schlicks(V_H, vertex_normal_n, -H, bias, scale, shn);
 
     return albedo * max(0.1,(spec_dist + geom_shadow + fresnel));
 }
@@ -110,8 +110,8 @@ void main()
 	// vec3 tcol= texture(tex, texture_uvs).rgb;
 	vec3 tcol = vec3(1);	// this is the case since the head has weird UVs and needs its own individual tex.
 	color.rgb = (1- flashAmt) * tcol + flashAmt * flashCol;
-    float bias = 0.0, scale = 0.05, shn = 6.0;
-    float roughness = 0.0;
+    float bias = 0.0, scale = 0.15, shn = 6.0;
+    float roughness = 0.1;
     vec3 viewDir = normalize(camPos - vertex_pos);
     color.rgb = brdf(tcol, n, lightDir, viewDir, roughness, bias, scale, shn);
     color.r = min(color.r, 1.0);
