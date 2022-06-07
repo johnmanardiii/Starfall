@@ -498,6 +498,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	heightProg->addUniform("shadowColor");
 	heightProg->addUniform("terrainColor");
 	heightProg->addUniform("sandStrength");
+	heightProg->addUniform("shadowCastColor");
 	// rim 
 	heightProg->addUniform("rimStrength");
 	heightProg->addUniform("rimPower");
@@ -595,6 +596,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	HUDprog->addAttribute("vertPos");
 	HUDprog->addAttribute("vertTex");
 
+
 	TexLocation = glGetUniformLocation(HUDprog->pid, "Texture0");
 
 	glUseProgram(HUDprog->pid);
@@ -625,7 +627,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	// Terrain Depth
 	auto terrainDepthProg = make_shared<Program>();
 	terrainDepthProg->setVerbose(true);
-	terrainDepthProg->setShaderNames(resourceDirectory + "/terrain_depth_vert.glsl", resourceDirectory + "/shadow_depth_frag.glsl");
+	terrainDepthProg->setShaderNames(resourceDirectory + "/terrain_depth_vert.glsl", resourceDirectory + "/shadow_depth_frag.glsl",
+		resourceDirectory + "/terrain_depth_tesscontrol.glsl", resourceDirectory + "/terrain_depth_tesseval.glsl");
 	if (!terrainDepthProg->Init())
 	{
 		std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
@@ -637,6 +640,11 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	terrainDepthProg->addUniform("camoff");
 	terrainDepthProg->addUniform("castShadows");
 	terrainDepthProg->addAttribute("vertPos");
+	//Terrain info
+	terrainDepthProg->addUniform("baseHeight");
+	// Camera/Player information
+	terrainDepthProg->addUniform("campos");
+	terrainDepthProg->addUniform("playerPos");
 
 
 	assert(glGetError() == GL_NO_ERROR);

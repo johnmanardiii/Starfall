@@ -36,6 +36,9 @@ void TerrainRenderer::UpdateUniforms()
 	ImGui::SliderFloat("sandStrength", (float*)&sandStrength, 0.0f, 1.0f);
 	glUniform1f(prog->getUniform("sandStrength"), sandStrength);
 
+	ImGui::ColorEdit3("shadowCastColor", (float*)&shadowCastColor);
+	glUniform3fv(prog->getUniform("shadowCastColor"), 1, &shadowCastColor[0]);
+
 	// Rim
 	ImGui::SliderFloat("rimStrength", (float*)&rimStrength, 0.0f, 5.0f);
 	glUniform1f(prog->getUniform("rimStrength"), rimStrength);
@@ -99,7 +102,6 @@ void TerrainRenderer::Draw(float frameTime)
 	vec3 pos = cam.GetPos();
 
 	glUniformMatrix4fv(prog->getUniform("LS"), 1, GL_FALSE, &LS[0][0]);
-
 	//vec3 lightDir = normalize(vec3(1000, 0, 100)); // Hardcoded for now
 
 	// Sun direction
@@ -146,6 +148,7 @@ void TerrainRenderer::DrawDepth()
 	mat4 M = trans->GetModelMat();
 
 	depthProg->bind();
+	UpdatePosition();
 
 	glUniformMatrix4fv(depthProg->getUniform("M"), 1, GL_FALSE, &trans->GetModelMat()[0][0]);
 
@@ -161,9 +164,24 @@ void TerrainRenderer::DrawDepth()
 	mat4 inverted = glm::inverse(rotY);
 	sunDir = normalize(glm::vec3(inverted[2]));
 
+	vec3 playerPos = Player::GetInstance(vec3()).GetPosition();
+
 	glUniformMatrix4fv(depthProg->getUniform("LP"), 1, GL_FALSE, &ortho[0][0]);
 	glUniformMatrix4fv(depthProg->getUniform("LV"), 1, GL_FALSE, &LV[0][0]);
-	glUniform1i(depthProg->getUniform("castShadows"), 0);
+	glUniform3fv(depthProg->getUniform("campos"), 1, &pos[0]);
+	glUniform3fv(depthProg->getUniform("playerPos"), 1, &playerPos[0]);
+	glUniform1f(depthProg->getUniform("baseHeight"), BASE_HEIGHT);
+
+	glBindVertexArray(terrain.VAOId);
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	glDrawElements(GL_PATCHES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
+	depthProg->unbind();
+
+	//glUniform1i(depthProg->getUniform("castShadows"), 0);
+	/*
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	glDrawElements(GL_PATCHES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
+	
 
 	glBindVertexArray(terrain.VAOId);
 	glEnable(GL_BLEND);
@@ -171,5 +189,5 @@ void TerrainRenderer::DrawDepth()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain.IndexBuff);
 
 	glDrawElements(GL_TRIANGLES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
-	depthProg->unbind();
+	depthProg->unbind();*/
 }

@@ -46,6 +46,6 @@ private:
 
 	// debug
 	float o = 25.0f;
-	vec3 lightPos = vec3(0, 10, 0);
+	vec3 lightPos = vec3(0, 5, 0);
 	float scale = 30;
 };

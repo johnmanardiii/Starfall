@@ -2,10 +2,7 @@
 layout(location = 0) in vec3 vertPos;
 
 uniform mat4 M;
-uniform mat4 LP;
-uniform mat4 LV;
-
-uniform vec3 camoff;
+out vec3 vertex_pos;
 
 float heightCalc(float x, float z)
 {
@@ -25,19 +22,11 @@ void main()
 
 	float proc_height = heightCalc(tpos.x, tpos.z);
 
-	//tpos.y -= 5;
-
 	vec3 b = tpos.xyz + vec3(0.1f, 0.0f, 0.1f), 
 		c = tpos.xyz + vec3(0.1f, 0.0f, -0.1f);
 
 	tpos.y += proc_height;
-	b.y += heightCalc(b.x, b.z);
-	c.y += heightCalc(c.x, c.z);
-	vec3 ab = (tpos.xyz - b);
-	ab = normalize(ab);
-	vec3 ac = (tpos.xyz - c);
-	ac = normalize(ac);
-	vec3 n = normalize(cross(ab,ac));
 
-	gl_Position = LP * LV * tpos;
+	gl_Position = tpos;
+	vertex_pos = tpos.xyz;
 }

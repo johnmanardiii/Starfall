@@ -6,8 +6,6 @@ uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
 out vec3 vertex_pos;
-uniform mat4 LS; // Composite L0 and LS 
-out vec4 posLS;
 uniform sampler2D tex;
 
 float heightCalc(float x, float z)
@@ -33,5 +31,4 @@ void main()
 
 	gl_Position = tpos;
 	vertex_pos = tpos.xyz;
-	posLS = LS * tpos;
 }

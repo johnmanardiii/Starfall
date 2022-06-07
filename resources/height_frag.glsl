@@ -24,6 +24,7 @@ uniform float diffuseContrast;
 uniform vec3 shadowColor;
 uniform vec3 terrainColor;
 uniform float sandStrength;
+uniform vec3 shadowCastColor;
 
 // rim 
 uniform float rimStrength;
@@ -111,7 +112,7 @@ vec3 SandRipples(vec2 texcoords, vec3 lightDir, vec3 view)
 }
 
 float TestShadow(vec4 LSfPos) {
-	float bias = 0.005;
+	float bias = 0.01;
 	//1: shift the coordinates from -1, 1 to 0 ,1
 	vec3 projCoord = (LSfPos.xyz + vec3(1)) / 2;
 	//2: read off the stored depth (.) from the ShadowDepth, using the shifted.xy 
@@ -147,6 +148,11 @@ void main()
 	len = abs(len) / 150.0f;
 	len = clamp(len,0,1);
 	len = pow(len, 5.0f);
+
+	float lenshadow = length(frag_pos.xz-playerPos.xz);
+	lenshadow = abs(lenshadow) / 20.0f;
+	lenshadow = clamp(lenshadow,0,1);
+	lenshadow = pow(lenshadow, 5.0f);
 	
 	// Sand normals
 	vec3 sandNormal = SandNormal(frag_norm, texcoords) * (1 - len);
@@ -160,12 +166,12 @@ void main()
 	// Combining
 	vec3 sandRipplesColor = SandRipples(texcoords, lightDir, view);
 	vec3 diffuseColor = DiffuseColor(sandNormal, lightDir);
-	float shade = TestShadow(posLS);
+	vec3 shade = (1.0 - TestShadow(posLS) * shadowCastColor * (1-lenshadow));
 
 	//diffuseColor = mix(diffuseColor, sandRipplesColor * 0.5, 0.4);
-	color.rgb = spec + (1.0 - shade * shadowColor) * diffuseColor * 0.7 * sandRipplesColor;
-	color.rgb = vec3(shade);
+	color.rgb = spec + shade * diffuseColor * 0.7 * sandRipplesColor;
 	color.a=1-len;
+	//color.rgb = vec3(posLS);
 	//color.rgb = sandRipplesColor;
 	//color.rgb = normalize(frag_norm);
 	//color.a = 1;

@@ -20,9 +20,9 @@ void LightComponent::Update(float frameTime, ComponentManager* compMan)
 	ImGui::SliderFloat3("Light Posiiton", (float*)&lightPos, 0.0f, 100.0f);
 	ImGui::SliderFloat("Scale", (float*)&scale, 1.0f, 100.0f);
 	ImGui::SliderFloat("Ortho", (float*)&o, 0.0f, 50.0f);
-
+	
 	// Sun direction
-	//ImGui::SliderFloat("SUN ROTATIon", (float*)&sunRotation, -10.0, 10.0f);
+	ImGui::SliderFloat("SUN ROTATIon", (float*)&sunRotation, -10.0, 10.0f);
 
 	mat4 rotY = glm::rotate(mat4(1.0f), sunRotation, glm::vec3(1.0f, 0.0f, 0.0f));
 	mat4 inverted = glm::inverse(rotY);
@@ -38,9 +38,15 @@ mat4 LightComponent::GetOrthoMatrix()
 
 mat4 LightComponent::GetLightView()
 {
+	float r = glm::max(0.2f, sunRotation);
+	mat4 rotY = glm::rotate(mat4(1.0f), r, glm::vec3(1.0f, 0.0f, 0.0f));
+	mat4 inverted = glm::inverse(rotY);
+	vec3 sDir = normalize(glm::vec3(inverted[2]));
+	vec3 mDir = vec3(sDir.x, sDir.y, sDir.z * -1.0f);
+
 	vec3 playerPos = componentManager->GetPlayer().GetPosition();
-	vec3 camPos = playerPos + lightPos + (sunDir * scale);
-	vec3 lookAt = camPos - sunDir;
+	vec3 camPos = playerPos + lightPos + (mDir * scale);
+	vec3 lookAt = camPos - mDir;
 	return glm::lookAt(camPos, lookAt, vec3(0, 1, 0));
 	return mat4(1.0f);
 }

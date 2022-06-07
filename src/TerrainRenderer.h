@@ -49,6 +49,7 @@ private:
 	vec3 shadowColor = vec3(0.33, 0.25, 0.60);
 	vec3 terrainColor = vec3(0.76, 0.61, 1.0);
 	float sandStrength = 0.08;
+	vec3 shadowCastColor = vec3(0.23, 0.61, 0.23);
 
 	// rim 
 	float rimStrength = 0.176;
