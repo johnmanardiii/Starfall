@@ -215,7 +215,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     state.IncTotalFrameTime(frameTime);
     future<void> starsSpawned;
     if (state.ShouldSpawnStar()) {
-        starsSpawned = async(launch::async, [this]() {
+        starsSpawned = async(launch::deferred, [this]() {
             AddLineOfStars();
         });
     }
@@ -227,7 +227,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     }
 
     // update movements. Movement component vector is updated by neither stars nor sand.
-    for_each(execution::par_unseq, components["Movement"].begin(), components["Movement"].end(), [frameTime, this](shared_ptr<Component>& move) {
+    for_each(components["Movement"].begin(), components["Movement"].end(), [frameTime, this](const shared_ptr<Component>& move) {
         if (move->IsActive)
         move->Update(frameTime, this);
     });
@@ -239,7 +239,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
 
     //resolve collisions. Not needed until Collect phase.
     future<void> collisionsResolved = async(launch::async, [&frameTime, this]() {
-        for_each(execution::par_unseq, components["Collision"].begin(), components["Collision"].end(), [&frameTime, this](shared_ptr<Component>& collider) {
+        for_each(execution::par_unseq, components["Collision"].begin(), components["Collision"].end(), [&frameTime, this](const shared_ptr<Component>& collider) {
             if (collider->IsActive)
                 collider->Update(frameTime, this);
             });
@@ -249,8 +249,8 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     if (sandSpawned.valid()) {
         sandSpawned.wait();
     }
-    // update transforms based on movements.
-    for_each(execution::par_unseq, components["Transform"].begin(), components["Transform"].end(), [&frameTime, this](shared_ptr<Component>& transform) {
+    // update transforms based on movements. Do this component update in the main thread.
+    for_each(components["Transform"].begin(), components["Transform"].end(), [&frameTime, this](const shared_ptr<Component>& transform) {
         if (transform->IsActive)
             transform->Update(frameTime, this);
     });
@@ -259,7 +259,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     collisionsResolved.wait();
 
     // Use collision resolution to determine updates to collect.
-    for_each(execution::par_unseq, components["Collect"].begin(), components["Collect"].end(), [&frameTime, this](shared_ptr<Component>& collect) {
+    for_each(execution::par_unseq, components["Collect"].begin(), components["Collect"].end(), [&frameTime, this](const shared_ptr<Component>& collect) {
         if (collect->IsActive)
             collect->Update(frameTime, this);
     });
