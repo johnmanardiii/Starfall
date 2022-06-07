@@ -3,7 +3,7 @@
 const float DroneManager::DRONE_SPEED = 2.5f;
 const float DroneManager::DRONE_WOBBLE = 0.20f;
 const float DroneManager::DRONE_WOBBLE_SPEED = 1.0f;
-const float DroneManager::MAX_DRONE_OFFSET = 6.0f;
+const float DroneManager::MAX_DRONE_OFFSET = 5.5f;
 const float DroneManager::MIN_DRONE_OFFSET = 4.0f;
 const int DroneManager::STARS_NEEDED_TO_SPAWN_DRONE = 10;
 void DroneManager::Init(ComponentManager* compMan)
@@ -30,9 +30,9 @@ void DroneManager::Update(float frameTime, ComponentManager* compMan)
 		vec3 oldPos = positions[i];
 		vec3 droneTarget = target + player.GetRotation() * offsets[i];
 		vec3 newPos = CalcNewPos(oldPos, droneTarget, frameTime, t_vals[i]);
-		// Have drones look in direction of movement
-		//mat4 rot = mat4(rotation(vec3(1.0f, 0.0f, 0.0f), normalize(newPos - oldPos)));
-		// have drones look at Luna at all times
+		// Have drones look in direction of player movement
+		// mat4 rot = mat4(rotation(vec3(1.0f, 0.0f, 0.0f), player.GetForward()));
+		// Have drones look at Luna at all times
 		mat4 rot = mat4(rotation(vec3(1.0f, 0.0f, 0.0f), normalize(target - newPos)));
 		mat4 T = glm::translate(mat4(1.0f), newPos);
 		model_matrices[i] = T * rot;
