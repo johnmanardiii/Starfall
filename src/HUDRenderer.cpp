@@ -19,6 +19,7 @@ void HUDRenderer::Init(GameState* gameState)
     win_tex = shaderMan.GetTexture("win");
     lose_tex = shaderMan.GetTexture("lose");
     slash_tex = shaderMan.GetTexture("slash");
+    x_tex = shaderMan.GetTexture("x");
 }
 
 void HUDRenderer::InitQuad() {
@@ -77,16 +78,20 @@ void HUDRenderer::RenderHUD(int width, int height, GameState* gameState)
 	prog->bind();
 
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &projection[0][0]);
-    DrawSprite(starFragment_tex,vec2(30.0f, 200.0f), vec2(100.0f, 100.0f), 0.0f);
-    DrawSprite(moonBar_tex, vec2(30.0f, 30.0f), vec2(700.0f, 100.0f), 0.0f);
-    DrawSprite(moonIcon_tex, vec2(moonIconPosition, 30.0f), vec2(100.0f, 100.0f), 0.0f);
+    DrawSprite(moonBar_tex, vec2(50.0f, 50.0f), vec2(700.0f, 50.0f), 0.0f);
+    DrawSprite(moonIcon_tex, vec2(moonIconPosition, 35.0f), vec2(80.0f, 80.0f), 0.0f);
+    DrawSprite(starFragment_tex, vec2(20.0f, 105.0f), vec2(150.0f, 150.0f), 0.0f);
 
-    DrawSprite(slash_tex, vec2(400, 200.0f), vec2(100.0f, 100.0f), 0.0f);
-    DrawSprite(starsRequired_tenthPlace_tex, vec2(500, 200.0f), vec2(100.0f, 100.0f), 0.0f);
-    DrawSprite(starsRequired_onesPlace_tex, vec2(600, 200.0f), vec2(100.0f, 100.0f), 0.0f);
+    DrawSprite(x_tex, vec2(135, 145.0f), vec2(50.0f, 50.0f), 0.0f);
 
-    DrawSprite(starsCollected_tenthPlace_tex, vec2(200, 200.0f), vec2(100.0f, 100.0f), 0.0f);
-    DrawSprite(starsCollected_onesPlace_tex, vec2(300, 200.0f), vec2(100.0f, 100.0f), 0.0f);
+    DrawSprite(starsCollected_tenthPlace_tex, vec2(170, 138), vec2(70, 70), 0.0f);
+    DrawSprite(starsCollected_onesPlace_tex, vec2(210, 138), vec2(70, 70), 0.0f);
+
+    DrawSprite(slash_tex, vec2(245, 134), vec2(80, 80), 0.0f);
+    DrawSprite(starsRequired_tenthPlace_tex, vec2(290, 138), vec2(70, 70), 0.0f);
+    DrawSprite(starsRequired_onesPlace_tex, vec2(330, 138), vec2(70, 70), 0.0f);
+
+
 
     if (gameState->IsGameEnded())
     {

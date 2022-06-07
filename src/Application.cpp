@@ -258,6 +258,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/HUD/MoonBar.png", "moonBar");
 	loadTexture("/HUD/MoonIcon.png", "moonIcon");
 	loadTexture("/HUD/num_slash.png", "slash");
+	loadTexture("/HUD/num_x.png", "x");
 	loadTexture("/HUD/winTex.png", "win");
 	loadTexture("/HUD/loseTex.png", "lose");
 
