@@ -22,6 +22,7 @@ private:
 	static const float DRONE_SPEED;
 	// Maximum drone offset from target
 	static const float MAX_DRONE_OFFSET;
+	static const float MIN_DRONE_OFFSET;
 	static const int STARS_NEEDED_TO_SPAWN_DRONE;
 
 	vec3 CalcNewPos(vec3 current, vec3 target, float frameTime);
