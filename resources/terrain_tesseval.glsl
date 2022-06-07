@@ -1,6 +1,6 @@
 #version 410 core
 
-layout (triangles, fractional_even_spacing, cw) in;	//equal_spacing
+layout (triangles, equal_spacing, cw) in;	//equal_spacing
 uniform mat4 P;
 uniform mat4 V;
 uniform sampler2D tex;
