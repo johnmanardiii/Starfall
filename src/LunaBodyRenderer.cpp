@@ -14,6 +14,7 @@ void LunaBodyRenderer::Draw(float frameTime)
 	prog->bind();
 	// send over PVM matrices
 	Camera cam = Camera::GetInstance(vec3(0,1,0));
+	LightComponent light = LightComponent::GetInstance(vec3(0));
 	mat4 P = cam.GetPerspective(),
 		V = cam.GetView(),
 		M = trans->GetModelMat();
@@ -23,6 +24,8 @@ void LunaBodyRenderer::Draw(float frameTime)
 	glUniform3fv(prog->getUniform("flashCol"), 1, &flashColor[0]);
 	glUniform3fv(prog->getUniform("camPos"), 1, &cm->GetCamera().GetPos()[0]);
 	glUniform1f(prog->getUniform("flashAmt"), flashAmt);
+	glUniform3fv(prog->getUniform("lightDir"), 1, &light.moonDir[0]);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glActiveTexture(GL_TEXTURE1);

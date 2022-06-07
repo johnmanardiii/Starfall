@@ -9,6 +9,7 @@ uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
 uniform vec3 camPos;
+uniform vec3 lightDir;
 
 out vec3 vertex_pos;
 out vec3 vertex_normal;
@@ -32,6 +33,6 @@ void main()
 	TBN = transpose(mat3(wT, wBN, wN));
 	vec3 lp=vec3(50, 30, 50);
 
-	lTS = TBN * normalize(lp - vertex_pos);
+	lTS = TBN * normalize(lightDir);
 	vTS = TBN * normalize(camPos - vertex_pos);
 }
