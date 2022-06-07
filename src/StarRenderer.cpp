@@ -65,6 +65,6 @@ void StarRenderer::DrawDepth()
 	glUniformMatrix4fv(dprog->getUniform("LV"), 1, GL_FALSE, &LV[0][0]);
 	glUniformMatrix4fv(dprog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
 	glUniform1i(dprog->getUniform("castShadows"), 1);
-	model->draw(dprog);
+	model->draw(dprog, false);
 	dprog->unbind();
 }

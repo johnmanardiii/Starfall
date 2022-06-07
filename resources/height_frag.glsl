@@ -164,7 +164,7 @@ void main()
 
 	//diffuseColor = mix(diffuseColor, sandRipplesColor * 0.5, 0.4);
 	color.rgb = spec + (1.0 - shade * shadowColor) * diffuseColor * 0.7 * sandRipplesColor;
-	
+	color.rgb = vec3(shade);
 	color.a=1-len;
 	//color.rgb = sandRipplesColor;
 	//color.rgb = normalize(frag_norm);

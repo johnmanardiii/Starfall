@@ -210,5 +210,5 @@ void PostProcessing::RenderPostProcessing(float frameTime, float goalBlur)
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	simple_prog->unbind();
 
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 }

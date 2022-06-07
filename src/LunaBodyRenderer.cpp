@@ -1,6 +1,7 @@
 #include "LunaBodyRenderer.h"
 #include "Camera.h"
 #include "ComponentManager.h"
+#include "LightComponent.h"
 #include <iostream>
 
 void LunaBodyRenderer::Init(ComponentManager* compMan)
@@ -36,7 +37,7 @@ void LunaBodyRenderer::Draw(float frameTime)
 	prog->unbind();
 }
 
-void TextureRenderer::DrawDepth()
+void LunaBodyRenderer::DrawDepth()
 {
 	// send over PVM matrices
 	Camera cam = Camera::GetInstance(vec3(0, 1, 0));
@@ -52,6 +53,6 @@ void TextureRenderer::DrawDepth()
 	glUniformMatrix4fv(dprog->getUniform("LV"), 1, GL_FALSE, &LV[0][0]);
 	glUniformMatrix4fv(dprog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
 	glUniform1i(dprog->getUniform("castShadows"), 1);
-	model->draw(dprog);
+	model->draw(dprog, false);
 	dprog->unbind();
 }

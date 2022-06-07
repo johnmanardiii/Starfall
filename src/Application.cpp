@@ -770,9 +770,9 @@ void Application::render(float frameTime)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, width, height);
 	}
-	componentManager.UpdateComponents(frameTime, width, height);
-	hudRenderer->Update(frameTime, componentManager.GetGameState());
 
+	hudRenderer->Update(frameTime, componentManager.GetGameState());
+	
 	componentManager.Render(frameTime);
 
 	// render post-processing

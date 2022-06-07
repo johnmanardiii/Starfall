@@ -26,6 +26,7 @@ public:
 	}
 	void Update(float frameTime, ComponentManager& compMan) { Draw(frameTime); }
 	void Init(ComponentManager* compMan);
+	void DrawDepth();
 
 	void Draw(float frameTime);
 	void SetFlashAmt(float amt) { flashAmt = amt; }

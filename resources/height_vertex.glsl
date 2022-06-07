@@ -22,7 +22,6 @@ float rand(vec2 co){
 
 void main()
 {
-
 	vec4 tpos =  vec4(vertPos, 1.0);
 	tpos =  M * tpos;
 

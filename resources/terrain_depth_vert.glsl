@@ -20,15 +20,12 @@ float rand(vec2 co){
 
 void main()
 {
-
 	vec4 tpos =  vec4(vertPos, 1.0);
 	tpos =  M * tpos;
-	tpos.z +=camoff.z;
-	tpos.x +=camoff.x;
 
 	float proc_height = heightCalc(tpos.x, tpos.z);
 
-	tpos.y -= 5;
+	//tpos.y -= 5;
 
 	vec3 b = tpos.xyz + vec3(0.1f, 0.0f, 0.1f), 
 		c = tpos.xyz + vec3(0.1f, 0.0f, -0.1f);

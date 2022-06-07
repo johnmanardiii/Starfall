@@ -100,6 +100,7 @@ void HUDRenderer::RenderHUD(int width, int height, GameState* gameState)
     }
 
 	prog->unbind();
+    glEnable(GL_DEPTH_TEST);
 }
 
 void HUDRenderer::DrawSprite(GLuint tex, vec2 position, vec2 size, float rotate)

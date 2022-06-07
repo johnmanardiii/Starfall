@@ -90,17 +90,13 @@ void TerrainRenderer::Draw(float frameTime)
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &cam.GetPerspective()[0][0]);
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &cam.GetView()[0][0]);
 
-	vec3 pos = cam.GetPos();
-	vec3 color_offset;
-	offset.y = 0;
-	offset.x = (int)pos.x;
-	offset.z = (int)pos.z;
-
 	LightComponent lightC = LightComponent::GetInstance(vec3(0));
 	shared_ptr<Program> dprog = lightC.depthProg;
 	mat4 ortho = lightC.GetOrthoMatrix();
 	mat4 LV = lightC.GetLightView();
 	mat4 LS = ortho * LV;
+
+	vec3 pos = cam.GetPos();
 
 	glUniformMatrix4fv(prog->getUniform("LS"), 1, GL_FALSE, &LS[0][0]);
 
@@ -165,7 +161,6 @@ void TerrainRenderer::DrawDepth()
 	mat4 inverted = glm::inverse(rotY);
 	sunDir = normalize(glm::vec3(inverted[2]));
 
-	glUniform3fv(depthProg->getUniform("camoff"), 1, &offset[0]);
 	glUniformMatrix4fv(depthProg->getUniform("LP"), 1, GL_FALSE, &ortho[0][0]);
 	glUniformMatrix4fv(depthProg->getUniform("LV"), 1, GL_FALSE, &LV[0][0]);
 	glUniform1i(depthProg->getUniform("castShadows"), 0);
