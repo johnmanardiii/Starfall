@@ -35,7 +35,11 @@ public:
     vector<float> lights; //for now place 20 lights (60 floats) at exact same position, sort of where moon starts.
     void InitLights();
     void UpdateLights(); 
+    int GetObjectsNeeded() { return objectsNeeded; }
     int TotalObjectsEverMade;
+    float timeLeft = 60;
+    float startTime = 60;
+    bool wonGame = false;
 private:
     ComponentManager* compMan;
     const int INITIAL_OBJECT_COUNT;
@@ -49,5 +53,6 @@ private:
     float cumulativeFrameTime;
     bool isGameEnded = false;
     int objectsNeeded = 50;
+
 };
 

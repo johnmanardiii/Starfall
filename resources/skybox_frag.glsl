@@ -40,12 +40,13 @@ vec3 SkyGradient(vec3 texCoords, float yCoord)
 {
 	// gradient
 	vec3 normalizedSun = normalize(sunDir);
+	float sunClamp = mix(0, 1, normalizedSun.y * 2);
 	yCoord = clamp(yCoord, 0, 1);
 	vec3 gradientDay = mix(dayTopColor, dayBottomColor, yCoord);
 	vec3 gradientNight = mix(nightTopColor, nightBottomColor, yCoord);
 
 	// mix night and day colors
-	vec3 skyGradients = mix(clamp(gradientDay, 0, 1), clamp(gradientNight, 0, 1), normalizedSun.y);
+	vec3 skyGradients = mix(clamp(gradientDay, 0, 1), clamp(gradientNight, 0, 1), sunClamp);
 	skyGradients = clamp(skyGradients, 0, 1);
 	return skyGradients;
 }
@@ -65,20 +66,22 @@ vec3 SunAndMoon(vec3 texCoords, float yCoord)
 	float moonDiscCrest = clamp((1 - clamp(moonCrest * 13, 0, 1)) * 100, 0, 2);
 	moonDisc -= moonDiscCrest;
 	moonDisc = clamp(moonDisc, 0, 2);
-	return vec3(sunDisc) + vec3(moonDisc);
+	return vec3(moonDisc);
 }
 
 vec3 HorizonColor(vec3 texCoords, float yCoord)
 {
-	float horizon = clamp(abs(texCoords.y), 0, 1);
+	float horizon = clamp(abs(texCoords.y - 0.3), 0, 1);
 	vec3 normalizedSun = normalize(sunDir);
 	float horizonGlow = clamp((1 - horizon) * clamp(normalizedSun.y, 0, 1), 0, 1);
+	float h = mix(0, 1, abs(texCoords.y));
 	return vec3((1 - horizonGlow) * horizonColor * 0.5);
 }
 
 vec3 Clouds(vec3 texCoords, float yCoord)
 {
 	vec3 normalizedSun = normalize(sunDir);
+	float sunClamp = mix(0, 1, normalizedSun.y * 2);
 	vec2 skyUV = texCoords.xz /(texCoords.y - 0.2);
 
 	vec3 baseNoise = texture(cloudBaseNoise, (skyUV - time * cloudSpeed) * cloudScale).rgb;
@@ -91,7 +94,7 @@ vec3 Clouds(vec3 texCoords, float yCoord)
 	vec3 cloudsColoredDay = mix(cloudColorDayEdge,  cloudColorDayMain , clouds) * clouds;
 	vec3 cloudsColoredNight = mix(cloudColorNightEdge,  cloudColorNightMain , clouds) * clouds;
 
-	vec3 cloudMix = mix(clamp(cloudsColoredDay, 0, 1), clamp(cloudsColoredNight, 0, 1), normalizedSun.y);
+	vec3 cloudMix = mix(clamp(cloudsColoredDay, 0, 1), clamp(cloudsColoredNight, 0, 1), sunClamp);
 	cloudMix = clamp(cloudMix, 0, 1);
 	return cloudMix;
 }
@@ -103,7 +106,7 @@ void main() {
 
 	// Stars
 	vec4 stars = texture(skybox, TexCoords);
-	stars *= clamp(clamp(-yCoord + 0.8, 0, 1) * 0.8 * normalizedSun.y, 0, 1);
+	stars *= clamp(clamp(-yCoord + 1, 0, 1), 0, 5);
 	// Gradient Sky
 	vec3 skyColor = SkyGradient(normTexCoords, yCoord);
 	// Sun + Moon
@@ -111,7 +114,6 @@ void main() {
 	// Horizon color
 	vec3 horizon = HorizonColor(normTexCoords, yCoord);
 	vec3 clouds = Clouds(normTexCoords, yCoord);
-
 
 	vec3 combined = skyColor + sunAndMoonColor + stars.xyz + clouds;
 	combined = clamp(combined, vec3(0), vec3(1.02));	// fiona u should probably change this to what looks good 
