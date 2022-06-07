@@ -37,7 +37,7 @@ void AudioEngine::Init(string resourceDir)
     engine = make_unique<ma_engine>();
     CHECK_MA(ma_engine_init(NULL, engine.get()));
     
-    InitSoundFromFile("tomorrow.mp3");
+    InitSoundFromFile("Climbing the Ginso Tree.mp3");
     for (int i = 0; i < 100; i++) {
         InitSoundFromFile("collect_majortriad.mp3", to_string(i));
     }
@@ -60,7 +60,7 @@ void AudioEngine::PlayClocked(string soundFileName) {
     } 
     int index = 1 + (soundsPlayed % (sounds.size() - 2));
 
-    ma_sound_set_pitch(sounds[soundFileName + to_string(index)].get(), static_cast<float>(pow(2, (halfSteps) / 12.0f)));
+    ma_sound_set_pitch(sounds[soundFileName + to_string(index)].get(), static_cast<float>(pow(2, (minorScale[halfSteps % minorScale.size()]) / 12.0f)));
 #ifdef SOUND
     ma_result result = ma_sound_start(sounds[soundFileName + to_string(index)].get());
 #endif

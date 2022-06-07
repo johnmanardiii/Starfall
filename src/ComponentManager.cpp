@@ -139,7 +139,7 @@ void ComponentManager::InitDroneManager(std::string resourceDirectory)
 
 void ComponentManager::AddLineOfStars()
 {
-    int numStarsToSpawn = (rand() % 12) + 1; //1-12 stars spawning
+    int numStarsToSpawn = (rand() % 8) + 1; //1-8 stars spawning
     RandomGenerator randTrans(-10, 10); //generate a position offset from the player's right-vector
     
     float offsetRight = randTrans.GetFloat();    //get some number between -4 and 4

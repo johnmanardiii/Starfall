@@ -6,6 +6,7 @@
 #include <string>
 
 using std::string;
+using std::vector;
 
 class AudioEngine {
 public:
@@ -24,4 +25,5 @@ private:
     std::unique_ptr<ma_engine> engine;
     std::unordered_map<string, std::unique_ptr<ma_sound>> sounds;
     string resourceDir;
+    vector<int> minorScale = { 0,2,3,5,7,8,10,12 };
 };
