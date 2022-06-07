@@ -1,7 +1,10 @@
- #include "TerrainRenderer.h"
+#include "TerrainRenderer.h"
+#include "LightComponent.h"
+
 #include "imgui/imgui.h"
 #include "Player.h"
 #include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 const float TerrainRenderer::OFFSET_FROM_CENTER = 20.0f; 
 const float TerrainRenderer::TERRAIN_SIZE = 300.0f;
@@ -16,8 +19,9 @@ void TerrainRenderer::UpdateUniforms()
 {
 	if (ImGui::CollapsingHeader("Terrain!")) {}
 
-	ImGui::SliderFloat("Sun RowRowRotation", (float*)&sunRotation, 0.0f, 10.0f);
-	glUniform3fv(prog->getUniform("lightDir"), 1, &sunDir[0]);
+	LightComponent light = LightComponent::GetInstance(vec3(1, 0, 0));
+
+	glUniform3fv(prog->getUniform("lightDir"), 1, &light.moonDir[0]);
 
 	// Diffuse
 	ImGui::SliderFloat("diffuseContrast", (float*)&diffuseContrast, -1.0f, 10.0f);
@@ -29,11 +33,11 @@ void TerrainRenderer::UpdateUniforms()
 	ImGui::ColorEdit3("terrainColor", (float*)&terrainColor);
 	glUniform3fv(prog->getUniform("terrainColor"), 1, &terrainColor[0]);
 
-	ImGui::SliderFloat("sandStrength", (float*)&sandStrength, 0.0f, 5.0f);
+	ImGui::SliderFloat("sandStrength", (float*)&sandStrength, 0.0f, 1.0f);
 	glUniform1f(prog->getUniform("sandStrength"), sandStrength);
 
 	// Rim
-	ImGui::SliderFloat("rimStrength", (float*)&rimStrength, -10.0f, 100.0f);
+	ImGui::SliderFloat("rimStrength", (float*)&rimStrength, 0.0f, 5.0f);
 	glUniform1f(prog->getUniform("rimStrength"), rimStrength);
 
 	ImGui::SliderFloat("rimPower", (float*)&rimPower, -10.0f, 100.0f);
@@ -43,10 +47,10 @@ void TerrainRenderer::UpdateUniforms()
 	glUniform3fv(prog->getUniform("rimColor"), 1, &rimColor[0]);
 
 	// Ocean Spec
-	ImGui::SliderFloat("oceanSpecularStrength", (float*)&oceanSpecularStrength, -10.0f, 100.0f);
+	ImGui::SliderFloat("oceanSpecularStrength", (float*)&oceanSpecularStrength, 0.0f, 10.0f);
 	glUniform1f(prog->getUniform("oceanSpecularStrength"), oceanSpecularStrength);
 
-	ImGui::SliderFloat("oceanSpecularPower", (float*)&oceanSpecularPower, -10.0f, 200.0f);
+	ImGui::SliderFloat("oceanSpecularPower", (float*)&oceanSpecularPower, 0.0f, 200.0f);
 	glUniform1f(prog->getUniform("oceanSpecularPower"), oceanSpecularPower);
 
 	ImGui::ColorEdit3("oceanSpecularColor", (float*)&oceanSpecularColor);
@@ -58,6 +62,9 @@ void TerrainRenderer::UpdateUniforms()
 
 	ImGui::SliderFloat("specularHardness", (float*)&specularHardness, -10.0, 1.0f);
 	glUniform1f(prog->getUniform("specularHardness"), specularHardness);
+
+	ImGui::SliderFloat("sandRipplesStrength", (float*)&sandRipplesStrength, 0.0, 10.0f);
+	glUniform1f(prog->getUniform("sandRipplesStrength"), sandRipplesStrength);
 }
 
 void TerrainRenderer::UpdatePosition()

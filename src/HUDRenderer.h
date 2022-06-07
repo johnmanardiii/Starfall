@@ -34,7 +34,7 @@ private:
 	mat4 projection;
 	shared_ptr<Shape> quad;
 	float moonIconPosition = 50;
-	float moonIconStartingPos = 70, moonIconEndingPos = 650;
+	float moonIconStartingPos = 70, moonIconEndingPos = 670;
 	GLuint starsCollected_onesPlace_tex, starsCollected_tenthPlace_tex;
 	GLuint starsRequired_onesPlace_tex, starsRequired_tenthPlace_tex;
 	GLuint win_tex, lose_tex, x_tex;

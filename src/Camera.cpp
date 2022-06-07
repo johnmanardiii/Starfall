@@ -59,6 +59,7 @@ void Camera::Update(float frameTime, int width, int height, ComponentManager* co
     // update last view for motion blur
     lastView = view;
     view = lookAt; //something can watch view and do something based on that value.
+    cout << "VIEW: " << to_string(vec3(view[0][2], view[1][2], view[2][2])) << endl;
     extractVFPlanes(); //extract the view frustum planes for the current view and perspective matrices.
 }
 

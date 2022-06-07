@@ -21,6 +21,7 @@ void LightComponent::Update(float frameTime, ComponentManager* compMan)
 	mat4 rotY = glm::rotate(mat4(1.0f), sunRotation, glm::vec3(1.0f, 0.0f, 0.0f));
 	mat4 inverted = glm::inverse(rotY);
 	sunDir = normalize(glm::vec3(inverted[2]));
+	moonDir = vec3(sunDir.x, sunDir.y, sunDir.z * -1.0f);
 }
 
 void LightComponent::Init(ComponentManager* compMan)

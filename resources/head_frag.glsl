@@ -10,6 +10,7 @@ uniform vec3 flashCol;
 uniform vec2 eye1Pos;
 uniform float eye1Radius;
 uniform float eyeOpenPct;
+uniform vec3 lightDir;
 
 bool isUVInEye(vec2 eyePos, vec2 uv)
 {
@@ -39,9 +40,7 @@ vec3 draw_eyes(vec3 base_color)
 void main()
 {
 	vec3 n = normalize(vertex_normal);
-	vec3 lp=vec3(50, 30, 50);
-	vec3 ld = normalize(lp - vertex_pos);
-	float diffuse = dot(n,ld);
+	float diffuse = dot(n,lightDir);
 	// vec3 tcol= texture(tex, texture_uvs).rgb;
 	vec3 tcol = vec3(1, 1, 1);	// this is the case since the head has weird UVs and needs its own individual tex.
 	color.rgb = (1- flashAmt) * tcol + flashAmt * flashCol;
