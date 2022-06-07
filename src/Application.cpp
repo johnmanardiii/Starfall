@@ -736,7 +736,7 @@ void Application::Init(std::string resourceDirectory)
 	// do ComponentManager's init here
 	componentManager.Init(resourceDirectory, &audioEngine);
 	audioEngine.Init(resourceDirectory);
-	audioEngine.Play("tomorrow.mp3");
+	audioEngine.Play("Climbing the Ginso Tree.mp3");
 
 	postProcessing = make_shared<PostProcessing>(windowManager, &componentManager.GetCamera());
 	hudRenderer = make_shared<HUDRenderer>();
