@@ -9,8 +9,8 @@ void EulerTransform::CalcModelMat()
 		S = glm::scale(i, scale);
 	mat4 rollMatrix = rotate(mat4(1), glm::radians(rollAmount), vec3(0, 0, -1));
 	mat4 leanMatrix = rotate(mat4(1), glm::radians(leanAmount), vec3(1, 0, 0));
-	// WARNING, MIGHT BE (0, 0, 1) DEPENDING ON MODEL
-	M = T * R * rollMatrix * leanMatrix* S;
+	mat4 visualOffset = translate(i, vec3(0, visualHeightOffset, 0));
+	M = visualOffset * T * R * rollMatrix * leanMatrix* S;
 }
 
 EulerTransform::EulerTransform(std::string name) : Transform(name){}

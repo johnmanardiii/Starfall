@@ -35,7 +35,6 @@ private:
 	float currentXRotation = 0.0f;
 	float radius = 1.8f;
 	void AnimatePlayerModel(float frameTime);
-	void AddIdleOffset(float frameTime);
 	void SetManualRotations();
 	void SetAutomaticRotations(float frameTime);
 	shared_ptr<Transform> trans = NULL;
@@ -45,6 +44,10 @@ private:
 	shared_ptr<PlayerTransform> arm2Trans;
 	shared_ptr<HeadRenderer> headRenderer;
 	void UpdatePlayerAnimations(float frameTime);
+	void UpdateArmAnimations(float frameTime, int thrust, int rTurn, int lTurn);
+	void UpdateHeadAnimations(float frameTime, int headTurn);
+	void SetBaseRotation(float frameTime, int thrust);
+	void SetHoverAnimation(float frameTime, int thrust);
 	vec3 rightArmEulerOffset = vec3(0, 0, 0);
 	vec3 leftArmEulerOffset = vec3(0, 0, 0);
 	vec3 headEulerOffset = vec3(0, 0, 0);

@@ -14,16 +14,6 @@ T exponential_growth(T actual, T goal, float factor, float frametime)
 
 void Player::Update(float frameTime, ComponentManager* compMan)
 {
-    // add to idle time if idle
-    if (fabs(movement->GetSpeed()) < 0.001f)
-    {
-        idleTime += frameTime;
-    }
-    else
-    {
-        idleTime = 0;
-    }
-
     UpdatePlayerAnimations(frameTime);
 }
 
@@ -37,19 +27,7 @@ vec3 Player::GetVelocity()
     return normalize(movement->GetVel());
 }
 
-void Player::AddIdleOffset(float frameTime)
-{
-    float goalOffset = 0.0f;
-    if (idleTime != 0.0f)
-    {
-        // try to lerp floatoffset back to 0.
-        goalOffset = sin(idleTime * 1.5f) * .2f;
-    }
-    currentFloatOffset = exponential_growth(currentFloatOffset,
-        goalOffset, .05f * 60.0f, frameTime);
-    pos.y += currentFloatOffset;
-}
-
+// Converts and Euler angle to a quaternion
 quat EulerToQuat(vec3 angles)
 {
     return quat(glm::rotate(mat4(1), radians<float>(angles.x), vec3(1, 0, 0))
@@ -57,6 +35,7 @@ quat EulerToQuat(vec3 angles)
         * glm::rotate(mat4(1), radians<float>(angles.z), vec3(0, 0, 1)));
 }
 
+// Converts all stored Euler rotations to quaternions for slerping
 Player::Player(vec3 pos) : pos (pos)
 {
     rArmIdle = EulerToQuat(rightArmIdle);
@@ -92,7 +71,6 @@ void Player::Init(ComponentManager* compMan, shared_ptr<EulerTransform> pTrans,
     GameObject obj = compMan->GetGameObject(pName);
     int index = obj.GetComponentLocation("Movement");
     movement = static_pointer_cast<PlayerMovement>(compMan->GetComponent("Movement", index));
-
 }
 
 void Player::SetInput(int index, bool val)
@@ -100,6 +78,8 @@ void Player::SetInput(int index, bool val)
     movement->SetInput(index, val);
 }
 
+
+// Set each orientation to that of its ImGui values
 void Player::SetManualRotations()
 {
     mat4 manualRightArmRotation = glm::rotate(mat4(1), radians<float>(rightArmEulerOffset.x), vec3(1, 0, 0))
@@ -119,11 +99,9 @@ void Player::SetManualRotations()
     headTrans->SetBaseRotation(manualHeadRotation);
 }
 
-void Player::SetAutomaticRotations(float frameTime)
+// Pushes each arm out towards its target location, smoothed
+void Player::UpdateArmAnimations(float frameTime, int thrust, int rTurn, int lTurn)
 {
-    int thrust = movement->inputBuffer[W] - movement->inputBuffer[S];
-    int rTurn = movement->inputBuffer[A];
-    int lTurn = movement->inputBuffer[D];
     quat rGoalRot = rArmIdle;
     quat lGoalRot = lArmIdle;
     bool thrustInfluence = false;
@@ -170,16 +148,18 @@ void Player::SetAutomaticRotations(float frameTime)
     lRot = slerp(lRot, lGoalRot, .16f * 60.0f * frameTime);
     arm1Trans->SetBaseRotation(mat4(rRot));
     arm2Trans->SetBaseRotation(mat4(lRot));
+}
 
-    // turn the head based on the desired input
+// Makes the player look ahead to the direction they are turning
+void Player::UpdateHeadAnimations(float frameTime, int headTurn)
+{
     quat headGoal = glm::identity<quat>();
-    int head_turn = rTurn - lTurn;
-    if (head_turn > 0)
+    if (headTurn > 0)
     {
         // turning right
         headGoal = hTurnRight;
     }
-    else if (head_turn < 0)
+    else if (headTurn < 0)
     {
         // turning left
         headGoal = hTurnLeft;
@@ -188,21 +168,13 @@ void Player::SetAutomaticRotations(float frameTime)
     headTrans->SetBaseRotation(mat4(hRot));
 }
 
-void Player::AnimatePlayerModel(float frameTime)
+// Sets the lean and roll on the player based on input, smoothed
+void Player::SetBaseRotation(float frameTime, int thrust)
 {
-    // if LUNA is still, have them float a bit above the ground. (gets reset upon move)
-    // TODO: Fix idle float calculations
-    //AddIdleOffset(frameTime);
-    SetAutomaticRotations(frameTime);
-    // SetManualRotations();
-    
-    
-    // lerp LUNA to the rotation they are accelerating in (around their local z axis)
     float goalZRotation = -movement->GetAngularSpeed() * 15.0f;
     currentZRotation = exponential_growth(currentZRotation, goalZRotation, .02 * 60.0f, frameTime);
     pTransform->SetRoll(currentZRotation);
 
-    int thrust = movement->inputBuffer[W] - movement->inputBuffer[S];
     float goalForwardsRotation = thrust * 30.0f;
     if (thrust < 0)
     {
@@ -210,6 +182,51 @@ void Player::AnimatePlayerModel(float frameTime)
     }
     currentXRotation = exponential_growth(currentXRotation, goalForwardsRotation, .2 * 60.0f, frameTime);
     pTransform->SetLean(currentXRotation);
+}
+
+// Animates the player only visually to slightly hover up and down while idle
+void Player::SetHoverAnimation(float frameTime, int thrust)
+{
+    float goalHoverOffset = 0.0;
+    if (thrust == 0)
+    {
+        idleTime += frameTime;
+        goalHoverOffset = sin(idleTime * .4) * idleHeight;
+    }
+    else
+    {
+        idleTime = 0;
+    }
+    currentFloatOffset = exponential_growth(currentFloatOffset, goalHoverOffset, .2 * 60.0f, frameTime);
+    pTransform->SetVisualOffset(currentFloatOffset);
+}
+
+void Player::SetAutomaticRotations(float frameTime)
+{
+    int thrust = movement->inputBuffer[W] - movement->inputBuffer[S];
+    int rTurn = movement->inputBuffer[A];
+    int lTurn = movement->inputBuffer[D];
+
+    UpdateArmAnimations(frameTime, thrust, rTurn, lTurn);
+    
+    // turn the head based on the desired input
+    int head_turn = rTurn - lTurn;
+    UpdateHeadAnimations(frameTime, head_turn);
+
+    // Animate pitch and roll based on turning / speed
+    SetBaseRotation(frameTime, thrust);
+
+    // Animate bobbing when idle    // TODO: AFTER CODE REVIEW, FIX THIS 
+    SetHoverAnimation(frameTime, thrust);
+}
+
+void Player::AnimatePlayerModel(float frameTime)
+{
+    // if LUNA is still, have them float a bit above the ground. (gets reset upon move)
+    // TODO: Fix idle float calculations -- maybe I will add this back in if time
+    //AddIdleOffset(frameTime);
+    SetAutomaticRotations(frameTime);
+    // SetManualRotations();
 }
 
 // animation code begins here:
