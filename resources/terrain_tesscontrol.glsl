@@ -6,14 +6,13 @@ uniform vec3 campos;
 in vec3 vertex_pos[];
 void main(void)
 {
-    vec3 cp = campos; 
-    //cp = vec3(0,0,0);
-    float df=50.;
+    vec3 cp = campos;
+    float df=75.;
     float dist = df-length(vertex_pos[gl_InvocationID] - cp);
     dist/=df;
     dist = pow(dist,3);
-    float tessfact = dist*16;
-    clamp(tessfact, 1, 16);
+    float tessfact = dist*8;
+    clamp(tessfact, 1, 8);
     tessfact = max(1, tessfact);
     gl_TessLevelInner[0] = tessfact;
     gl_TessLevelOuter[0] = tessfact;
