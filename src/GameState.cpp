@@ -37,15 +37,18 @@ void GameState::EndGame()
     cout << "You have collected: " << objectsCollected << " out of " << objectsNeeded << " star fragments in "
         << cumulativeFrameTime << " seconds, a rate of " << setprecision(2) <<
         (objectsCollected / cumulativeFrameTime) << " per second." << endl;
-    if (objectsCollected >= objectsNeeded)
+    if (objectsCollected >= objectsNeeded) {
         cout << "YOU WIN! Collected enough star fragments!" << endl;
+        wonGame = true;
+    }
     else
         cout << "YOU LOST! Did not collect enough star fragments, you are stranded." << endl;
     isGameEnded = true;
 }
 //when or what conditions to spawn sand particles
 bool GameState::ShouldSpawnSand() {
-    if (spawnSandFrames >= 10) { 
+    auto& player = Player::GetInstance(vec3());
+    if (player.GetCurrentSpeedAsPct() > 0.8) {
         spawnSandFrames = 0;
         currentObjectCount++;
         return true;

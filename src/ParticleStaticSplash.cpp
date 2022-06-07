@@ -169,8 +169,11 @@ void ParticleRenderer::drawSand(float totalTime) {
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, glm::value_ptr(Projection));
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(View));
-	mat4 Model = trans->GetModelMat();
-	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(Model));
+	//cout << initialPlayerSpeed << endl;
+	float speedPct = Player::GetInstance(vec3()).GetCurrentSpeedAsPct();
+	glUniform1f(prog->getUniform("alphaSpeed"), clamp(static_cast<float>(pow(speedPct,4)), 0.0f, 1.0f));
+	glUniform1f(prog->getUniform("playerSpeed"), initialPlayerSpeed);
+	glUniform3fv(prog->getUniform("playerDirection"),1, glm::value_ptr(initialPlayerDirection));
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
 	float alphaTime = 0;
 	if (totalTime < 1) {
@@ -183,14 +186,12 @@ void ParticleRenderer::drawSand(float totalTime) {
 		alphaTime = LIFETIME - totalTime;
 	}
 	glUniform1f(prog->getUniform("alphaTime"), alphaTime);
-	vec4 nearPlane = Camera::GetInstance(vec3()).getVFCPlanes()[4];
 	
-	trans->SetPos(Camera::GetInstance(vec3()).GetPos() + 1.f * vec3(nearPlane));
 	glUniform3fv(prog->getUniform("centerPos"), 1, glm::value_ptr(trans->GetPos()));
 
 	//do the calculation for, based on the time, which row/column images should be used.
 	//over a period of 2s, so map [0-2) to [0-39], technically [0-40) first.
-	int spriteNum = int(totalTime * 60.0f) % 64; //an extra frametime is added for update. Make sure it doesn't mess up indexing.
+	int spriteNum = int(totalTime * 10.0f) % 64; //an extra frametime is added for update. Make sure it doesn't mess up indexing.
 	//get the next and previous images, to potentially do some blending.
 	pair<vec3, vec3> coords = calcSpritePos(spriteNum);
 	
@@ -208,11 +209,6 @@ void ParticleRenderer::drawSand(float totalTime) {
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	glPointSize(originalPointSize);
-	prog->unbind();
-}
-
-void ParticleRenderer::drawSmoke(float totalTime) {
-	prog->bind();
 	prog->unbind();
 }
 
@@ -238,6 +234,6 @@ pair<vec3, vec3> ParticleRenderer::calcSpritePos(int curr) {
 	
 	vec3 rows = vec3(SpriteRowColumnTable[prev].first, SpriteRowColumnTable[curr].first, SpriteRowColumnTable[next].first);
 	vec3 cols = vec3(SpriteRowColumnTable[prev].second, SpriteRowColumnTable[curr].second, SpriteRowColumnTable[next].second);
-	//lookup the row and column of each. Think about adding all the above to lookup table as well
+	//lookup the row and column of each.
 	return make_pair(rows, cols);
 }

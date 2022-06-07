@@ -46,17 +46,17 @@ public:
 
     void drawSplash(float totalTime);
     void drawSand(float totalTime);
-    void drawSmoke(float totalTime);
     vec3 calcNewPos(vec3 globalWindVec, float frametime);
     pair<vec3, vec3> calcSpritePos(int spriteNum);
     static void gpuSetup(std::shared_ptr<Program> prog, int numP);
     void setCamera(mat4 inC) { View = inC; }
     void setProjection(mat4 inP) { Projection = inP; }
-    float LIFETIME = 10;
+    float LIFETIME = 3;
     constexpr static float originalPointSize = 5.0f;
-    bool sorted = false; //particles are not sorted by default. Sort them if you are using transparent alpha values.
     const glm::vec3& getPos() const { return trans->GetPos(); }
     int bufObjIndex;
+    float initialPlayerSpeed;
+    vec3 initialPlayerDirection;
 private:
     void(ParticleRenderer::*func)(float totalTime);
     GLuint texture;

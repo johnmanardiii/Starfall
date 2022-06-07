@@ -185,12 +185,13 @@ void ComponentManager::AddBunchOfSandParticles() {
     for (int i = 0; i < numSandToSpawn; ++i) {
         string SandName = "Sand" + to_string(state.TotalObjectsEverMade);
         
-        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 1, 80000, FLT_MAX, &ParticleRenderer::drawSand);
+        shared_ptr<ParticleRenderer> particles = make_shared<ParticleRenderer>("SandPartTex", "Sand", SandName, 1, 80, FLT_MAX, &ParticleRenderer::drawSand);
         shared_ptr<Transform> transform = make_shared<Transform>(SandName);
 
         //where all the variables at the top come in.
-        vec3 pos = player.GetPosition() + //the player's position
-            playerGaze * (distFactor);
+        vec3 pos = player.GetPosition(); //the player's position
+        particles->initialPlayerSpeed = player.GetCurrentSpeed();
+        particles->initialPlayerDirection = player.GetVelocity();
         //finally, calculate each spawned fragment's height at this position.
         transform->ApplyTranslation(vec3(pos.x, HeightCalc::heightCalc(pos.x, pos.z), pos.z));
         transform->ApplyScale(vec3(0.02f));
@@ -215,9 +216,9 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     if (state.ShouldSpawnStar()) {
         AddLineOfStars();
     }
-    //re-add this when it looks good
+    
     if (state.ShouldSpawnSand()) {
-        //AddBunchOfSandParticles();
+        AddBunchOfSandParticles();
     }
 
     // update movements

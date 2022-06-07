@@ -12,6 +12,8 @@ uniform mat4 V;
 uniform vec3 campos;
 uniform vec3 centerPos;
 uniform float totalTime;
+uniform float playerSpeed;
+uniform vec3 playerDirection;
 
 out vec3 partCol;
 out vec3 vertex_pos;
@@ -239,9 +241,9 @@ void main()
 	M0[1] = vec4(0.0, 1.0, 0.0, 0.0);
 	M0[2] = vec4(0.0, 0.0, 1.0, 0.0);
 	
-	vec3 newPosition = centerPos;
+	vec3 newPosition = centerPos + (-playerDirection * totalTime * playerSpeed) * pRotation * 10;
 
-	gl_Position = P * V * vec4(newPosition, 1.0);
+	gl_Position = P * V * vec4(newPosition - vec3(0,1,0), 1.0);
 	vertex_pos = (vec4(newPosition, 1.0)).xyz;
 
 	partCol = pColor;

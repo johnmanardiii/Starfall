@@ -26,10 +26,10 @@ public:
 	void UpdateUniforms();
 private:
 	shared_ptr<Shape> model;
-	vec3 dayTopColor = vec3(0, 0, 0.37);
-	vec3 dayBottomColor = vec3(0.52, 0.16, 0.16);
-	vec3 nightTopColor = vec3(0, 0.01, 0.25);
-	vec3 nightBottomColor = vec3(0.03, 0.01, 0.23);
+	vec3 dayTopColor = vec3(0.13, 0, 0.19);
+	vec3 dayBottomColor = vec3(0, 0, 0);
+	vec3 nightTopColor = vec3(0.38, 0.11, 0.55);
+	vec3 nightBottomColor = vec3(0.0, 0.01, 0.11);
 	vec3 horizonColor = vec3(1, 0, 0);
 	float texCoordAddOffset = 0;
 	float texCoordsMultOffset = 0;

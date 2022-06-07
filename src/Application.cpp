@@ -256,6 +256,21 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/drone_rockie/Robot_Rockie_Normal.png", "droneNormal");
 	loadTexture("/rainbow.jpg", "Rainbow");
 
+	// HUD textures
+	loadTexture("/HUD/starfragment.png", "starFragment");
+	loadTexture("/HUD/MoonBar.png", "moonBar");
+	loadTexture("/HUD/MoonIcon.png", "moonIcon");
+	loadTexture("/HUD/num_slash.png", "slash");
+	loadTexture("/HUD/num_x.png", "x");
+	loadTexture("/HUD/winTex.png", "win");
+	loadTexture("/HUD/loseTex.png", "lose");
+
+	for (int i = 0; i <= 10; i++)
+	{
+		loadTexture("/HUD/num_" + to_string(i) + ".png", "num_" + to_string(i));
+	}
+
+
 	// used on Luna
 	auto luna_body = make_shared<Program>();
 	luna_body->setVerbose(true);
@@ -374,9 +389,12 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	sandProg->addUniform("totalTime");
 	sandProg->addUniform("alphaTime");
 	sandProg->addUniform("centerPos");
+	sandProg->addUniform("playerSpeed");
+	sandProg->addUniform("playerDirection");
 	sandProg->addUniform("campos");
 	sandProg->addUniform("alphaTexture");
 	sandProg->addUniform("alphaMult");
+	sandProg->addUniform("alphaSpeed");
 	sandProg->addAttribute("pColor");
 	sandProg->addAttribute("pNormal");
 	sandProg->addAttribute("pRotation");
@@ -555,11 +573,37 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	assert(glGetError() == GL_NO_ERROR);
 	shaderManager.SetShader("Skybox", skyboxProg);
 
+	// HUD shader
+	auto HUDprog = make_shared<Program>();
+	HUDprog->setVerbose(true);
+	HUDprog->setShaderNames(resourceDirectory + "/hud_vert.glsl", resourceDirectory + "/hud_frag.glsl");
+	if (!HUDprog->Init())
+
+	{
+		std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+		exit(1);
+	}
+
+	HUDprog->addUniform("P");
+	HUDprog->addUniform("M");
+	HUDprog->addUniform("texBuf");
+	HUDprog->addAttribute("vertPos");
+	HUDprog->addAttribute("vertTex");
+
+	TexLocation = glGetUniformLocation(HUDprog->pid, "Texture0");
+
+	glUseProgram(HUDprog->pid);
+	glUniform1i(TexLocation, 1);
+
+	assert(glGetError() == GL_NO_ERROR);
+	shaderManager.SetShader("HUD", HUDprog);
+
 
 	//the obj files you want to load. Add more to read them all.
 	vector<string> filenames = { "sphere", "Star Bit", "icoSphere", "LUNA/new/lunaModelTextures/right_arm",
-		"LUNA/new/lunaModelTextures/left_arm", "LUNA/new/lunaModelTextures/body", "LUNA/new/lunaModelTextures/head", "unit_cube", "drone_rockie/Robot_Rockie"};
-	vector<bool> normalMapFlags = { false, false, false, true, true, true, false, false, true};	// not extensible, should be tied to the model but 1 week remaining.
+		"LUNA/new/lunaModelTextures/left_arm", "LUNA/new/lunaModelTextures/body", "LUNA/new/lunaModelTextures/head", 
+    "unit_cube", "quad", "drone_rockie/Robot_Rockie"};
+	vector<bool> normalMapFlags = { false, false, false, true, true, true, false, false, false, true};	// not extensible, should be tied to the model but 1 week remaining.
 	vec3 explosionScaleFactor = vec3(60.0f);
 	//where the data is held
 	vector<vector<tinyobj::shape_t>> TOshapes(filenames.size());
@@ -622,6 +666,8 @@ void Application::Init(std::string resourceDirectory)
 	audioEngine.Play("tomorrow.mp3");
 
 	postProcessing = make_shared<PostProcessing>(windowManager, &componentManager.GetCamera());
+	hudRenderer = make_shared<HUDRenderer>();
+	hudRenderer->Init(componentManager.GetGameState());
 }
 
 
@@ -656,14 +702,16 @@ void Application::render(float frameTime)
 		glViewport(0, 0, width, height);
 	}
 	componentManager.UpdateComponents(frameTime, width, height);
+	hudRenderer->Update(frameTime, componentManager.GetGameState());
 
 	// render post-processing
 	if (renderPostProcessing && !renderLines)
     {
-		
     	// render post-processing
     	postProcessing->RenderPostProcessing();
     }
+	// render HUD
+	hudRenderer->RenderHUD(width, height, componentManager.GetGameState());
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
