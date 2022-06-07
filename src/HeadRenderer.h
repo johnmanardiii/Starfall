@@ -9,6 +9,7 @@ class ComponentManager;
 #include <glm/gtc/type_ptr.hpp> //for value_ptr
 
 #include "Camera.h"
+#include "LightComponent.h"
 
 class HeadRenderer : public Renderer
 {
@@ -24,6 +25,7 @@ public:
 	void Init(ComponentManager* compMan);
 
 	void Draw(float frameTime);
+	void DrawDepth();
 	void SetFlashAmt(float amt) { flashAmt = amt; }
 	vec2 eye1Pos = vec2(.07, .44);
 	float eye1Radius = .02;

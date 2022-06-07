@@ -28,6 +28,7 @@ public:
     }
     void Draw(float frameTime);
     void Update(float frameTime, ComponentManager* compMan);
+    void DrawDepth() {}
     void Init(ComponentManager* compMan);
     
     float totalTime = 0;

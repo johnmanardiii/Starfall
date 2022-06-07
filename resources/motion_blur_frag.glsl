@@ -33,7 +33,7 @@ vec2 GetVelocity()
     previousPos /= previousPos.w; 
     // Use this frame's position and last frame's to compute the pixel    
     // velocity (this is in clip space coordinates)
-    vec2 velocity = ((currentPos - previousPos)/2.0f).xy;
+    vec2 velocity = ((currentPos - previousPos)).xy;
     return velocity;
 }
 
@@ -44,7 +44,7 @@ vec2 GetVelocity()
 //                       Instead of camera movement (I don't feel like mine has been enough work to be a tech)?
 void main()
 {
-    vec2 velocity = GetVelocity() /  3.0f; // reduce velocity to lower motion blur effect here since
+    vec2 velocity = GetVelocity(); // reduce velocity to lower motion blur effect here since
     // Get the initial color at this pixel.    
     vec4 blurred_color = texture(screenTexture, TexCoord);
     vec4 original_color = blurred_color;
@@ -72,7 +72,7 @@ void main()
 
     // calculate the percentage distance away from the center of the screen (0.5, 0.5)
     // and then divide that by a set amount of distance. (.7071 is max)
-    float pctBlurred = distance(TexCoord, vec2(.5, .5)) / .7071;
-    color = mix(original_color, blurred_color, pctBlurred);
-    // color = blurred_color; // enable this to make you sick enough to beleive that I put in motion blur.
+    // float pctBlurred = distance(TexCoord, vec2(.5, .5)) / .7071;
+    // color = mix(original_color, blurred_color, pctBlurred);
+    color = blurred_color; // enable this to make you sick enough to beleive that I put in motion blur.
 }

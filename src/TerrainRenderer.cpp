@@ -36,6 +36,9 @@ void TerrainRenderer::UpdateUniforms()
 	ImGui::SliderFloat("sandStrength", (float*)&sandStrength, 0.0f, 1.0f);
 	glUniform1f(prog->getUniform("sandStrength"), sandStrength);
 
+	ImGui::ColorEdit3("shadowCastColor", (float*)&shadowCastColor);
+	glUniform3fv(prog->getUniform("shadowCastColor"), 1, &shadowCastColor[0]);
+
 	// Rim
 	ImGui::SliderFloat("rimStrength", (float*)&rimStrength, 0.0f, 5.0f);
 	glUniform1f(prog->getUniform("rimStrength"), rimStrength);
@@ -90,8 +93,16 @@ void TerrainRenderer::Draw(float frameTime)
 	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &cam.GetPerspective()[0][0]);
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &cam.GetView()[0][0]);
 
+	LightComponent lightC = LightComponent::GetInstance(vec3(0));
+	shared_ptr<Program> dprog = lightC.depthProg;
+	mat4 ortho = lightC.GetOrthoMatrix();
+	mat4 LV = lightC.GetLightView();
+	mat4 LS = ortho * LV;
+
 	vec3 pos = cam.GetPos();
-	vec3 color_offset;
+
+	glUniformMatrix4fv(prog->getUniform("LS"), 1, GL_FALSE, &LS[0][0]);
+	//vec3 lightDir = normalize(vec3(1000, 0, 100)); // Hardcoded for now
 
 	// Sun direction
 	mat4 rotY = glm::rotate(mat4(1.0f), sunRotation, vec3(1.0f, 0.0f, 0.0f));
@@ -118,9 +129,65 @@ void TerrainRenderer::Draw(float frameTime)
 	glBindTexture(GL_TEXTURE_2D, shallowTexture);
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, steepTexture);
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, lightC.depthMap);
 
 	glPatchParameteri(GL_PATCH_VERTICES, 3);
 	glDrawElements(GL_PATCHES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
 	prog->unbind();
 	glDisable(GL_BLEND);
+}
+
+void TerrainRenderer::DrawDepth()
+{
+	// send over PVM matrices
+	Camera cam = Camera::GetInstance(vec3(0));
+	LightComponent lightC = LightComponent::GetInstance(vec3(0));
+	mat4 ortho = lightC.GetOrthoMatrix();
+	mat4 LV = lightC.GetLightView();
+	mat4 M = trans->GetModelMat();
+
+	depthProg->bind();
+	UpdatePosition();
+
+	glUniformMatrix4fv(depthProg->getUniform("M"), 1, GL_FALSE, &trans->GetModelMat()[0][0]);
+
+	vec3 pos = cam.GetPos();
+	vec3 offset;
+	vec3 color_offset;
+	offset.y = 0;
+	offset.x = (int)pos.x;
+	offset.z = (int)pos.z;
+
+	// Sun direction
+	mat4 rotY = glm::rotate(mat4(1.0f), sunRotation, glm::vec3(1.0f, 0.0f, 0.0f));
+	mat4 inverted = glm::inverse(rotY);
+	sunDir = normalize(glm::vec3(inverted[2]));
+
+	vec3 playerPos = Player::GetInstance(vec3()).GetPosition();
+
+	glUniformMatrix4fv(depthProg->getUniform("LP"), 1, GL_FALSE, &ortho[0][0]);
+	glUniformMatrix4fv(depthProg->getUniform("LV"), 1, GL_FALSE, &LV[0][0]);
+	glUniform3fv(depthProg->getUniform("campos"), 1, &pos[0]);
+	glUniform3fv(depthProg->getUniform("playerPos"), 1, &playerPos[0]);
+	glUniform1f(depthProg->getUniform("baseHeight"), BASE_HEIGHT);
+
+	glBindVertexArray(terrain.VAOId);
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	glDrawElements(GL_PATCHES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
+	depthProg->unbind();
+
+	//glUniform1i(depthProg->getUniform("castShadows"), 0);
+	/*
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	glDrawElements(GL_PATCHES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
+	
+
+	glBindVertexArray(terrain.VAOId);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain.IndexBuff);
+
+	glDrawElements(GL_TRIANGLES, terrain.numVerts, GL_UNSIGNED_SHORT, (void*)0);
+	depthProg->unbind();*/
 }

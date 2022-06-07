@@ -4,12 +4,14 @@ in vec3 frag_pos;
 in vec2 frag_tex;
 in vec3 frag_norm;
 in float frag_height;
+in vec4 posLS;
 
 uniform sampler2D tex;
 uniform sampler2D tex2;
 uniform sampler2D noiseTex;
 uniform sampler2D sandShallow;
 uniform sampler2D sandSteep;
+uniform sampler2D shadowDepth;
 
 uniform vec3 campos;
 uniform vec3 playerPos;
@@ -22,6 +24,7 @@ uniform float diffuseContrast;
 uniform vec3 shadowColor;
 uniform vec3 terrainColor;
 uniform float sandStrength;
+uniform vec3 shadowCastColor;
 
 // rim 
 uniform float rimStrength;
@@ -75,7 +78,7 @@ vec3 OceanSpecular(vec3 normal, vec3 lightDir, vec3 view)
 	vec3 modView = normalize(vec3(view.x, 0.2, 0.2));
 	vec3 H = normalize(modView + lightDir);
 	float NdotH = max(0, dot(normal, H));
-	float spec = clamp(pow(NdotH, oceanSpecPowLerp) * oceanSpecularStrength, 0.0, 1.1);
+	float spec = clamp(pow(NdotH, oceanSpecPowLerp) * oceanSpecularStrength, 0.0, 1.6);
 	return spec * oceanSpecularColor * NdotL;
 }
 
@@ -108,15 +111,48 @@ vec3 SandRipples(vec2 texcoords, vec3 lightDir, vec3 view)
 	return vec3(color);
 }
 
+float TestShadow(vec4 LSfPos) {
+	float bias = 0.01;
+	//1: shift the coordinates from -1, 1 to 0 ,1
+	vec3 projCoord = (LSfPos.xyz + vec3(1)) / 2;
+	//2: read off the stored depth (.) from the ShadowDepth, using the shifted.xy 
+	float lightDepth = texture(shadowDepth, projCoord.xy).r;
+	float castShadows = texture(shadowDepth, projCoord.xy).g;
+	//if (castShadows < 0.01) {return 0;}
+	//3: compare to the current depth (.z) of the projected depth
+	vec2 texelScale = 1.0 / textureSize(shadowDepth, 0); 
+	float curDepth = projCoord.z;
+	float percentShadow = 0;
+
+	for (int i=-2; i <= 2; i++) { 
+		for (int j=-2; j <= 2; j++) { 
+		  lightDepth = texture(shadowDepth, projCoord.xy+vec2(i, j)*texelScale).r; 
+		  if (curDepth - bias > lightDepth) 
+			percentShadow += 1.0; 
+		} 
+	  } 
+	return percentShadow/25.0;
+
+	if (curDepth - bias > lightDepth)
+		return 1; //4: return 1 if the point is shadowed
+	return 0.0;
+}
+
 
 void main()
 {
 	vec2 texcoords=frag_tex;
 
+	vec3 s = texture(shadowDepth, texcoords).rgb;
 	float len = length(frag_pos.xz-playerPos.xz);
 	len = abs(len) / 150.0f;
 	len = clamp(len,0,1);
 	len = pow(len, 5.0f);
+
+	float lenshadow = length(frag_pos.xz-playerPos.xz);
+	lenshadow = abs(lenshadow) / 20.0f;
+	lenshadow = clamp(lenshadow,0,1);
+	lenshadow = pow(lenshadow, 5.0f);
 	
 	// Sand normals
 	vec3 sandNormal = SandNormal(frag_norm, texcoords) * (1 - len);
@@ -129,11 +165,14 @@ void main()
 
 	// Combining
 	vec3 sandRipplesColor = SandRipples(texcoords, lightDir, view);
-	vec3 diffuseColor = DiffuseColor(frag_norm, lightDir);
+	vec3 diffuseColor = DiffuseColor(sandNormal, lightDir);
+	vec3 shade = (1.0 - TestShadow(posLS) * shadowCastColor * (1-lenshadow));
+
 	//diffuseColor = mix(diffuseColor, sandRipplesColor * 0.5, 0.4);
-	color.rgb = spec + diffuseColor * 0.7 * sandRipplesColor;
-	
+	color.rgb = spec + shade * diffuseColor * 0.7 * sandRipplesColor;
 	color.a=1-len;
+
+	//color.rgb = vec3(posLS);
 	//color.rgb = sandRipplesColor;
 	//color.rgb = normalize(frag_norm);
 	//color.a = 1;

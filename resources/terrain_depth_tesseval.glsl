@@ -1,17 +1,11 @@
 #version 410 core
 
 layout (triangles, equal_spacing, cw) in;	//equal_spacing
-uniform mat4 P;
-uniform mat4 V;
-uniform sampler2D tex;
 uniform vec3 camoff;
 uniform float baseHeight;
-uniform mat4 LS; // Composite L0 and LS 
-out vec2 frag_tex;
-out float frag_height;
-out vec3 frag_pos;
-out vec3 frag_norm;
-out vec4 posLS;
+
+uniform mat4 LP;
+uniform mat4 LV;
 
 float heightCalc(float x, float z)
 {
@@ -41,10 +35,5 @@ void main()
 
 	vec2 texcoords = vec2(tpos.x / 100., tpos.z / 100.);
 
-	gl_Position = P * V * tpos;
-	frag_pos = tpos.xyz;
-	frag_tex = texcoords;
-	frag_norm = n;
-	frag_height = tpos.y;
-	posLS = LS * tpos;
+	gl_Position = LP * LV * tpos;
 }
