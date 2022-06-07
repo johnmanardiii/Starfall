@@ -20,6 +20,7 @@ void RadialBlur::InitializeShaders()
 	radialBlurProg->Init();
 	radialBlurProg->addAttribute("vertPos");
 	radialBlurProg->addAttribute("texCoord");
+	radialBlurProg->addUniform("blurAmount");
 
 	GLuint TexLocation = glGetUniformLocation(radialBlurProg->pid, "screenTexture");
 	glUseProgram(radialBlurProg->pid);
@@ -84,6 +85,11 @@ RadialBlur::~RadialBlur()
 	glDeleteTextures(1, &blurTex);
 }
 
+void RadialBlur::SetBlurAmount(float amount)
+{
+	blurAmount = amount;
+}
+
 
 // Renders motion blur using the base color and depth texture in PostProcessing into
 // blurTex on blurFBO.
@@ -98,6 +104,7 @@ void RadialBlur::RenderRadialBlur()
 	radialBlurProg->bind();
 	glBindVertexArray(postProcessing->GetQuadVAO());
 	// upload inverse of the PV matrix to the program to recreate the world space positions.
+	glUniform1f(radialBlurProg->getUniform("blurAmount"), blurAmount);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, postProcessing->GetLastProcessedScreen());
 	glDrawArrays(GL_TRIANGLES, 0, 6);

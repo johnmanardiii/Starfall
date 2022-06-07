@@ -46,13 +46,6 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
-	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
-		postProcessing->RenderRadialBlur(true);
-	}
-	if (key == GLFW_KEY_B && action == GLFW_RELEASE) {
-		postProcessing->RenderRadialBlur(false);
-	}
-
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 		renderPostProcessing = false;
 	}
@@ -707,8 +700,9 @@ void Application::render(float frameTime)
 	// render post-processing
 	if (renderPostProcessing && !renderLines)
     {
+		float goalBlur = componentManager.GetGameState()->ShouldSpawnSand() ? .5 : 0.0;
     	// render post-processing
-    	postProcessing->RenderPostProcessing();
+    	postProcessing->RenderPostProcessing(frameTime, goalBlur);
     }
 	// render HUD
 	hudRenderer->RenderHUD(width, height, componentManager.GetGameState());

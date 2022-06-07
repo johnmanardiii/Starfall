@@ -4,6 +4,12 @@
 
 using namespace std;
 
+template<typename T>
+T exponential_growth(T actual, T goal, float factor, float frametime)
+{
+	return actual + (goal - actual) * factor * frametime;
+}
+
 /*
 Code for initializing a quad from: https://learnopengl.com/Advanced-OpenGL/Framebuffers
 
@@ -164,18 +170,13 @@ void PostProcessing::SetUpFrameBuffers()
 	glEnable(GL_DEPTH_TEST);
 }
 
-void PostProcessing::RenderRadialBlur(bool shouldRender)
-{
-	renderRadialBlur = shouldRender;
-}
-
 void PostProcessing::SetLastProcessedScreen(GLuint tex)
 {
 	last_processed_screen = tex;
 }
 
 // Renders all effects to the screen using the main framebuffer.
-void PostProcessing::RenderPostProcessing()
+void PostProcessing::RenderPostProcessing(float frameTime, float goalBlur)
 {
 	last_processed_screen = base_color;
 	glDisable(GL_DEPTH_TEST);
@@ -184,10 +185,9 @@ void PostProcessing::RenderPostProcessing()
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// mb->RenderMotionBlur(camera);
-	if (renderRadialBlur)
-	{
-		rb->RenderRadialBlur();	// uncomment this if you want radial blur for speed.
-	}
+	currentBlur = exponential_growth(currentBlur, goalBlur, .02f * 60.0f, frameTime);
+	rb->SetBlurAmount(currentBlur);
+	rb->RenderRadialBlur();	// uncomment this if you want radial blur for speed.
 
 	// generate bloom
 	// glViewport(0, 0, width, height);
