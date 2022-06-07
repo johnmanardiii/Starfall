@@ -14,11 +14,10 @@ void StarRenderer::Init(ComponentManager* compMan)
 	state = compMan->GetGameState();
 	isCullable = true; //set the star fragments as being available to be culled.
 	//GameObject& obj = compMan->GetGameObject(Name);
-	shared_ptr<Collision> col = static_pointer_cast<Collision>(compMan->GetComponent("Collision", compMan->GetGameObject(Name).GetComponentLocation("Collision")));
-	col->Init(compMan);
+	
 	//set their culling radius to be the same as the radius of the collision component.
 	//Other derived renderer components may choose to set a custom culling radius e.g. if they are not collidable.
-	cullingRadius = col->getRadius();
+	cullingRadius = compMan->GetCollisionNodeRadius(Name);
 }
 
 void StarRenderer::Draw(float frameTime)

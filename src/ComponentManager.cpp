@@ -127,7 +127,7 @@ void ComponentManager::AddLineOfStars()
     float spacing = 4.0f; //the distance between each star fragment, if multiple are spawned.
     vec3 playerGaze = normalize(player.GetForward()); //double check that this is normalized.
     vec3 playerRight = cross(playerGaze, vec3(0, 1, 0));
-
+    CollisionNode root;
     //start initializing stars.
     for (int i = 0; i < numStarsToSpawn; ++i){
         string sphereName = "Star Bit" + to_string(state.TotalObjectsEverMade);
@@ -146,11 +146,17 @@ void ComponentManager::AddLineOfStars()
         //finally, calculate each spawned fragment's height at this position.
         transform->ApplyTranslation(vec3(pos.x, HeightCalc::heightCalc(pos.x, pos.z), pos.z));
         transform->ApplyScale(vec3(0.02f));
-        vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collision, collect };
+        vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collect }; //collision nodes should not be added here!
+        
         AddGameObject(sphereName, sphereComps);
         state.TotalObjectsEverMade++;
+        collision->Init(this);
+        root.children.emplace_back(make_shared<CollisionNode>(collision));
+        
         //cout << "\nAdded one more star!\n";
     }
+    root.constructBoundingSphere();
+    this->collisionNodes.push_back(root);
 }
 
 void ComponentManager::AddBunchOfSandParticles() {
@@ -210,11 +216,16 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     //int mvtime = timer.stop();
     //resolve collisions.
     //timer.start();
-    for (auto& giver : components["Collision"])
-    {
-        if (!giver->IsActive) continue;  //don't collide with destroyed objects.
-        giver->Update(frameTime, this);
+
+    for (auto& node : collisionNodes) {
+        node.Update(frameTime, this);
     }
+
+    //for (auto& giver : components["Collision"])
+    //{
+    //    if (!giver->IsActive) continue;  //don't collide with destroyed objects.
+     //   giver->Update(frameTime, this);
+    //}
     //int colitime = timer.stop();
     //timer.start();
     // update transforms based on movements.
@@ -315,6 +326,17 @@ void ComponentManager::AddGameObject(string name, vector<shared_ptr<Component>> 
         size_t index = comp.second;
         GetComponent(name, index)->Init(this);
     }//end processing component vector freeing
+}
+
+float ComponentManager::GetCollisionNodeRadius(string name)
+{
+    for (auto& node : collisionNodes) {
+        for (auto& child : node.children) {
+            if (child->self->Name == name) {
+                return child->self->getRadius();
+            }
+        }
+    }
 }
 
 //add the component to the first-available position of the corresponding vector of components.

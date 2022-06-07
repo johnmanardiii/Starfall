@@ -69,6 +69,7 @@ public:
     GameState* GetGameState() { return &state; }
     AudioEngine* Audio() { return audio; }
     ParticleSorter partComponentSorter = ParticleSorter();
+    float GetCollisionNodeRadius(string name);
 private:
     //helper functions to differentiate parts of AddGameObject.
     pair<string, size_t> addToComponentList(const shared_ptr<Component>& comp);
@@ -89,6 +90,7 @@ private:
     unordered_map <string, OpenSlots> componentOpenSlots;
     //a data structure for vfc and collision.
     vector<CollisionNode> collisionNodes;
+    
     //one camera for now
     Camera& camera = Camera::GetInstance(vec3(0,1,0));
     Player& player = Player::GetInstance(vec3(0, 1, 0));

@@ -1,9 +1,10 @@
 #include "CollisionNode.h"
-//go down the hierarchy, and compute a bounding sphere, that encompasses all of the bounding spheres of your children.
-//if the child's bounding sphere is not valid (it hasn't been computed, or the objects moved or something, recursively generate it.
 
 void CollisionNode::Update(float frameTime, ComponentManager* compMan) {
     if (children.empty()) {
+        if (!self.get()) {//if you both have no children (they were removed) and don't contain a Collision object, your container is marked for garbage collection
+            isKilled = true;
+        }
         self->Update(frameTime, compMan); //update yourself. You resolve to an actual Collision object
     }
     else {//You aren't a collision object, but you have children that could be.
@@ -13,6 +14,8 @@ void CollisionNode::Update(float frameTime, ComponentManager* compMan) {
     }
 }
 
+//go down the hierarchy, and compute a bounding sphere, that encompasses all of the bounding spheres of your children.
+//if the child's bounding sphere is not valid (it hasn't been computed, or the objects moved or something, recursively generate it.
 void CollisionNode::constructBoundingSphere()
 {
     pos = vec3(0);

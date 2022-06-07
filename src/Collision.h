@@ -23,10 +23,11 @@ public:
     void Update(float frameTime, ComponentManager* compMan);
     bool IsCollected() const { return hasBeenTouchedByPlayer; }
     float getRadius();
-    glm::vec3 getCenter(); 
+    glm::vec3 getCenter();
+    bool CollideWithPlayer(float frameTime, ComponentManager* compMan);
 private:
     glm::vec3 getCenterOfBBox();
-    void collideWithPlayer(float frameTime, ComponentManager* compMan);
+    
     float maxDistance = 200;
     bool hasBeenTouchedByPlayer = false;
     Shape shape;

@@ -33,10 +33,10 @@ glm::vec3 Collision::getCenter()
 
 void Collision::Update(float frameTime, ComponentManager* compMan)
 {
-    collideWithPlayer(frameTime, compMan);
+    CollideWithPlayer(frameTime, compMan);
 }
 
-void Collision::collideWithPlayer(float frameTime, ComponentManager* compMan) {
+bool Collision::CollideWithPlayer(float frameTime, ComponentManager* compMan) {
     vec3 center = transform->GetPos();
     vec3 playerPos = compMan->GetPlayer().GetPosition();
     float radius = getRadius();
@@ -45,12 +45,15 @@ void Collision::collideWithPlayer(float frameTime, ComponentManager* compMan) {
     if (distanceFromObjectToPlayer <= radius + pRadius) {
         hasBeenTouchedByPlayer = true;
         compMan->GetGameState()->Collect();
+        return true;
     }
     else if (distanceFromObjectToPlayer > maxDistance) {
         //sometimes the trash takes itself out.
         compMan->RemoveGameObject(this->Name);
         //cout << "garbage-collected " << Name << endl;
+        return true;
     }
+    return false;
 }
 
 void Collision::Init(ComponentManager* compMan) {
