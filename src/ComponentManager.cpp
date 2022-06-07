@@ -213,11 +213,9 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     //Timer timer;
     //the first thing that should happen in every frame. Stores total time.
     state.IncTotalFrameTime(frameTime);
-    future<void> starsSpawned;
-    if (state.ShouldSpawnStar()) {
-        starsSpawned = async(launch::deferred, [this]() {
-            AddLineOfStars();
-        });
+    
+    if (state.ShouldSpawnStar()) { //do on this thread, needs to happen with minimal fuss
+        AddLineOfStars();
     }
     future<void> sandSpawned;
     if (state.ShouldSpawnSand()) {
@@ -233,17 +231,14 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     });
     
     //ensure that stars are spawned and have been added to component vectors, before iterating over them.
-    if (starsSpawned.valid()) {
-        starsSpawned.wait();
-    }
-
+    
     //resolve collisions. Not needed until Collect phase.
-    future<void> collisionsResolved = async(launch::async, [&frameTime, this]() {
-        for_each(execution::par_unseq, components["Collision"].begin(), components["Collision"].end(), [&frameTime, this](const shared_ptr<Component>& collider) {
-            if (collider->IsActive)
-                collider->Update(frameTime, this);
-            });
+    
+    for_each(execution::par_unseq, components["Collision"].begin(), components["Collision"].end(), [&frameTime, this](const shared_ptr<Component>& collider) {
+        if (collider->IsActive)
+            collider->Update(frameTime, this);
     });
+    
     
     //ensure that the transform and particle component vectors have been updated with sand components
     if (sandSpawned.valid()) {
@@ -254,9 +249,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
         if (transform->IsActive)
             transform->Update(frameTime, this);
     });
-
-    //Make sure collision resolution is done.
-    collisionsResolved.wait();
+    //Make sure collision resolution is finished by here!
 
     // Use collision resolution to determine updates to collect.
     for_each(execution::par_unseq, components["Collect"].begin(), components["Collect"].end(), [&frameTime, this](const shared_ptr<Component>& collect) {
@@ -418,7 +411,7 @@ int ComponentManager::getNextOpenSlot(OpenSlots& slots) {
     if (slots.empty()) return -1;
     else {
         size_t val = slots.top();
-        slots.pop(); //remove the element, as the corresponding position is going to be immediately filled.
+        slots.atomic_pop(); //remove the element, as the corresponding position is going to be immediately filled.
         return val;
     }
 }

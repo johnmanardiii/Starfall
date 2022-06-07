@@ -40,6 +40,12 @@ class ComponentManager
         void clear() { //access the raw vector container memory and clear it. This reduces the overhead of reallocating on a queue clear.
             this->c.clear(); //no idea why this isn't a supported operation without inheritance, it seems very useful and more elegant than continuously popping
         }
+        void atomic_pop() {
+            std::lock_guard<std::mutex> lock(pop_mutex);
+            pop();
+        }
+    private:
+        mutable std::mutex pop_mutex;
     };
     
 public:
