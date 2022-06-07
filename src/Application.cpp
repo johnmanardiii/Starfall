@@ -790,7 +790,7 @@ void Application::render(float frameTime)
 	if (renderPostProcessing && !renderLines)
     {
 		// Check if we are going fast enough that we should flag blur
-		float goalBlur = componentManager.GetGameState()->ShouldSpawnSand() ? 1.2 : 0.0;
+		float goalBlur = componentManager.GetGameState()->ShouldSpawnSand() ? .92 : 0.0;
     	// render post-processing
     	postProcessing->RenderPostProcessing(frameTime, goalBlur);
     }

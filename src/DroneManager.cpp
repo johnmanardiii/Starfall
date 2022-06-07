@@ -15,8 +15,6 @@ void DroneManager::Init(ComponentManager* compMan)
 	model_matrices = vector<mat4>();
 	offsets = vector<vec3>();
 	t_vals = vector<float>();
-	AddDrone();
-	AddDrone();
 }
 
 void DroneManager::Update(float frameTime, ComponentManager* compMan)

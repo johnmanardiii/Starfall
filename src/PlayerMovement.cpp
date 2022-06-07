@@ -46,7 +46,7 @@ void PlayerMovement::Update(float frameTime, ComponentManager* compMan)
     // Reset Luna's position to the ground height
     //   if they're below the ground
     vec3 pos = trans->GetPos();
-    pos.y = (glm::max)(pos.y, HeightCalc::heightCalc(pos.x, pos.z) - 0.5f);
+    pos.y = (glm::max)(pos.y, HeightCalc::heightCalc(pos.x, pos.z));
     trans->SetPos(pos);
 
     // Lose a small amount of velocity (friction)
