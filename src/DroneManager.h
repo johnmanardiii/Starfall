@@ -17,7 +17,10 @@ private:
 	std::shared_ptr<Player> player;
 	vector<vec3> positions;
 	vector<mat4> model_matrices;
+	vector<vec3> offsets;
 	static const float DRONE_SPEED;
+	// Maximum drone offset from target
+	static const float MAX_DRONE_OFFSET;
 
 	vec3 CalcNewPos(vec3 current, vec3 target, float frameTime);
 };
