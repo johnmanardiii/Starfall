@@ -81,6 +81,14 @@ vec3 brdf(vec3 albedo, vec3 vertex_normal_n, vec3 lightDir, vec3 viewDir, float 
     return albedo * max(0.1,(spec_dist + geom_shadow + fresnel));
 }
 
+float luminance(vec3 rgb)
+{
+    // Algorithm from Chapter 10 of Graphics Shaders.
+    const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+    return dot(rgb, W);
+}
+
+
 void main()
 {
     vec3 lightPos = (M * vec4(lights[0],1.0f)).xyz;
@@ -100,6 +108,8 @@ void main()
       abs(0.85f * rand(centerPos.xy)),
       abs(0.85f * rand(centerPos.yz)),
       abs(0.85f * rand(centerPos.xz)));
+
+    randCol /= luminance(randCol);
 
     //for star fragments, fake roughness.
     float roughness = 0.4; //choose a value between (0 and 1] or use a texture. 

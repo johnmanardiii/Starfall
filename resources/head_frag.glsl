@@ -110,11 +110,9 @@ void main()
 	// vec3 tcol= texture(tex, texture_uvs).rgb;
 	vec3 tcol = vec3(1);	// this is the case since the head has weird UVs and needs its own individual tex.
 	color.rgb = (1- flashAmt) * tcol + flashAmt * flashCol;
-	diffuse = clamp(diffuse, 0.1f, 1.0f);
-	color *= diffuse;
-	color.rgb = normalize(camPos);
     float bias = 0.0, scale = 0.05, shn = 6.0;
     float roughness = 0.0;
+    vec3 viewDir = normalize(camPos - vertex_pos);
     color.rgb = brdf(tcol, n, lightDir, viewDir, roughness, bias, scale, shn);
     color.r = min(color.r, 1.0);
     color.g = min(color.g, 1.0);
