@@ -114,7 +114,7 @@ void LightComponent::DebugDrawDepthTexture()
 {
 	glViewport(0, 0, 640, 640);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	initQuad();
 	ShaderManager shaderMan = ShaderManager::GetInstance();
 	shared_ptr<Program> debugProg = shaderMan.GetShader("TextureDebug");

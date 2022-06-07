@@ -161,10 +161,6 @@ void PostProcessing::SetUpFrameBuffers()
 	glClearColor(0.0, 0.0, 0.0, 1.0);	// clear color for background of scene
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	// clear the default framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
 	// set render target to default offscreen framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, base_fbo);
 	glEnable(GL_DEPTH_TEST);
@@ -197,6 +193,10 @@ void PostProcessing::RenderPostProcessing(float frameTime, float goalBlur)
 	bloom->RenderBloom();
 	glViewport(0, 0, width, height);
 
+	// clear the default framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
 	// bind default framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	simple_prog->bind();
@@ -209,4 +209,6 @@ void PostProcessing::RenderPostProcessing(float frameTime, float goalBlur)
 	glBindTexture(GL_TEXTURE_2D, bloom->GetBloomTex());
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	simple_prog->unbind();
+
+	glEnable(GL_DEPTH_TEST);
 }
