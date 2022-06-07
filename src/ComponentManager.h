@@ -46,7 +46,7 @@ public:
     GameObject GetGameObject(string name);
     //anything the component manager needs to do BEFORE frame-by-frame operations
     void Init(std::string resourceDirectory, AudioEngine* audioPtr);
-    
+    void InitDroneManager(std::string resourceDirectory);
     void AddLineOfStars();
 
     void AddBunchOfSandParticles();
