@@ -2,7 +2,7 @@
 
 const float DroneManager::DRONE_SPEED = 3.0f;
 const float DroneManager::MAX_DRONE_OFFSET = 3.0f;
-const int DroneManager::STARS_NEEDED_TO_SPAWN_DRONE = 25;
+const int DroneManager::STARS_NEEDED_TO_SPAWN_DRONE = 10;
 void DroneManager::Init(ComponentManager* compMan)
 {
 	GameObject obj = compMan->GetGameObject(Name);
