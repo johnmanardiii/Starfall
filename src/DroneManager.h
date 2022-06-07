@@ -19,10 +19,14 @@ private:
 	vector<vec3> positions;
 	vector<mat4> model_matrices;
 	vector<vec3> offsets;
+	vector<float> t_vals;
 	static const float DRONE_SPEED;
+	static const float DRONE_WOBBLE;
+	static const float DRONE_WOBBLE_SPEED;
 	// Maximum drone offset from target
 	static const float MAX_DRONE_OFFSET;
+	static const float MIN_DRONE_OFFSET;
 	static const int STARS_NEEDED_TO_SPAWN_DRONE;
 
-	vec3 CalcNewPos(vec3 current, vec3 target, float frameTime);
+	vec3 CalcNewPos(vec3 current, vec3 target, float frameTime, float sint);
 };
