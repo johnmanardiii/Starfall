@@ -59,7 +59,7 @@ vec3 DiffuseColor(vec3 normal, vec3 ligthDir)
 
 vec3 SandNormal(vec3 normal, vec2 texcoords)
 {
-	vec3 random = texture(shadowDepth, texcoords * 20).rgb;
+	vec3 random = texture(noiseTex, texcoords * 20).rgb;
 	random = normalize(random * 2 - 1); // [-1 to 1]
 	vec3 Ns = nlerp(normal, random, sandStrength);
 	return Ns;
@@ -171,6 +171,7 @@ void main()
 	//diffuseColor = mix(diffuseColor, sandRipplesColor * 0.5, 0.4);
 	color.rgb = spec + shade * diffuseColor * 0.7 * sandRipplesColor;
 	color.a=1-len;
+
 	//color.rgb = vec3(posLS);
 	//color.rgb = sandRipplesColor;
 	//color.rgb = normalize(frag_norm);

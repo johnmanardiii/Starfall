@@ -510,6 +510,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	// sand ripples
 	heightProg->addUniform("steepnessSharpnessPower");
 	heightProg->addUniform("specularHardness");
+	heightProg->addUniform("sandRipplesStrength");
+
 
 	heightProg->addAttribute("vertPos");
 	heightProg->addAttribute("vertTex");
@@ -792,7 +794,7 @@ void Application::render(float frameTime)
     }
 	// render HUD
 	hudRenderer->RenderHUD(width, height, componentManager.GetGameState());
-	LightComponent::GetInstance(vec3(0)).DebugDrawDepthTexture();
+	//LightComponent::GetInstance(vec3(0)).DebugDrawDepthTexture();
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
