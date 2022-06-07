@@ -25,5 +25,6 @@ protected:
 	shared_ptr<Transform> trans = NULL;
 	float cullingRadius;
 	float distToPlane(float A, float B, float C, float D, const vec3& point);
+	ComponentManager* cm = NULL;
 private:
 };

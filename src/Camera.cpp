@@ -73,8 +73,8 @@ glm::vec3 Camera::get_wanted_pos(ComponentManager* compMan)
     }
     if (x_pressed)
     {
-        target_pos = compMan->GetPlayer().GetPosition() + camDistZ * -compMan->GetPlayer().GetForward() * .2f +
-            vec3(0, 1, 0) * camDistHeight * .2f;
+        target_pos = compMan->GetPlayer().GetPosition() + camDistZ * -compMan->GetPlayer().GetForward() * .3f +
+            vec3(0, 1, 0) * camDistHeight * .3f;
     }
     else
     {

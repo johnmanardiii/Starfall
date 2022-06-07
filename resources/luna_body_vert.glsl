@@ -8,11 +8,13 @@ layout(location = 4) in vec3 vertBN;
 uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
+uniform vec3 camPos;
 
 out vec3 vertex_pos;
 out vec3 vertex_normal;
 out vec2 vertex_tex;
 out vec3 lTS;
+out vec3 vTS;
 
 
 void main()
@@ -31,4 +33,5 @@ void main()
 	vec3 lp=vec3(50, 30, 50);
 
 	lTS = TBN * normalize(lp - vertex_pos);
+	vTS = TBN * normalize(camPos - vertex_pos);
 }

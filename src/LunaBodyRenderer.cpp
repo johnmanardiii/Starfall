@@ -1,4 +1,6 @@
 #include "LunaBodyRenderer.h"
+#include "Camera.h"
+#include "ComponentManager.h"
 #include <iostream>
 
 void LunaBodyRenderer::Init(ComponentManager* compMan)
@@ -18,6 +20,7 @@ void LunaBodyRenderer::Draw(float frameTime)
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
 	glUniform3fv(prog->getUniform("flashCol"), 1, &flashColor[0]);
+	glUniform3fv(prog->getUniform("camPos"), 1, &cm->GetCamera().GetPos()[0]);
 	glUniform1f(prog->getUniform("flashAmt"), flashAmt);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -25,6 +28,10 @@ void LunaBodyRenderer::Draw(float frameTime)
 	glBindTexture(GL_TEXTURE_2D, emissive_tex);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, normal_tex);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, roughness);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, metal);
 	model->draw(prog, true);
 	prog->unbind();
 }

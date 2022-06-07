@@ -235,6 +235,8 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_BaseColor.png", "Luna");
 	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Emissive.png", "Luna Emissive");
 	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Normal.png", "Luna Normal");
+	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Roughness.png", "Luna Roughness");
+	loadTexture("/LUNA/new/lunaModelTextures/luna3_lambert1_Metallic.png", "Luna Metal");
 	loadTexture("/grass.jpg", "Grass");
 	loadTexture("/alpha.bmp", "Alpha", false);
 	loadTexture("/smoke_spritesheet.png", "SandPartTex");
@@ -274,6 +276,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	luna_body->addUniform("M");
 	luna_body->addUniform("flashAmt");
 	luna_body->addUniform("flashCol");
+	luna_body->addUniform("camPos");
 	luna_body->addAttribute("vertPos");
 	luna_body->addAttribute("vertNor");
 	luna_body->addAttribute("vertTex");
@@ -289,6 +292,12 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	TexLocation = glGetUniformLocation(luna_body->pid, "normalTex");
 	glUseProgram(luna_body->pid);
 	glUniform1i(TexLocation, 2);
+	TexLocation = glGetUniformLocation(luna_body->pid, "roughness");
+	glUseProgram(luna_body->pid);
+	glUniform1i(TexLocation, 3);
+	TexLocation = glGetUniformLocation(luna_body->pid, "metal");
+	glUseProgram(luna_body->pid);
+	glUniform1i(TexLocation, 4);
 
 	shaderManager.SetShader("Luna Body", luna_body);
 
@@ -304,6 +313,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	head_prog->addUniform("eye1Pos");
 	head_prog->addUniform("eye1Radius");
 	head_prog->addUniform("eyeOpenPct");
+	head_prog->addUniform("camPos");
 	head_prog->addAttribute("vertPos");
 	head_prog->addAttribute("vertNor");
 	head_prog->addAttribute("vertTex");
