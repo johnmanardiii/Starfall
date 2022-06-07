@@ -23,6 +23,7 @@ public:
     void Update(float frameTime, ComponentManager* compMan);
     bool IsCollected() const { return hasBeenTouchedByPlayer; }
     float getRadius();
+    glm::vec3 getCenter(); 
 private:
     glm::vec3 getCenterOfBBox();
     void collideWithPlayer(float frameTime, ComponentManager* compMan);

@@ -26,6 +26,11 @@ float Collision::getRadius(){
     return max2;
 }
 
+glm::vec3 Collision::getCenter()
+{
+   return transform->GetPos();
+}
+
 void Collision::Update(float frameTime, ComponentManager* compMan)
 {
     collideWithPlayer(frameTime, compMan);
@@ -51,6 +56,5 @@ void Collision::collideWithPlayer(float frameTime, ComponentManager* compMan) {
 void Collision::Init(ComponentManager* compMan) {
     GameObject obj = compMan->GetGameObject(Name);
     size_t transformIndex = obj.GetComponentLocation("Transform");
-    
     transform = static_pointer_cast<Transform>(compMan->GetComponent("Transform", transformIndex));
 }

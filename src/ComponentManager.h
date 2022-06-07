@@ -17,6 +17,7 @@
 #include "HeightCalc.h"
 #include "LightComponent.h"
 #include "Audio.h"
+#include "CollisionNode.h"
 
 #include <glm/gtx/quaternion.hpp>
 #include <string>
@@ -86,6 +87,8 @@ private:
     //the various components
     unordered_map <string, vector<shared_ptr<Component>>> components;
     unordered_map <string, OpenSlots> componentOpenSlots;
+    //a data structure for vfc and collision.
+    vector<CollisionNode> collisionNodes;
     //one camera for now
     Camera& camera = Camera::GetInstance(vec3(0,1,0));
     Player& player = Player::GetInstance(vec3(0, 1, 0));
