@@ -213,53 +213,61 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     //Timer timer;
     //the first thing that should happen in every frame. Stores total time.
     state.IncTotalFrameTime(frameTime);
+    future<void> starsSpawned;
     if (state.ShouldSpawnStar()) {
-        AddLineOfStars();
+        starsSpawned = async(launch::async, [this]() {
+            AddLineOfStars();
+        });
     }
-    
+    future<void> sandSpawned;
     if (state.ShouldSpawnSand()) {
-        AddBunchOfSandParticles();
+        sandSpawned = async(launch::async, [this]() {
+            AddBunchOfSandParticles();
+        });
     }
 
-    // update movements
-    for (auto& move : components["Movement"])
-    {
-        if (!move->IsActive) continue;
+    // update movements. Movement component vector is updated by neither stars nor sand.
+    for_each(execution::par_unseq, components["Movement"].begin(), components["Movement"].end(), [frameTime, this](shared_ptr<Component>& move) {
+        if (move->IsActive)
         move->Update(frameTime, this);
-    }
-    //int mvtime = timer.stop();
-    //resolve collisions.
-    //timer.start();
-    for (auto& giver : components["Collision"])
-    {
-        if (!giver->IsActive) continue;  //don't collide with destroyed objects.
-        giver->Update(frameTime, this);
-    }
-    //int colitime = timer.stop();
-    //timer.start();
-    // update transforms based on movements.
-    for (auto& trans : components["Transform"])
-    {
-        if (!trans->IsActive) continue;
-        trans->Update(frameTime, this);
-    }
-    //int transtime = timer.stop();
-    //timer.start();
-    // update flashing animation
-    for (auto& collect : components["Collect"])
-    {
-        if (!collect->IsActive) continue;
-        collect->Update(frameTime, this);
+    });
+    
+    //ensure that stars are spawned and have been added to component vectors, before iterating over them.
+    if (starsSpawned.valid()) {
+        starsSpawned.wait();
     }
 
+    //resolve collisions. Not needed until Collect phase.
+    future<void> collisionsResolved = async(launch::async, [&frameTime, this]() {
+        for_each(execution::par_unseq, components["Collision"].begin(), components["Collision"].end(), [&frameTime, this](shared_ptr<Component>& collider) {
+            if (collider->IsActive)
+                collider->Update(frameTime, this);
+            });
+    });
+    
+    //ensure that the transform and particle component vectors have been updated with sand components
+    if (sandSpawned.valid()) {
+        sandSpawned.wait();
+    }
+    // update transforms based on movements.
+    for_each(execution::par_unseq, components["Transform"].begin(), components["Transform"].end(), [&frameTime, this](shared_ptr<Component>& transform) {
+        if (transform->IsActive)
+            transform->Update(frameTime, this);
+    });
+
+    //Make sure collision resolution is done.
+    collisionsResolved.wait();
+
+    // Use collision resolution to determine updates to collect.
+    for_each(execution::par_unseq, components["Collect"].begin(), components["Collect"].end(), [&frameTime, this](shared_ptr<Component>& collect) {
+        if (collect->IsActive)
+            collect->Update(frameTime, this);
+    });
     for (auto& droneManager : components["DroneManager"])
     {
         if (!droneManager->IsActive) continue;
         droneManager->Update(frameTime, this);
     }
-
-    //int coletime = timer.stop();
-    //timer.start();
     // update the player
     player.Update(frameTime, this);
     
@@ -272,6 +280,7 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     //finally update renderers/draw.
 
     //timer.start();
+    //the rest must be done sequentially, due to opengl global state.
     for (auto& rend : components["Renderer"])
     {
         if (!rend->IsActive) continue; //if the component is active (isn't awaiting replacement in the component vector structure)
@@ -288,7 +297,6 @@ void ComponentManager::UpdateComponents(float frameTime, int width, int height)
     {
         if (!part->IsActive) continue;
         part->Update(frameTime, this);
-        
     }
     //sort("Particle");
     for (auto& part : components["Particle"])

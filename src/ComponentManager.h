@@ -19,6 +19,7 @@
 #include "Audio.h"
 
 #include <execution>
+#include <future>
 #include <glm/gtx/quaternion.hpp>
 #include <string>
 #include <memory>
