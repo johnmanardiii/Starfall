@@ -78,7 +78,7 @@ vec3 OceanSpecular(vec3 normal, vec3 lightDir, vec3 view)
 	vec3 modView = normalize(vec3(view.x, 0.2, 0.2));
 	vec3 H = normalize(modView + lightDir);
 	float NdotH = max(0, dot(normal, H));
-	float spec = clamp(pow(NdotH, oceanSpecPowLerp) * oceanSpecularStrength, 0.0, 1.1);
+	float spec = clamp(pow(NdotH, oceanSpecPowLerp) * oceanSpecularStrength, 0.0, 1.6);
 	return spec * oceanSpecularColor * NdotL;
 }
 

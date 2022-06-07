@@ -277,6 +277,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	luna_body->addUniform("flashAmt");
 	luna_body->addUniform("flashCol");
 	luna_body->addUniform("camPos");
+	luna_body->addUniform("lightDir");
 	luna_body->addAttribute("vertPos");
 	luna_body->addAttribute("vertNor");
 	luna_body->addAttribute("vertTex");
