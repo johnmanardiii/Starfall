@@ -91,14 +91,12 @@ void HUDRenderer::RenderHUD(int width, int height, GameState* gameState)
     DrawSprite(starsRequired_tenthPlace_tex, vec2(290, 138), vec2(70, 70), 0.0f);
     DrawSprite(starsRequired_onesPlace_tex, vec2(330, 138), vec2(70, 70), 0.0f);
 
-
-
     if (gameState->IsGameEnded())
     {
         if (gameState->wonGame)
-            DrawSprite(win_tex, vec2(width / 2 - 200, height / 2 - 200), vec2(500.0f, 400.0f), 0.0f);
+            DrawSprite(win_tex, vec2(width / 2 - 300, height - 400), vec2(600.0f, 230.0f), 0.0f);
         else
-            DrawSprite(lose_tex, vec2(width / 2 - 200, height / 2 - 200), vec2(500.0f, 400.0f), 0.0f);
+            DrawSprite(lose_tex, vec2(width / 2 - 300, height - 400), vec2(600.0f, 230.0f), 0.0f);
     }
 
 	prog->unbind();

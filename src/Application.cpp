@@ -246,7 +246,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/alpha.bmp", "Alpha", false);
 	loadTexture("/smoke_spritesheet.png", "SandPartTex");
 	loadTexture("/noiseTex.png", "noiseTex", false);
-	loadTexture("/sandShallow.jpg", "sandShallow");
+	loadTexture("/sandShallow.png", "sandShallow");
 	loadTexture("/sandSteep.jpg", "sandSteep");
 	loadTexture("/CloudNoise/cloud_BaseNoise.png", "cloudBaseNoise");
 	loadTexture("/CloudNoise/cloud_NoiseTexture.png", "cloudNoise");
@@ -311,6 +311,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	head_prog->addUniform("eye1Pos");
 	head_prog->addUniform("eye1Radius");
 	head_prog->addUniform("eyeOpenPct");
+	head_prog->addUniform("lightDir");
 	head_prog->addAttribute("vertPos");
 	head_prog->addAttribute("vertNor");
 	head_prog->addAttribute("vertTex");
@@ -505,6 +506,7 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	// sand ripples
 	heightProg->addUniform("steepnessSharpnessPower");
 	heightProg->addUniform("specularHardness");
+	heightProg->addUniform("sandRipplesStrength");
 
 	heightProg->addAttribute("vertPos");
 	heightProg->addAttribute("vertTex");

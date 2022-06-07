@@ -42,23 +42,24 @@ private:
 
 	// diffuse
 	float diffuseContrast = 2;
-	vec3 shadowColor = vec3(0.611, 0.44, 0.32);
-	vec3 terrainColor = vec3(1, 0.79, 0.65);
-	float sandStrength = 0.1;
+	vec3 shadowColor = vec3(0.33, 0.25, 0.60);
+	vec3 terrainColor = vec3(0.76, 0.61, 1.0);
+	float sandStrength = 0.08;
 
 	// rim 
-	float rimStrength = 0.3;
-	float rimPower = 20;
-	vec3 rimColor = vec3(1, 0.9, 0.94);
+	float rimStrength = 0.176;
+	float rimPower = 0.96;
+	vec3 rimColor = vec3(1, 0.74, 1.0);
 
 	// ocean spec
-	float oceanSpecularStrength = 0.3;
-	float oceanSpecularPower = 100;
-	vec3 oceanSpecularColor = vec3(1, 0.9, 0.94);
+	float oceanSpecularStrength = 1.0;
+	float oceanSpecularPower = 50;
+	vec3 oceanSpecularColor = vec3(0.81, 0.37, 1.0);
 
 	// sand ripples
 	float steepnessSharpnessPower = 20.0;
 	float specularHardness = 2.0;
+	float sandRipplesStrength = 1.99f;
 
 	static const float OFFSET_FROM_CENTER;
 	static const float TERRAIN_SIZE;

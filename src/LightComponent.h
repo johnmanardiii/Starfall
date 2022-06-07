@@ -15,7 +15,8 @@ public:
 	// Sun rotation around x axis
 	float sunRotation = 0;
 	vec3 sunDir = vec3(0, 0, 1);
+	vec3 moonDir = vec3(0, 0, -1);
 private:
-	float startSunRotation = 0.6;
-	float endSunRotation = -0.5;
+	float startSunRotation = 0.65;
+	float endSunRotation = -0.4;
 };
