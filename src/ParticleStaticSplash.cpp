@@ -145,7 +145,7 @@ void ParticleRenderer::drawSplash(float totalTime) {
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, glm::value_ptr(Model));
 	glUniform1f(prog->getUniform("totalTime"), totalTime);
 	glUniform3f(prog->getUniform("centerPos"), trans->GetPos().x, trans->GetPos().y, trans->GetPos().z);
-	glUniform1f(prog->getUniform("alphaMult"), clamp(1 - totalTime, 0.0f, 1.0f));
+	glUniform1f(prog->getUniform("alphaMult"), glm::clamp(1 - totalTime, 0.0f, 1.0f));
 	
 	// Draw the points
 	glEnable(GL_BLEND);
@@ -171,7 +171,7 @@ void ParticleRenderer::drawSand(float totalTime) {
 	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, glm::value_ptr(View));
 	//cout << initialPlayerSpeed << endl;
 	float speedPct = Player::GetInstance(vec3()).GetCurrentSpeedAsPct();
-	glUniform1f(prog->getUniform("alphaSpeed"), clamp(static_cast<float>(pow(speedPct,4)), 0.0f, 1.0f));
+	glUniform1f(prog->getUniform("alphaSpeed"), glm::clamp(static_cast<float>(pow(speedPct,4)), 0.0f, 1.0f));
 	glUniform1f(prog->getUniform("playerSpeed"), initialPlayerSpeed);
 	glUniform3fv(prog->getUniform("playerDirection"),1, glm::value_ptr(initialPlayerDirection));
 	glUniform1f(prog->getUniform("totalTime"), totalTime);

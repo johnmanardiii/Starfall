@@ -13,7 +13,7 @@ T exponential_growth(T actual, T goal, float factor, float frametime)
 template<typename T>
 T InverseLerp(T start_range, T end_range, T value)
 {
-    return clamp<float>((value - start_range) / (end_range - start_range), 0.0, 1.0);
+    return glm::clamp<float>((value - start_range) / (end_range - start_range), 0.0, 1.0);
 }
 
 // Interpolates camera position towards goal position and updates perspective and view matrices,

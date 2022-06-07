@@ -18,6 +18,7 @@
 #include "LightComponent.h"
 #include "Audio.h"
 
+#include <execution>
 #include <glm/gtx/quaternion.hpp>
 #include <string>
 #include <memory>
