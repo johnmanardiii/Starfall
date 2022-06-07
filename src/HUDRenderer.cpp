@@ -6,9 +6,19 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-void HUDRenderer::Init()
+void HUDRenderer::Init(GameState* gameState)
 {
+    ShaderManager shaderMan = ShaderManager::GetInstance();
+
     InitQuad();
+    int totalStarsRequired = gameState->GetObjectsNeeded();
+    int tenthPlace = (totalStarsRequired / 10) % 10;
+    int onesPlace = (totalStarsRequired % 10);
+    starsRequired_tenthPlace_tex = shaderMan.GetTexture("num_" + to_string(tenthPlace));
+    starsRequired_onesPlace_tex = shaderMan.GetTexture("num_" + to_string(onesPlace));
+    win_tex = shaderMan.GetTexture("win");
+    lose_tex = shaderMan.GetTexture("lose");
+    slash_tex = shaderMan.GetTexture("slash");
 }
 
 void HUDRenderer::InitQuad() {
@@ -38,6 +48,21 @@ void HUDRenderer::InitQuad() {
     glBindVertexArray(0);
 }
 
+void HUDRenderer::Update(float frameTime, GameState* gameState)
+{
+    ShaderManager shaderMan = ShaderManager::GetInstance();
+
+    moonIconPosition = glm::mix(moonIconEndingPos, moonIconStartingPos, gameState->timeLeft / gameState->startTime);
+    int totalStarsCollected = gameState->ReportObjectsCollected();
+    int tenthPlace = (totalStarsCollected / 10) % 10;
+    int onesPlace = (totalStarsCollected % 10);
+    if (tenthPlace == 0)
+        starsCollected_tenthPlace_tex = shaderMan.GetTexture("num_10");
+    else
+        starsCollected_tenthPlace_tex = shaderMan.GetTexture("num_" + to_string(tenthPlace));
+    starsCollected_onesPlace_tex = shaderMan.GetTexture("num_" + to_string(onesPlace));
+}
+
 void HUDRenderer::SetUpFrameBuffers(int width, int height)
 {
     glEnable(GL_BLEND);
@@ -45,7 +70,7 @@ void HUDRenderer::SetUpFrameBuffers(int width, int height)
     projection = glm::ortho(0.0f, width * 1.0f, height * 1.0f, 0.0f, -1.0f, 1.0f);
 }
 
-void HUDRenderer::RenderHUD(int width, int height)
+void HUDRenderer::RenderHUD(int width, int height, GameState* gameState)
 {
     SetUpFrameBuffers(width, height);
 
@@ -54,7 +79,22 @@ void HUDRenderer::RenderHUD(int width, int height)
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &projection[0][0]);
     DrawSprite(starFragment_tex,vec2(30.0f, 200.0f), vec2(100.0f, 100.0f), 0.0f);
     DrawSprite(moonBar_tex, vec2(30.0f, 30.0f), vec2(700.0f, 100.0f), 0.0f);
-    DrawSprite(moonIcon_tex, vec2(30.0f, 30.0f), vec2(100.0f, 100.0f), 0.0f);
+    DrawSprite(moonIcon_tex, vec2(moonIconPosition, 30.0f), vec2(100.0f, 100.0f), 0.0f);
+
+    DrawSprite(slash_tex, vec2(400, 200.0f), vec2(100.0f, 100.0f), 0.0f);
+    DrawSprite(starsRequired_tenthPlace_tex, vec2(500, 200.0f), vec2(100.0f, 100.0f), 0.0f);
+    DrawSprite(starsRequired_onesPlace_tex, vec2(600, 200.0f), vec2(100.0f, 100.0f), 0.0f);
+
+    DrawSprite(starsCollected_tenthPlace_tex, vec2(200, 200.0f), vec2(100.0f, 100.0f), 0.0f);
+    DrawSprite(starsCollected_onesPlace_tex, vec2(300, 200.0f), vec2(100.0f, 100.0f), 0.0f);
+
+    if (gameState->IsGameEnded())
+    {
+        if (gameState->wonGame)
+            DrawSprite(win_tex, vec2(width / 2 - 200, height / 2 - 200), vec2(500.0f, 400.0f), 0.0f);
+        else
+            DrawSprite(lose_tex, vec2(width / 2 - 200, height / 2 - 200), vec2(500.0f, 400.0f), 0.0f);
+    }
 
 	prog->unbind();
 }
@@ -63,11 +103,9 @@ void HUDRenderer::DrawSprite(GLuint tex, vec2 position, vec2 size, float rotate)
 {
     mat4 model = mat4(1.0f);
     model = translate(model, vec3(position, 0.0f));
-
     model = translate(model, vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
     model = glm::rotate(model, radians(rotate), vec3(0.0f, 0.0f, 1.0f));
     model = translate(model, vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-
     model = glm::scale(model, glm::vec3(size, 1.0f));
 
     glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &model[0][0]);

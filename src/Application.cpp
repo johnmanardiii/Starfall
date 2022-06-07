@@ -257,6 +257,15 @@ void Application::InitShaderManager(const std::string& resourceDirectory)
 	loadTexture("/HUD/starfragment.png", "starFragment");
 	loadTexture("/HUD/MoonBar.png", "moonBar");
 	loadTexture("/HUD/MoonIcon.png", "moonIcon");
+	loadTexture("/HUD/num_slash.png", "slash");
+	loadTexture("/HUD/winTex.png", "win");
+	loadTexture("/HUD/loseTex.png", "lose");
+
+	for (int i = 0; i <= 10; i++)
+	{
+		loadTexture("/HUD/num_" + to_string(i) + ".png", "num_" + to_string(i));
+	}
+
 
 	// used on Luna
 	auto luna_body = make_shared<Program>();
@@ -623,7 +632,7 @@ void Application::Init(std::string resourceDirectory)
 
 	postProcessing = make_shared<PostProcessing>(windowManager, &componentManager.GetCamera());
 	hudRenderer = make_shared<HUDRenderer>();
-	hudRenderer->Init();
+	hudRenderer->Init(componentManager.GetGameState());
 }
 
 
@@ -658,7 +667,7 @@ void Application::render(float frameTime)
 		glViewport(0, 0, width, height);
 	}
 	componentManager.UpdateComponents(frameTime, width, height);
-	hudRenderer->Update(frameTime);
+	hudRenderer->Update(frameTime, componentManager.GetGameState());
 
 	// render post-processing
 	if (renderPostProcessing && !renderLines)
@@ -667,7 +676,7 @@ void Application::render(float frameTime)
     	postProcessing->RenderPostProcessing();
     }
 	// render HUD
-	hudRenderer->RenderHUD(width, height);
+	hudRenderer->RenderHUD(width, height, componentManager.GetGameState());
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
