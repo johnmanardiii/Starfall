@@ -24,6 +24,7 @@ public:
     int GetCount() { return
         currentObjectCount;
     }
+    int GetCollectedCount() { return objectsCollected; }
     void Collect();
     void IncTotalFrameTime(float frameTime);
     void EndGame();

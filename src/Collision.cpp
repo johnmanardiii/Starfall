@@ -1,5 +1,6 @@
 #include "Collision.h"
 #include "ComponentManager.h"
+#include "DroneManager.h"
 glm::vec3 Collision::getCenterOfBBox(){
     return glm::vec3(
         (shape.max.x + shape.min.x) / 2,
@@ -39,7 +40,16 @@ void Collision::collideWithPlayer(float frameTime, ComponentManager* compMan) {
     float distanceFromObjectToPlayer = glm::distance(center, playerPos);
     if (distanceFromObjectToPlayer <= radius + pRadius) {
         hasBeenTouchedByPlayer = true;
-        compMan->GetGameState()->Collect();
+        // Call the game state's collect method.
+        GameState* state = compMan->GetGameState();
+        state->Collect();
+        // Get the drone manager and call OnCollect on it.
+        GameObject obj = compMan->GetGameObject("Drone Manager");
+        int index = obj.GetComponentLocation("DroneManager");
+        static_pointer_cast<DroneManager>(
+            compMan->GetComponent("DroneManager", index)
+            )->OnCollect(state->GetCollectedCount());
+
     }
     else if (distanceFromObjectToPlayer > maxDistance) {
         //sometimes the trash takes itself out.

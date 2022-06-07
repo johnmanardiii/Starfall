@@ -2,6 +2,7 @@
 
 const float DroneManager::DRONE_SPEED = 3.0f;
 const float DroneManager::MAX_DRONE_OFFSET = 3.0f;
+const int DroneManager::STARS_NEEDED_TO_SPAWN_DRONE = 25;
 void DroneManager::Init(ComponentManager* compMan)
 {
 	GameObject obj = compMan->GetGameObject(Name);
@@ -10,9 +11,6 @@ void DroneManager::Init(ComponentManager* compMan)
 	positions = vector<vec3>();
 	model_matrices = vector<mat4>();
 	offsets = vector<vec3>();
-	AddDrone();
-	AddDrone();
-	AddDrone();
 }
 
 void DroneManager::Update(float frameTime, ComponentManager* compMan)
@@ -62,4 +60,12 @@ vector<vec3> DroneManager::GetPositions()
 vector<mat4> DroneManager::GetModelMatrices()
 {
 	return model_matrices;
+}
+
+void DroneManager::OnCollect(int count)
+{
+	if (count % STARS_NEEDED_TO_SPAWN_DRONE == 0)
+	{
+		AddDrone();
+	}
 }
