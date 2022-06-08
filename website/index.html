@@ -1,0 +1,254 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>STARFALL</title>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+
+  <!--<link rel="stylesheet" href="main.css">-->
+
+</head>
+<!-- Note, this html and css is very bad and done at 2am-->
+<style>
+body {
+   margin: 0;
+}
+
+.hero {
+   height: 35vh;
+   top: 0;
+   z-index: -10;
+   position: sticky;
+   overflow: hidden;
+}
+.hero-img {
+   
+   position: absolute;
+   z-index: -10;
+   
+   width: 100%;
+}
+
+.black-fade {
+   background: rgb(48,8,88);
+   background: linear-gradient(180deg, rgba(48,8,88,0.7) 0%, rgba(32,32,176,0) 80%, rgba(0,212,255,0) 100%);
+   height: 100%;
+   width: 100%;
+   z-index: -5;
+   position: absolute;
+}
+.img-container {
+   width: 100%;
+   position: sticky;
+   top: 0;
+   z-index: -10;
+   height: 100%;
+   min-width: 1900px;
+}
+
+.hero-copy {
+   max-width: 1600px;
+   margin: 0 auto;
+   padding-top: 60px;
+}
+
+.center-divs {
+   text-align: center;
+}
+
+h1 {
+   font-size: 35px;
+   margin: 0;
+   padding: 5px;
+   font-family: "Arial Black", Gadget, sans-serif;
+   color: white;
+   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+h2 {
+   font-size: 25px;
+   margin: 0;
+   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+   color:#ab86d8;
+}
+
+h3 {
+   text-align: left;
+   font-family: "Georgia", Gadget, sans-serif;
+   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+   font-size: 40px;
+   margin: 10px 0px;
+   color:#4e1775;
+}
+
+
+.content {
+   padding: 30px;
+   background-color: #10215b;
+}
+.main {
+   background-color: #d9adff;
+   text-align: center;
+   
+}
+.title-img {
+   width: 100%;
+}
+
+.main-content {
+   max-width: 1400px;
+   margin: 0 auto;
+   background-color:white;
+   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+   border-radius: 15px;
+}
+
+.main-copy {
+   padding: 30px 80px;
+   text-align:left;
+}
+
+p2 {
+   text-align: left;
+   font-family: "Georgia", Gadget, sans-serif;
+   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+   display: block;
+   font-size: 16px;
+   padding-bottom: 20px;
+}
+
+
+.vid-water-container {
+   overflow: hidden;
+   width: 100%;
+   text-align:center
+}
+
+.vid-water {
+   width: 50%;
+   height: 400px;
+   margin: 0 auto;
+}
+
+.square-vid-container {
+   width: 500px;
+    overflow:hidden;
+    display:inline-block;
+    height: 500px;
+    text-align: center;
+}
+
+.square-vid {
+   width: 100%;
+   height:100%;
+}
+
+img {
+   border-radius: 10px;
+}
+
+video {
+   border-radius: 10px;
+}
+
+a {
+   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+   text-decoration: none;
+   font-size: 18px;
+   display:block;
+}
+
+.white {
+   color: white;
+}
+</style>
+
+<body>
+   <div class="hero">
+      <script src="js/scripts.js"></script>
+      <div class="img-container">
+         <img class="hero-img" src="images/hero.png" alt="Italian Trulli">
+         
+         <div class="black-fade"></div>
+         <!-- <video class="hero-img"autoplay loop muted>
+            <source src="videos/hero-video2.mp4" type="video/mp4">
+         Your browser does not support the video tag.
+         </video> -->
+         <div class="hero-copy">
+            <h1 style="font-size:90px;"> STARFALL</h1>
+            <h1> CSC 476 - Final Project </h1>
+            <p2 class="white"> John Manard III, Fiona Soetrisno, Mitchell Kanazawa, Bob Loth </p2>
+         </div>
+      </div>
+   </div>
+   <div class="main">
+      <div class="content">
+         <div class="main-content">
+            <!--<img class="title-img" src="images/title-logo.png" alt="Italian Trulli">-->
+            
+            <div class="main-copy">
+
+               <!-- EXAMPLE OF PLAYING VIDEO ---
+               <video style="width:100%;"controls loop muted>
+                  <source src="videos/gameplay.mp4" type="video/mp4">
+               Your browser does not support the video tag. 
+               </video>-->
+
+               <!-- EXAMPLE FOR 2 PANEL VIDEOS --- <h3>Sun </h3>
+               <p2>  A gradient color on the spheres using mix, and discarded the frag based on sin(yPos + time). </p2>
+               <div class="center-divs">
+                  <video class="square-vid-container"autoplay loop muted>
+                     <source class="square-vid"src="videos/sun1.mp4" type="video/mp4">
+                     Your browser does not support the video tag.
+                  </video>
+                  <video class="square-vid-container"autoplay loop muted>
+                     <source class="square-vid"src="videos/sun3.mp4" type="video/mp4">
+                     Your browser does not support the video tag.
+                  </video>
+               </div> -->
+
+               <!-- EXAMPLE OF FULL WIDTH PICTURE
+                  <img style="width:100%;"src="images/terrain.png"> -->
+
+               <!-- EXAMPLE OF VIDEO 
+                  <video class="vid-water-container"autoplay loop muted>
+                  <source class="vid-water"src="videos/boids.mp4" type="video/mp4">
+                  Your browser does not support the video tag.
+               </video> -->
+
+               <!-- Overview -->
+               <h3> OVERVIEW </h3>
+               <p2> Dolphin Friends is a low-poly dolphin “hide-and-seek” game made using C++ and OpenGL for CPE 471, Intro Graphics. The goal of the game is to find all of the dolphins in the least amount of time, and the dolphins follow you after you find them. Every time you collect a dolphin, they follow you, with collision detections on each other and the islands. Look underwater to find fish boids swimming around and other underwater fun!</p2>
+               <p2> {Video of gameplay here} </p2>
+               <hr>
+
+               <!-- Inspiration -->
+               <h3> Inspiration </h3>
+               <p2> Gifs of references, Journey, etc.</p2>
+               <p2> {Video of gameplay here} </p2>
+               <h2> Concept Art </h2>
+               <p2> {Images of concept art here} </p2>
+               <hr>
+
+               <!-- Features -->
+               <h3> Features </h3>
+               <h2> Gameplay </h2>
+               <p2> Insert here</p2>
+               <h2> Player Movement </h2>
+               <p2> Insert here</p2>
+               <hr>
+
+                <h3> Resources </h3>
+                  <a href="https://www.youtube.com/watch?v=5yhDb9dzJ58">LowPoly Water Tutorial, ThinMatrix</a>
+                  <a href="https://processing.org/examples/flocking.html">Boids, Flocking by Daniel Shiffman</a>
+                  <a href="https://poly.google.com/">Models from Google Poly</a>
+                  <a href="https://assetstore.unity.com/packages/vfx/shaders/free-skybox-extended-shader-107400">Skybox by BOXOPHOBIC</a>
+            </div>
+         </div>
+      </content>
+   </div>
+</body>
+</html>
