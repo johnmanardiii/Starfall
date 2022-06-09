@@ -4,7 +4,7 @@
 // hardcoded value from sin function that generates the terrain.
 float HeightCalc::heightCalc(float x, float z)
 {
-	return z * 0.2f + sin(x / 20.0) * sin(z / 20.0) * 20.0 * cos(x / 20.) * cos(z / 15.);
+	return z * 0.2f + sin(x / 20.0) * sin(z / 20.0) * 20.0 * cos(x / 20.) * cos(z / 15.) - 4.0f;
 }
 
 vec3 HeightCalc::groundNormal(float x, float z)
