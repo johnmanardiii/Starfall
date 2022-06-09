@@ -1,21 +1,22 @@
 <!doctype html>
 
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
+   <meta charset="utf-8">
 
-  <title>STARFALL</title>
-  <meta name="description" content="The HTML5 Herald">
-  <meta name="author" content="SitePoint">
+   <title>STARFALL</title>
+   <meta name="description" content="The HTML5 Herald">
+   <meta name="author" content="SitePoint">
 
-  <!--<link rel="stylesheet" href="main.css">-->
+   <!--<link rel="stylesheet" href="main.css">-->
 
 </head>
 <!-- Note, this html and css is very bad and done at 2am-->
 <style>
-body {
-   margin: 0;
-}
+   body {
+      margin: 0;
+   }
 
 .row {
    display: flex;
@@ -42,138 +43,149 @@ body {
    width: 100%;
 }
 
-.black-fade {
-   background: rgb(48,8,88);
-   background: linear-gradient(180deg, rgba(48,8,88,0.7) 0%, rgba(32,32,176,0) 80%, rgba(0,212,255,0) 100%);
-   height: 100%;
-   width: 100%;
-   z-index: -5;
-   position: absolute;
-}
-.img-container {
-   width: 100%;
-   position: sticky;
-   top: 0;
-   z-index: -10;
-   height: 100%;
-   min-width: 1900px;
-}
+   .hero-img {
 
-.hero-copy {
-   max-width: 1600px;
-   margin: 0 auto;
-   padding-top: 60px;
-}
+      position: absolute;
+      z-index: -10;
 
-.center-divs {
-   text-align: center;
-}
+      width: 100%;
+   }
 
-h1 {
-   font-size: 35px;
-   margin: 0;
-   padding: 5px;
-   font-family: "Arial Black", Gadget, sans-serif;
-   color: white;
-   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-}
+   .black-fade {
+      background: rgb(48, 8, 88);
+      background: linear-gradient(180deg, rgba(48, 8, 88, 0.7) 0%, rgba(32, 32, 176, 0) 80%, rgba(0, 212, 255, 0) 100%);
+      height: 100%;
+      width: 100%;
+      z-index: -5;
+      position: absolute;
+   }
 
-h2 {
-   font-size: 25px;
-   margin: 0;
-   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-   color:#ab86d8;
-}
+   .img-container {
+      width: 100%;
+      position: sticky;
+      top: 0;
+      z-index: -10;
+      height: 100%;
+      min-width: 1900px;
+   }
 
-h3 {
-   text-align: left;
-   font-family: "Georgia", Gadget, sans-serif;
-   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-   font-size: 40px;
-   margin: 10px 0px;
-   color:#4e1775;
-}
+   .hero-copy {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding-top: 60px;
+   }
 
+   .center-divs {
+      text-align: center;
+   }
 
-.content {
-   padding: 30px;
-   background-color: #10215b;
-}
-.main {
-   background-color: #d9adff;
-   text-align: center;
-   
-}
-.title-img {
-   width: 100%;
-}
+   h1 {
+      font-size: 35px;
+      margin: 0;
+      padding: 5px;
+      font-family: "Arial Black", Gadget, sans-serif;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+   }
 
-.main-content {
-   max-width: 1400px;
-   margin: 0 auto;
-   background-color:white;
-   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-   border-radius: 15px;
-}
+   h2 {
+      font-size: 25px;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      color: #ab86d8;
+   }
 
-.main-copy {
-   padding: 30px 80px;
-   text-align:left;
-}
-
-p2 {
-   text-align: left;
-   font-family: "Georgia", Gadget, sans-serif;
-   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-   display: block;
-   font-size: 16px;
-   padding-bottom: 20px;
-}
+   h3 {
+      text-align: left;
+      font-family: "Georgia", Gadget, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      font-size: 40px;
+      margin: 10px 0px;
+      color: #4e1775;
+   }
 
 
-.vid-water-container {
-   overflow: hidden;
-   width: 100%;
-   text-align:center
-}
+   .content {
+      padding: 30px;
+      background-color: #10215b;
+   }
 
-.vid-water {
-   width: 50%;
-   height: 400px;
-   margin: 0 auto;
-}
+   .main {
+      background-color: #d9adff;
+      text-align: center;
 
-.square-vid-container {
-   width: 500px;
-    overflow:hidden;
-    display:inline-block;
-    height: 500px;
-    text-align: center;
-}
+   }
 
-.square-vid {
-   width: 100%;
-   height:100%;
-}
+   .title-img {
+      width: 100%;
+   }
 
-img {
-   border-radius: 10px;
-}
+   .main-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      background-color: white;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 15px;
+   }
 
-video {
-   border-radius: 10px;
-}
+   .main-copy {
+      padding: 30px 80px;
+      text-align: left;
+   }
 
-a {
-   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-   text-decoration: none;
-   font-size: 18px;
-   display:block;
-}
+   p2 {
+      text-align: left;
+      font-family: "Georgia", Gadget, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      display: block;
+      font-size: 16px;
+      padding-bottom: 20px;
+   }
 
-.white {
-   color: white;
-}
+
+   .vid-water-container {
+      overflow: hidden;
+      width: 100%;
+      text-align: center
+   }
+
+   .vid-water {
+      width: 50%;
+      height: 400px;
+      margin: 0 auto;
+   }
+
+   .square-vid-container {
+      width: 500px;
+      overflow: hidden;
+      display: inline-block;
+      height: 500px;
+      text-align: center;
+   }
+
+   .square-vid {
+      width: 100%;
+      height: 100%;
+   }
+
+   img {
+      border-radius: 10px;
+   }
+
+   video {
+      border-radius: 10px;
+   }
+
+   a {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      text-decoration: none;
+      font-size: 18px;
+      display: block;
+   }
+
+   .white {
+      color: white;
+   }
 </style>
 
 <body>
@@ -181,7 +193,7 @@ a {
       <script src="js/scripts.js"></script>
       <div class="img-container">
          <img class="hero-img" src="images/hero.png" alt="Italian Trulli">
-         
+
          <div class="black-fade"></div>
          <!-- <video class="hero-img"autoplay loop muted>
             <source src="videos/hero-video2.mp4" type="video/mp4">
@@ -198,7 +210,7 @@ a {
       <div class="content">
          <div class="main-content">
             <!--<img class="title-img" src="images/title-logo.png" alt="Italian Trulli">-->
-            
+
             <div class="main-copy">
 
                <!-- EXAMPLE OF PLAYING VIDEO ---
@@ -231,7 +243,10 @@ a {
 
                <!-- Overview -->
                <h3> OVERVIEW </h3>
-               <p2> Dolphin Friends is a low-poly dolphin “hide-and-seek” game made using C++ and OpenGL for CPE 471, Intro Graphics. The goal of the game is to find all of the dolphins in the least amount of time, and the dolphins follow you after you find them. Every time you collect a dolphin, they follow you, with collision detections on each other and the islands. Look underwater to find fish boids swimming around and other underwater fun!</p2>
+               <p2> Starfall is a sand-surfing collection game developed using C++ and OpenGL. Race over dunes to
+                  collect star fragments that power your escape. Hurry before the moon sets though, or you'll be stuck
+                  in dark. As you collect star fragments, drone helpers will join you and cheer you on in your endeavor.
+               </p2>
                <p2> {Video of gameplay here} </p2>
                <hr>
 
@@ -242,8 +257,10 @@ a {
                <p2> A - Turn Left </p2>
                <p2> D - Turn Right </p2>
                <p2> LEFT SHIFT - Increase downwards force </p2>
-               <p2> The shift key should be used only when you are sure you are travelling on a downhill slope, otherwise it will slow you down. </p2>
-               <p2> A tip for new players is to only focus on going straight forward and go to star fragments only a little bit out of reach. </p2>
+               <p2> The shift key should be used only when you are sure you are travelling on a downhill slope,
+                  otherwise it will slow you down. </p2>
+               <p2> A tip for new players is to only focus on going straight forward and go to star fragments only a
+                  little bit out of reach. </p2>
                <hr>
 
                <!-- Inspiration -->
@@ -259,53 +276,146 @@ a {
                <h2> Gameplay </h2>
                <p2> Insert here</p2>
                <h2> Player Movement </h2>
-               <p2> Insert here</p2>
+               <p2> Luna moves with the slopes of the terrain! Holding shift launches them down slopes, but beware
+                  because that same downward momentum can slow them down while going uphill. Try to pick up speed going
+                  down slopes to collect stars as fast as you can.
+               </p2>
+               <h2> Terrain </h2>
+               <p2> The dunes themselves are procedurally generated and infinite, giving you plenty of space to zoom
+                  over the slopes. It also is tessellated
+                  allowing for better visual close to the camera while saving on rendering overhead faraway. Hold z to
+                  see the meshes making up all the objects.
+               </p2>
+               <p2> The shape of the dunes is defined using a clever composite of sine and cosine functions to generate
+                  the repeating soft hills. The mesh of the terrain moves and rotates with the player, provided infinite
+                  terrain with a still relatively small amount of vertices needed. The dune shape function is evaluated
+                  at world space coordinates, meaning that the displacement is stable despite the mesh moving with the
+                  player. </p2>
                <h2> Particle Systems</h2>
-               <p2> The particle system used initialized several vertex array objects, with a few vertex buffer objects per VAO, with different semi-randomized characteristics. Then, at program setup, all particle data was buffered onto the GPU, and the particle system class kept their references as static class members. A newly-created particle system would select the next vertex array object, and a random starting position into the vertex buffers, in order to get randomized characteristics without buffering data every frame. There was no sorting done on any of the particle systems, instead glDepthMask was set to disabled, and alpha values were adjusted to minimize any potential color saturation caused by stacking.</p2>
-               <div class="row">
-                  <div class="column"><img style="width:100%;"src="images/starparticles.png"></div>
-                  <div class="column"><img style="width:100%;"src="images/dust.png"></div>
-               </div>
-               <p2>The particle systems activated upon collecting a star fragment were smaller points, indexed into a buffer that was generated with randomized normals, and used a constant Perlin noise, added to a higher-weighted stacked Perlin noise that adjusted the point's vertex position along the direction of the random normal. This was animated using log(1 + the particle system's total time), and faded out with an alpha value that decreased with total time, to create a starburst effect with a faster particle speed at first that tapered off and faded out.</p2>
-               <p2>The particle systems activated upon exceeding a certain velocity were done by using a sprite sheet, precomputing the texture-space coordinates of each image in the sprite sheet and storing into a lookup table, and indexing into the sprite sheet table based on the total lifetime of the particle system. A particle system that managed one particle was spawned under the player, with a transform component that locked it at the player's position upon particle system spawn. The alpha values faded in and out over the lifetime of the particle system, as well as with the speed the player was travelling when the system was spawned.</p2>
+               <p2> The particle system used initialized several vertex array objects, with a few vertex buffer objects
+                  per VAO, with different semi-randomized characteristics. Then, at program setup, all particle data was
+                  buffered onto the GPU, and the particle system class kept their references as static class members. A
+                  newly-created particle system would select the next vertex array object, and a random starting
+                  position into the vertex buffers, in order to get randomized characteristics without buffering data
+                  every frame. There was no sorting done on any of the particle systems, instead glDepthMask was set to
+                  disabled, and alpha values were adjusted to minimize any potential color saturation caused by
+                  stacking.</p2>
+                  <div class="row">
+                     <div class="column"><img style="width:100%;"src="images/starparticles.png"></div>
+                     <div class="column"><img style="width:100%;"src="images/dust.png"></div>
+                  </div>
+               <p2>The particle systems activated upon collecting a star fragment were smaller points, indexed into a
+                  buffer that was generated with randomized normals, and used a constant Perlin noise, added to a
+                  higher-weighted stacked Perlin noise that adjusted the point's vertex position along the direction of
+                  the random normal. This was animated using log(1 + the particle system's total time), and faded out
+                  with an alpha value that decreased with total time, to create a starburst effect with a faster
+                  particle speed at first that tapered off and faded out.</p2>
+               <p2>The particle systems activated upon exceeding a certain velocity were done by using a sprite sheet,
+                  precomputing the texture-space coordinates of each image in the sprite sheet and storing into a lookup
+                  table, and indexing into the sprite sheet table based on the total lifetime of the particle system. A
+                  particle system that managed one particle was spawned under the player, with a transform component
+                  that locked it at the player's position upon particle system spawn. The alpha values faded in and out
+                  over the lifetime of the particle system, as well as with the speed the player was travelling when the
+                  system was spawned.</p2>
                <h2> Sound</h2>
-               <p2> Sound was all done through Miniaudio's high-level API. All sounds were loaded from files at startup. The soundtrack played at the start of the game, and the sound effects were played upon collecting a star fragment. 100 instances of the sound effect were loaded and iterated through to ensure the sound effects could play simultaneously. The soundtrack's main key was B minor, and a vector of integers representing the half steps of the B natural minor scale was used to adjust the pitch of the base sound effect if additional star fragments were collected in a period of 1s. The formula for adjusting a pitch in Hz up n half steps is pitch' = pitch * 2 ^ (n/12).</p2>
+               <p2> Sound was all done through Miniaudio's high-level API. All sounds were loaded from files at startup.
+                  The soundtrack played at the start of the game, and the sound effects were played upon collecting a
+                  star fragment. 100 instances of the sound effect were loaded and iterated through to ensure the sound
+                  effects could play simultaneously. The soundtrack's main key was B minor, and a vector of integers
+                  representing the half steps of the B natural minor scale was used to adjust the pitch of the base
+                  sound effect if additional star fragments were collected in a period of 1s. The formula for adjusting
+                  a pitch in Hz up n half steps is pitch' = pitch * 2 ^ (n/12).</p2>
                <h2>View Frustum Culling</h2>
-               <p2>View frustum culling was done individually on star fragments and particle systems, as they were the only two types of objects that would ever potentially be out of frame. The star fragments were culled with the radius obtained from their Collision component, and because of the uncertainty of the animated particle system's total radius at a given point in time, a value of 5 was used instead, as a wide estimate.</p2>
+               <p2>View frustum culling was done individually on star fragments and particle systems, as they were the
+                  only two types of objects that would ever potentially be out of frame. The star fragments were culled
+                  with the radius obtained from their Collision component, and because of the uncertainty of the
+                  animated particle system's total radius at a given point in time, a value of 5 was used instead, as a
+                  wide estimate.</p2>
                <h2>Entity-Component system</h2>
-               <p2>The entity-component system used a ComponentManager class, with a vector of GameObjects and a hashmap of vectors of Components, one vector for each first-level component. A GameObject is a name, and a hashmap of indices of any components that belong to it, and Components were inherited from a base Component class, with virtual Init and Update functions, as well as lifetime status boolean values. First-level derived components included Movement, Transform, Collision, Renderer, Collect, Particle, and DroneManager, which were used as interfaces to concrete classes with object-specific implementations.</p2>
-               <p2>Initializing a game object involved creating derived components, and passing them to AddGameObject, which would place all of the components into the first empty location in the respective vector, which was implemented by maintaining an atomic priority queue for each vector to avoid vector resizing and race conditions, and creating and storing a GameObject that stored its indices. Destroying a GameObject would involve calling RemoveGameObject, which marked all of the components located at the vector and index referenced by the GameObject as killed, and pushed their index to the respective atomic priority queue. This would allow the vector index to be used again, eventually overwriting the location when a component to be added popped the index off the queue.</p2>
-               <p2>Communication between components belonging to the same object took place through initializing shared pointers to components that needed to communicate with each other in the Init method, and the Update method was called every frame on active Components during the render loop. Because no components of the same type needed to communicate with each other, we could process their updates in parallel stages, using C++17's std::execution, or start an update or creation asynchronously and process it during unrelated updates using std::future.</p2>
-               <p2>While setting up the project in this way took longer than expected, I think it paid off by the end of the quarter. We were largely able to write new functionality by inheriting from a number of the first-level components, add a resulting game object, and the rest would take care of itself.</p2>
+               <p2>The entity-component system used a ComponentManager class, with a vector of GameObjects and a hashmap
+                  of vectors of Components, one vector for each first-level component. A GameObject is a name, and a
+                  hashmap of indices of any components that belong to it, and Components were inherited from a base
+                  Component class, with virtual Init and Update functions, as well as lifetime status boolean values.
+                  First-level derived components included Movement, Transform, Collision, Renderer, Collect, Particle,
+                  and DroneManager, which were used as interfaces to concrete classes with object-specific
+                  implementations.</p2>
+               <p2>Initializing a game object involved creating derived components, and passing them to AddGameObject,
+                  which would place all of the components into the first empty location in the respective vector, which
+                  was implemented by maintaining an atomic priority queue for each vector to avoid vector resizing and
+                  race conditions, and creating and storing a GameObject that stored its indices. Destroying a
+                  GameObject would involve calling RemoveGameObject, which marked all of the components located at the
+                  vector and index referenced by the GameObject as killed, and pushed their index to the respective
+                  atomic priority queue. This would allow the vector index to be used again, eventually overwriting the
+                  location when a component to be added popped the index off the queue.</p2>
+               <p2>Communication between components belonging to the same object took place through initializing shared
+                  pointers to components that needed to communicate with each other in the Init method, and the Update
+                  method was called every frame on active Components during the render loop. Because no components of
+                  the same type needed to communicate with each other, we could process their updates in parallel
+                  stages, using C++17's std::execution, or start an update or creation asynchronously and process it
+                  during unrelated updates using std::future.</p2>
+               <p2>While setting up the project in this way took longer than expected, I think it paid off by the end of
+                  the quarter. We were largely able to write new functionality by inheriting from a number of the
+                  first-level components, add a resulting game object, and the rest would take care of itself.</p2>
                <h2>Shading</h2>
-               <p2>Shading the star fragments and LUNA used a 3-component microfacet BRDF: a geometric shadowing function(GSF), a normal distribution function(NDF), and a fresnel function(F). The geometric shadowing function used was the Kelemen approximation of the Cook-Torrance GSF, the NDF used was the GGX microfacet NDF, and the Fresnel function was the Schlick's approximation function, with a few adjustments to add tunable values.</p2>
+               <p2>Shading the star fragments and LUNA used a 3-component microfacet BRDF: a geometric shadowing
+                  function(GSF), a normal distribution function(NDF), and a fresnel function(F). The geometric shadowing
+                  function used was the Kelemen approximation of the Cook-Torrance GSF, the NDF used was the GGX
+                  microfacet NDF, and the Fresnel function was the Schlick's approximation function, with a few
+                  adjustments to add tunable values.</p2>
 
                <h2>Character and Camera Animation</h2>
-               <p2>Each body part of the character is split up into individually animated objects. Each one has a desired orientation based on the input of the player and moves towards its desired orientation by slerping between its existing orientation and its goal quaternion. The player's head turns in the direction it wants to go and the player's body leans and rolls with the direction of motion it is accelerating in. Additionally, if you press ALT, you can see the eyes blinking with a scaled ellipse function in the fragment shader.</p2>
-               <p2>The camera is positioned behind the player and changes its distance and FOV based on the speed of the player. It smooths to its desired position, and has several different positions based on the state of the character. It looks directly at the player and follows the character as it travels through the sand. The camera also collides with the terrain to prevent the terrain from blocking the view of the player.</p2>
+               <p2>Each body part of the character is split up into individually animated objects. Each one has a
+                  desired orientation based on the input of the player and moves towards its desired orientation by
+                  slerping between its existing orientation and its goal quaternion. The player's head turns in the
+                  direction it wants to go and the player's body leans and rolls with the direction of motion it is
+                  accelerating in. Additionally, if you press ALT, you can see the eyes blinking with a scaled ellipse
+                  function in the fragment shader.</p2>
+               <p2>The camera is positioned behind the player and changes its distance and FOV based on the speed of the
+                  player. It smooths to its desired position, and has several different positions based on the state of
+                  the character. It looks directly at the player and follows the character as it travels through the
+                  sand. The camera also collides with the terrain to prevent the terrain from blocking the view of the
+                  player.</p2>
                <h2>Post Processing</h2>
-               <p2>Bloom is implemented using a modern technique used in engines like Unity. The pass takes the high valued colors above a threshhold, and then downsamples down to an extremely low resolution, and then recursively upsamples back to the base resolution while adding each pass together back into the final image.</p2>
-               <p2>The game is rendered in high dynamic range and then tonemapped using ACES tonemapping (see references).</p2>
-               <p2>Camera based motion blur was implemented, but the effect didn't give the feeling of speed we wanted, so we used a radial blur that started outside of the center of the screen that scales its strength with the player speed. This gives a similar effect as motion blur, but only on moving forwards and not the rotation of the camera. This effect gave our game the feeling of speed we were looking for.</p2>
+               <p2>Bloom is implemented using a modern technique used in engines like Unity. The pass takes the high
+                  valued colors above a threshhold, and then downsamples down to an extremely low resolution, and then
+                  recursively upsamples back to the base resolution while adding each pass together back into the final
+                  image.</p2>
+               <p2>The game is rendered in high dynamic range and then tonemapped using ACES tonemapping (see
+                  references).</p2>
+               <p2>Camera based motion blur was implemented, but the effect didn't give the feeling of speed we wanted,
+                  so we used a radial blur that started outside of the center of the screen that scales its strength
+                  with the player speed. This gives a similar effect as motion blur, but only on moving forwards and not
+                  the rotation of the camera. This effect gave our game the feeling of speed we were looking for.</p2>
                <h2>Normal Mapping and Other Mappings</h2>
-               <p2>The main character is normal mapped and has several other maps used for lighting. Since we are using physically based rendering, we used a metalic map and a roughness map in calculating the shading, in addition to the normal and base texture map of the character.</p2>
+               <p2>The main character is normal mapped and has several other maps used for lighting. Since we are using
+                  physically based rendering, we used a metallic map and a roughness map in calculating the shading, in
+                  addition to the normal and base texture map of the character.</p2>
                <hr>
 
-                <h3> Resources </h3>
-                  <a href="https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/">ACES Tone Mapping Used</a>
-                  <a href="https://blog.selfshadow.com/publications/s2012-shading-course/hoffman/s2012_pbs_physics_math_notes.pdf">course notes on BRDF shading math and physics</a>
-                  <a href="https://www.researchgate.net/publication/2378872_A_Microfacet_Based_Coupled_Specular-Matte_BRDF_Model_with_Importance_Sampling#pf8">Kelemen GSF</a>
-                  <a href="https://blog.selfshadow.com/publications/s2012-shading-course/#course_content">GGX NDF</a>
-                  <a href="https://en.wikipedia.org/wiki/Schlick%27s_approximation">Schlick's approximation of the Fresnel BRDF component</a>
-                  <a href="https://github.com/stegu/webgl-noise">Perlin Noise implementation</a>
-                  <a href="https://miniaud.io/index.html">Miniaudio website, with links to download and documentation</a>
-                  <a href="https://developer.nvidia.com/gpugems/gpugems3/part-iv-image-effects/chapter-27-motion-blur-post-processing-effect">NVIDIA Motion Blur Examples</a>
-                  <a href="http://goo.gl/eomGso">Reference Slides for Implementing Bloom</a>
-                  <a href="https://github.com/tinyobjloader/tinyobjloader">tinyobjloader</a>
-                  <a href="https://github.com/nothings/stb">stb_image</a>
+               <h3> Resources </h3>
+               <a href="https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/">ACES Tone Mapping
+                  Used</a>
+               <a
+                  href="https://blog.selfshadow.com/publications/s2012-shading-course/hoffman/s2012_pbs_physics_math_notes.pdf">course
+                  notes on BRDF shading math and physics</a>
+               <a
+                  href="https://www.researchgate.net/publication/2378872_A_Microfacet_Based_Coupled_Specular-Matte_BRDF_Model_with_Importance_Sampling#pf8">Kelemen
+                  GSF</a>
+               <a href="https://blog.selfshadow.com/publications/s2012-shading-course/#course_content">GGX NDF</a>
+               <a href="https://en.wikipedia.org/wiki/Schlick%27s_approximation">Schlick's approximation of the Fresnel
+                  BRDF component</a>
+               <a href="https://github.com/stegu/webgl-noise">Perlin Noise implementation</a>
+               <a href="https://miniaud.io/index.html">Miniaudio website, with links to download and documentation</a>
+               <a
+                  href="https://developer.nvidia.com/gpugems/gpugems3/part-iv-image-effects/chapter-27-motion-blur-post-processing-effect">NVIDIA
+                  Motion Blur Examples</a>
+               <a href="http://goo.gl/eomGso">Reference Slides for Implementing Bloom</a>
+               <a href="https://github.com/tinyobjloader/tinyobjloader">tinyobjloader</a>
+               <a href="https://github.com/nothings/stb">stb_image</a>
             </div>
          </div>
-      </content>
-   </div>
+         </content>
+      </div>
 </body>
+
 </html>

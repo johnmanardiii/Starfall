@@ -165,7 +165,7 @@ void ComponentManager::AddLineOfStars()
             playerRight * offsetRight; //plus shifted to the /left or right a random number, which is the same for all star fragments in this particular line.
             
         //finally, calculate each spawned fragment's height at this position.
-        transform->ApplyTranslation(vec3(pos.x, HeightCalc::heightCalc(pos.x, pos.z), pos.z));
+        transform->ApplyTranslation(vec3(pos.x, HeightCalc::heightCalc(pos.x, pos.z) + 2.0f, pos.z));
         transform->ApplyScale(vec3(0.02f));
         vector<shared_ptr<Component>> sphereComps = { renderer, particles, transform, collision, collect };
         AddGameObject(sphereName, sphereComps);
@@ -194,7 +194,7 @@ void ComponentManager::AddBunchOfSandParticles() {
         particles->initialPlayerSpeed = player.GetCurrentSpeed();
         particles->initialPlayerDirection = player.GetVelocity();
         //finally, calculate each spawned fragment's height at this position.
-        transform->ApplyTranslation(vec3(pos.x, HeightCalc::heightCalc(pos.x, pos.z) - 0.5, pos.z));
+        transform->ApplyTranslation(vec3(pos.x, HeightCalc::heightCalc(pos.x, pos.z) + 2.0f, pos.z));
         transform->ApplyScale(vec3(0.02f));
         vector<shared_ptr<Component>> Comps = { particles, transform };
         AddGameObject(SandName, Comps);
