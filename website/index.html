@@ -384,6 +384,10 @@
                   sand. The camera also collides with the terrain to prevent the terrain from blocking the view of the
                   player.</p2>
                <h2>Post Processing</h2>
+               <div class="row">
+                  <div class="column"><img style="height:350px;" src="images/bloom.png"></div>
+                  <div class="column"><img style="height:350px;" src="images/blink.png"></div>
+               </div>
                <p2>Bloom is implemented using a modern technique used in engines like Unity. The pass takes the high
                   valued colors above a threshhold, and then downsamples down to an extremely low resolution, and then
                   recursively upsamples back to the base resolution while adding each pass together back into the final
@@ -395,6 +399,10 @@
                   with the player speed. This gives a similar effect as motion blur, but only on moving forwards and not
                   the rotation of the camera. This effect gave our game the feeling of speed we were looking for.</p2>
                <h2>Normal Mapping and Other Mappings</h2>
+               <div class="row">
+                  <div class="column"><img style="width:90%;" src="images/roughness.png"></div>
+                  <div class="column"><img style="width:100%;" src="images/smoothness.png"></div>
+               </div>
                <p2>The main character is normal mapped and has several other maps used for lighting. Since we are using
                   physically based rendering, we used a metallic map and a roughness map in calculating the shading, in
                   addition to the normal and base texture map of the character.</p2>
