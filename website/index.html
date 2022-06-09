@@ -17,6 +17,16 @@ body {
    margin: 0;
 }
 
+.row {
+   display: flex;
+}
+
+.column {
+   float: left;
+   width: 50%;
+   padding: 5px;
+}
+
 .hero {
    height: 35vh;
    top: 0;
@@ -252,7 +262,10 @@ a {
                <p2> Insert here</p2>
                <h2> Particle Systems</h2>
                <p2> The particle system used initialized several vertex array objects, with a few vertex buffer objects per VAO, with different semi-randomized characteristics. Then, at program setup, all particle data was buffered onto the GPU, and the particle system class kept their references as static class members. A newly-created particle system would select the next vertex array object, and a random starting position into the vertex buffers, in order to get randomized characteristics without buffering data every frame. There was no sorting done on any of the particle systems, instead glDepthMask was set to disabled, and alpha values were adjusted to minimize any potential color saturation caused by stacking.</p2>
-               <img style="width:50%;"src="images/starparticles.png"> <img style="width:50%;"src="images/dust.png">
+               <div class="row">
+                  <div class="column"><img style="width:100%;"src="images/starparticles.png"></div>
+                  <div class="column"><img style="width:100%;"src="images/dust.png"></div>
+               </div>
                <p2>The particle systems activated upon collecting a star fragment were smaller points, indexed into a buffer that was generated with randomized normals, and used a constant Perlin noise, added to a higher-weighted stacked Perlin noise that adjusted the point's vertex position along the direction of the random normal. This was animated using log(1 + the particle system's total time), and faded out with an alpha value that decreased with total time, to create a starburst effect with a faster particle speed at first that tapered off and faded out.</p2>
                <p2>The particle systems activated upon exceeding a certain velocity were done by using a sprite sheet, precomputing the texture-space coordinates of each image in the sprite sheet and storing into a lookup table, and indexing into the sprite sheet table based on the total lifetime of the particle system. A particle system that managed one particle was spawned under the player, with a transform component that locked it at the player's position upon particle system spawn. The alpha values faded in and out over the lifetime of the particle system, as well as with the speed the player was travelling when the system was spawned.</p2>
                <h2> Sound</h2>
