@@ -225,6 +225,17 @@ a {
                <p2> {Video of gameplay here} </p2>
                <hr>
 
+               <h3> USER GUIDE </h3>
+               <p2> LUNA, the main character, is controlled using W/A/S/D and LEFT SHIFT.</p2>
+               <p2> W - Move Forwards </p2>
+               <p2> S - Move Backwards </p2>
+               <p2> A - Turn Left </p2>
+               <p2> D - Turn Right </p2>
+               <p2> LEFT SHIFT - Increase downwards force </p2>
+               <p2> The shift key should be used only when you are sure you are travelling on a downhill slope, otherwise it will slow you down. </p2>
+               <p2> A tip for new players is to only focus on going straight forward and go to star fragments only a little bit out of reach. </p2>
+               <hr>
+
                <!-- Inspiration -->
                <h3> Inspiration </h3>
                <p2> Gifs of references, Journey, etc.</p2>
@@ -255,9 +266,20 @@ a {
                <p2>While setting up the project in this way took longer than expected, I think it paid off by the end of the quarter. We were largely able to write new functionality by inheriting from a number of the first-level components, add a resulting game object, and the rest would take care of itself.</p2>
                <h2>Shading</h2>
                <p2>Shading the star fragments and LUNA used a 3-component microfacet BRDF: a geometric shadowing function(GSF), a normal distribution function(NDF), and a fresnel function(F). The geometric shadowing function used was the Kelemen approximation of the Cook-Torrance GSF, the NDF used was the GGX microfacet NDF, and the Fresnel function was the Schlick's approximation function, with a few adjustments to add tunable values.</p2>
+
+               <h2>Character and Camera Animation</h2>
+               <p2>Each body part of the character is split up into individually animated objects. Each one has a desired orientation based on the input of the player and moves towards its desired orientation by slerping between its existing orientation and its goal quaternion. The player's head turns in the direction it wants to go and the player's body leans and rolls with the direction of motion it is accelerating in. Additionally, if you press ALT, you can see the eyes blinking with a scaled ellipse function in the fragment shader.</p2>
+               <p2>The camera is positioned behind the player and changes its distance and FOV based on the speed of the player. It smooths to its desired position, and has several different positions based on the state of the character. It looks directly at the player and follows the character as it travels through the sand. The camera also collides with the terrain to prevent the terrain from blocking the view of the player.</p2>
+               <h2>Post Processing</h2>
+               <p2>Bloom is implemented using a modern technique used in engines like Unity. The pass takes the high valued colors above a threshhold, and then downsamples down to an extremely low resolution, and then recursively upsamples back to the base resolution while adding each pass together back into the final image.</p2>
+               <p2>The game is rendered in high dynamic range and then tonemapped using ACES tonemapping (see references).</p2>
+               <p2>Camera based motion blur was implemented, but the effect didn't give the feeling of speed we wanted, so we used a radial blur that started outside of the center of the screen that scales its strength with the player speed. This gives a similar effect as motion blur, but only on moving forwards and not the rotation of the camera. This effect gave our game the feeling of speed we were looking for.</p2>
+               <h2>Normal Mapping and Other Mappings</h2>
+               <p2>The main character is normal mapped and has several other maps used for lighting. Since we are using physically based rendering, we used a metalic map and a roughness map in calculating the shading, in addition to the normal and base texture map of the character.</p2>
                <hr>
 
                 <h3> Resources </h3>
+                  <a href="https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/">ACES Tone Mapping Used</a>
                   <a href="https://blog.selfshadow.com/publications/s2012-shading-course/hoffman/s2012_pbs_physics_math_notes.pdf">course notes on BRDF shading math and physics</a>
                   <a href="https://www.researchgate.net/publication/2378872_A_Microfacet_Based_Coupled_Specular-Matte_BRDF_Model_with_Importance_Sampling#pf8">Kelemen GSF</a>
                   <a href="https://blog.selfshadow.com/publications/s2012-shading-course/#course_content">GGX NDF</a>
