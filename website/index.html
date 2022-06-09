@@ -18,30 +18,31 @@
       margin: 0;
    }
 
-.row {
-   display: flex;
-}
+   .row {
+      display: flex;
+   }
 
-.column {
-   float: left;
-   width: 50%;
-   padding: 5px;
-}
+   .column {
+      float: left;
+      width: 50%;
+      padding: 5px;
+   }
 
-.hero {
-   height: 35vh;
-   top: 0;
-   z-index: -10;
-   position: sticky;
-   overflow: hidden;
-}
-.hero-img {
-   
-   position: absolute;
-   z-index: -10;
-   
-   width: 100%;
-}
+   .hero {
+      height: 35vh;
+      top: 0;
+      z-index: -10;
+      position: sticky;
+      overflow: hidden;
+   }
+
+   .hero-img {
+
+      position: absolute;
+      z-index: -10;
+
+      width: 100%;
+   }
 
    .hero-img {
 
@@ -291,6 +292,9 @@
                   terrain with a still relatively small amount of vertices needed. The dune shape function is evaluated
                   at world space coordinates, meaning that the displacement is stable despite the mesh moving with the
                   player. </p2>
+               <div class="row">
+                  <div class="column"><img style="width:100%;" src="images/TessellatedStarfall.jpg"></div>
+               </div>
                <h2> Particle Systems</h2>
                <p2> The particle system used initialized several vertex array objects, with a few vertex buffer objects
                   per VAO, with different semi-randomized characteristics. Then, at program setup, all particle data was
@@ -300,10 +304,10 @@
                   every frame. There was no sorting done on any of the particle systems, instead glDepthMask was set to
                   disabled, and alpha values were adjusted to minimize any potential color saturation caused by
                   stacking.</p2>
-                  <div class="row">
-                     <div class="column"><img style="width:100%;"src="images/starparticles.png"></div>
-                     <div class="column"><img style="width:100%;"src="images/dust.png"></div>
-                  </div>
+               <div class="row">
+                  <div class="column"><img style="width:100%;" src="images/starparticles.png"></div>
+                  <div class="column"><img style="width:100%;" src="images/dust.png"></div>
+               </div>
                <p2>The particle systems activated upon collecting a star fragment were smaller points, indexed into a
                   buffer that was generated with randomized normals, and used a constant Perlin noise, added to a
                   higher-weighted stacked Perlin noise that adjusted the point's vertex position along the direction of
