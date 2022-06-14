@@ -89,8 +89,13 @@ endfunction(findGLFW3)
 
 # Find and add GLM using find_package or environment variable 
 function(findGLM target)
-
-    find_package(glm QUIET)
+    if(DEFINED ENV{IN_GITHUB_ACTIONS})
+        message("inside github action script, using submodule...")
+        add_subdirectory("./submodules/glm")
+    else()
+        find_package(glm QUIET)
+    endif()
+    
 
     if(NOT glm_FOUND)
         set(GLM_INCLUDE_DIRS "$ENV{GLM_INCLUDE_DIR}")
