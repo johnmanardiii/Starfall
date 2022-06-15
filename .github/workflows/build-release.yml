@@ -36,12 +36,13 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
       
-    - name: Build
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      # Add additional options to the MSBuild command line here (like platform or verbosity level).
-      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+    - name: Package
+      run: Copy-Item -Path ${{github.workspace}}/resources -Destination ${{github.workspace}}/build/Release -recurse -force && New-Item -ItemType File -Path  ${{github.workspace}}/build/Release/executable/Starfall.exe -Force && Move-Item  ${{github.workspace}}/build/Release/Starfall.exe -Destination  ${{github.workspace}}/build/Release/executable/Starfall.exe -Force && Compress-Archive  ${{github.workspace}}/build/Release -DestinationPath Release
+        
+      
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      
