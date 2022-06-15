@@ -44,11 +44,8 @@ jobs:
       
     - name: Package
       if: startsWith(github.ref, 'refs/tags/')
-      run: >- 
-            Copy-Item -Path ${{github.workspace}}/resources -Destination ${{github.workspace}}/build/Release -recurse -force 
-            && New-Item -ItemType File -Path  ${{github.workspace}}/build/Release/executable/Starfall.exe -Force 
-            && Move-Item  ${{github.workspace}}/build/Release/Starfall.exe -Destination  ${{github.workspace}}/build/Release/executable/Starfall.exe -Force 
-            && Compress-Archive  ${{github.workspace}}/build/Release -DestinationPath Release
+      run: ${{github.workspace}}/package-script.ps1
+           
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
