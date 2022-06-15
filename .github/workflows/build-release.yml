@@ -38,5 +38,9 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
     - name: Package
-      run: Copy-Item -Path ${{github.workspace}}/resources -Destination ${{github.workspace}}/build/Release -recurse -force && New-Item -ItemType File -Path  ${{github.workspace}}/build/Release/executable/Starfall.exe -Force && Move-Item  ${{github.workspace}}/build/Release/Starfall.exe -Destination  ${{github.workspace}}/build/Release/executable/Starfall.exe -Force && Compress-Archive  ${{github.workspace}}/build/Release -DestinationPath Release
+      run: >- 
+            Copy-Item -Path ${{github.workspace}}/resources -Destination ${{github.workspace}}/build/Release -recurse -force 
+            && New-Item -ItemType File -Path  ${{github.workspace}}/build/Release/executable/Starfall.exe -Force 
+            && Move-Item  ${{github.workspace}}/build/Release/Starfall.exe -Destination  ${{github.workspace}}/build/Release/executable/Starfall.exe -Force 
+            && Compress-Archive  ${{github.workspace}}/build/Release -DestinationPath Release
       
