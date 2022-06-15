@@ -2,12 +2,8 @@ name: CMake
 
 on:
   push:
-    tags:
-      - "v*.*.*"
     branches: [ "master" ]
   pull_request:
-    tags:
-      - "v*.*.*"
     branches: [ "master" ]
 
 env:
@@ -43,12 +39,12 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
     - name: Package
-      if: startsWith(github.ref, 'refs/tags/')
+      if: ${{startsWith(github.ref, 'refs/tags/') && success()}}
       run: ${{github.workspace}}/package-script.ps1
            
     - name: Release
       uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
+      if: ${{startsWith(github.ref, 'refs/tags/') && success()}}
       with:
         files:
           ${{github.workspace}}/build/Release/Release.zip
