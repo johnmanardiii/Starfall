@@ -2,8 +2,12 @@ name: CMake
 
 on:
   push:
+    tags:
+      - "v*.*.*"
     branches: [ "master" ]
   pull_request:
+    tags:
+      - "v*.*.*"
     branches: [ "master" ]
 
 env:
@@ -43,4 +47,10 @@ jobs:
             && New-Item -ItemType File -Path  ${{github.workspace}}/build/Release/executable/Starfall.exe -Force 
             && Move-Item  ${{github.workspace}}/build/Release/Starfall.exe -Destination  ${{github.workspace}}/build/Release/executable/Starfall.exe -Force 
             && Compress-Archive  ${{github.workspace}}/build/Release -DestinationPath Release
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files:
+          ${{github.workspace}}/build/Release/Release.zip
+          
       
